@@ -30,7 +30,7 @@ fun HomeCategory(modifier: Modifier = Modifier) {
     val scrollState = rememberScrollState()
 
     Row(modifier.padding(horizontal = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-        LocationButton(text = "관악구")
+        LocationButton()
         Spacer(Modifier.size(10.dp))
         Row(
             modifier
