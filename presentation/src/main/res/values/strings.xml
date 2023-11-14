@@ -1,1 +1,4 @@
-<resources></resources>
+<resources>
+    <string name="title_activity_post_detail">PostDetailActivity</string>
+    <string name="title_activity_post_screen">PostScreen</string>
+</resources>
