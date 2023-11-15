@@ -1,5 +1,6 @@
 package com.pat.presentation.ui.home
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -18,27 +19,23 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.orhanobut.logger.Logger
 import com.pat.presentation.R
-import com.pat.presentation.ui.home.components.HatPat
+import com.pat.presentation.ui.home.components.BarIcon
 import com.pat.presentation.ui.home.components.HomeCategory
 import com.pat.presentation.ui.home.components.HomeMyPat
 import com.pat.presentation.ui.home.components.RecentPat
 import com.pat.presentation.ui.home.components.BarIcon
 import com.pat.presentation.ui.home.components.HomeTopBar
+import com.pat.presentation.ui.home.components.Pats
 import com.pat.presentation.ui.home.components.SearchTextField
 
 @Composable
-fun HomeScreenView(
-    modifier: Modifier = Modifier,
-    viewModel : HomeViewModel = hiltViewModel(),
-
-    ) {
-    val uiState by viewModel.uiState.collectAsState()
-    LaunchedEffect(uiState.content){
-        Logger.t("MainTest").i("${uiState.content}")
-    }
-//    val content by viewModel.content.collectAsState()
+fun HomeScreenView(homeViewModel: HomeViewModel = hiltViewModel()) {
+    val uiState by homeViewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
 
+    LaunchedEffect(uiState.content) {
+        Logger.t("MainTest").i("${uiState.content}")
+    }
     Scaffold(
         topBar = {
             HomeTopBar(

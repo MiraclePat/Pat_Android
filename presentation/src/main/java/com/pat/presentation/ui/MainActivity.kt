@@ -18,6 +18,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
+
+//            GlideImage(
+//                imageModel = { "https://miraclepatbucket.s3.ap-northeast-2.amazonaws.com/repimgtest.JPG" },
+//            )
             Scaffold(
                 bottomBar = { BottomNavi(navController = navController) }
             ) {

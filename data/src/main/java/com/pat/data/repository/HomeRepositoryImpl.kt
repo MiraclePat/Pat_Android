@@ -21,7 +21,6 @@ class HomeRepositoryImpl @Inject constructor(
             Result.success(result.getOrThrow().content)
         } else {
             Logger.t("MainTest").i("${result.exception().message}")
-
             Result.failure(result.exception())
         }
     }

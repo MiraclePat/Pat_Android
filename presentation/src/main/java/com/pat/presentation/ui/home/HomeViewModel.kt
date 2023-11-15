@@ -23,7 +23,7 @@ class HomeViewModel @Inject constructor(
     private val getHomePatsUseCase: GetHomePatsUseCase,
 ) : ViewModel() {
 
-//    private val _patContent = MutableStateFlow<List<HomePatContent>?>(null)
+    //    private val _patContent = MutableStateFlow<List<HomePatContent>?>(null)
 //    val patContent: StateFlow<List<HomePatContent>?> get() = _patContent
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()

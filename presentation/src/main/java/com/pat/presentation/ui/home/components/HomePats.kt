@@ -1,5 +1,6 @@
 package com.pat.presentation.ui.home.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -21,15 +23,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import com.pat.domain.model.home.HomePatContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.home.HomeScreenView
 import com.pat.presentation.ui.theme.PrimaryMain
-
+import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun HomePats(
@@ -38,10 +44,11 @@ fun HomePats(
     title: String = "강아지 산책",
     location: String = "서울시 관악구 신사동",
     startDate: String = "12.5(금) 시작",
-    curPerson: String = "8",
-    maxPerson: String = "10",
+    imgUri: String,
+    nowPerson: Int = 8,
+    maxPerson: Int = 10,
     category: String = "환경",
-    categoryColor: Color = PrimaryMain,
+    categoryColor: Color = Color(0xFFE2FFEC),
     textColor: Color = Color(0xFF009D65),
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
@@ -52,12 +59,7 @@ fun HomePats(
         Box(
             contentAlignment = Alignment.TopStart
         ) {
-
-            Image(
-                modifier = modifier.size(140.dp, 140.dp),
-                painter = painterResource(id = R.drawable.pat),
-                contentDescription = null
-            )
+            GlideImage(modifier = modifier.size(140.dp, 140.dp).clip(RoundedCornerShape(22.dp)), imageModel = { imgUri })
             Text(
                 text = category,
                 modifier = modifier
@@ -80,42 +82,39 @@ fun HomePats(
         }
         Row() {
             Icon(painter = painterResource(id = R.drawable.ic_user), contentDescription = null)
-            Text(text = "$curPerson / $maxPerson")
+            Text(text = "$nowPerson / $maxPerson")
         }
     }
 }
 
 @Composable
-fun HatPat(modifier: Modifier = Modifier) {
+fun Pats(modifier: Modifier = Modifier, content: List<HomePatContent>?) {
     Column(modifier.padding(vertical = 20.dp, horizontal = 16.dp)) {
         Text(text = "지금 가장 핫한 팟에 동참해보세요!", style = MaterialTheme.typography.titleLarge)
         Spacer(Modifier.size(12.dp))
         LazyRow() {
-            items(5) {
-                HomePats()
-                Spacer(Modifier.size(10.dp))
+            if (!content.isNullOrEmpty()) {
+                items(content) { pat ->
+                    HomePats(
+                        title = pat.patName, category = pat.category, nowPerson = pat.nowPerson,
+                        maxPerson = pat.maxPerson, startDate = pat.startDate, imgUri = pat.repImg
+                    )
+                    Spacer(Modifier.size(10.dp))
+                }
+            } else {
+                // TODO 팟이 아무것도 없을 때
             }
         }
     }
-}
-
-@Composable
-fun RecentPat(modifier: Modifier = Modifier) {
-    Column(modifier.padding(vertical = 20.dp, horizontal = 16.dp)) {
-        Text(text = "최근 개설된 팟!", style = MaterialTheme.typography.titleLarge)
-        Spacer(Modifier.size(12.dp))
-        LazyRow() {
-            items(5) {
-                HomePats()
-                Spacer(Modifier.size(10.dp))
-            }
-        }
-    }
-}
-
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun Preview6() {
-    HomeScreenView()
+//    Spacer(Modifier.size(20.dp))
+//    Column(modifier.padding(vertical = 20.dp, horizontal = 16.dp)) {
+//        Text(text = "최근 개설된 팟!", style = MaterialTheme.typography.titleLarge)
+//        Spacer(Modifier.size(12.dp))
+//        LazyRow() {
+//            items(5) {
+//                HomePats()
+//                Spacer(Modifier.size(10.dp))
+//            }
+//        }
+//    }
 }
