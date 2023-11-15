@@ -1,8 +1,5 @@
-package com.pat.presentation.ui
+package com.pat.presentation.ui.pat
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -22,25 +19,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -48,152 +41,135 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pat.presentation.R
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostDetailView(modifier: Modifier = Modifier) {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
+    val scrollState = rememberScrollState()
 
-        val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-        Scaffold(
-            modifier = modifier
-                .fillMaxSize()
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
-            topBar = {
-                TopAppBar(
-                    modifier = Modifier.fillMaxWidth(),
-                    title = {
-                        Text(
-                            text = "강아지 산책",
-                            fontSize = 14.sp,
-                            modifier = modifier.fillMaxWidth(),
+    Scaffold(
+        modifier = modifier
+            .fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                modifier = Modifier.fillMaxWidth(),
+                title = {
+                    Text(
+                        text = "강아지 산책",
+                        fontSize = 14.sp,
+                        modifier = modifier.fillMaxWidth(),
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBackIosNew,
+                            contentDescription = "Go back"
                         )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { /*TODO*/ }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBackIosNew,
-                                contentDescription = "Go back"
-                            )
-                        }
-                    },
-                    actions = {
-                    },
-                    scrollBehavior = scrollBehavior,
-                )
-            }
-        ) { values ->
-            Column(
-                modifier = modifier
-                    .padding(values)
-            ) {
-                PostDetailScreen()
-            }
+                    }
+                },
+                actions = {
+                },
+            )
+        }
+    ) { values ->
+        Column(
+            modifier = Modifier
+                .padding(values)
+                .verticalScroll(scrollState),
+        ) {
+            PostDetailScreen()
         }
     }
 }
 
 @Composable
 fun PostDetailScreen(modifier: Modifier = Modifier) {
-    Surface(
-        modifier = modifier.fillMaxSize(),
-    ) {
-        Column() {
-            Image(
+    Image(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(160.dp),
+        painter = painterResource(id = R.drawable.ic_add),
+        contentDescription = null
+    )
+    Column(modifier = modifier.padding(10.dp)) {
+        Row() {
+            Box(
                 modifier = modifier
-                    .fillMaxWidth()
-                    .height(160.dp),
-                painter = painterResource(id = R.drawable.ic_add),
-                contentDescription = null
-            )
-            Column(modifier = modifier.padding(10.dp)) {
-                Row() {
-                    Box(
-                        modifier = modifier
-                            .width(40.dp)
-                            .height(35.dp)
-                            .background(
-                                color = Color.Red,
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                    ) {
-                        Text(
-                            text = "일상",
-                            modifier = modifier
-                                .padding(8.dp)
-                                .align(Alignment.Center),
-                            color = Color.White,
-                            fontSize = 12.sp
-                        )
-                    }
-                    Text(
-                        text = "강아지 산책",
-                        fontSize = 20.sp,
-                        modifier = modifier.padding(3.dp)
+                    .width(40.dp)
+                    .height(35.dp)
+                    .background(
+                        color = Color.Red,
+                        shape = RoundedCornerShape(8.dp)
                     )
-                }
-                Text("서울시 관악구 신사동", modifier = modifier.padding(3.dp))
-                Text("11월 13일(월) - 11월 27일(월) 총 2주간", modifier = modifier.padding(3.dp))
-                Text("현재 8명 / 20명", modifier = modifier.padding(3.dp)) //TODO GETSTRING
-                Spacer(modifier.size(20.dp))
-
-                Text("인증사진", fontSize = 16.sp, modifier = modifier.padding(3.dp))
-                PatPhotos()
-                Spacer(modifier.size(20.dp))
-
+            ) {
                 Text(
-                    "팟 정보", fontSize = 16.sp, modifier = modifier
-                        .padding(3.dp)
-                        .fillMaxWidth()
+                    text = "일상",
+                    modifier = modifier
+                        .padding(8.dp)
+                        .align(Alignment.Center),
+                    color = Color.White,
+                    fontSize = 12.sp
                 )
-                CustomText("강아지와 주 2회 산책해요",painterResource(id = R.drawable.ic_add))
+            }
+            Text(
+                text = "강아지 산책",
+                fontSize = 20.sp,
+                modifier = modifier.padding(3.dp)
+            )
+        }
+        Text("서울시 관악구 신사동", modifier = modifier.padding(3.dp))
+        Text("11월 13일(월) - 11월 27일(월) 총 2주간", modifier = modifier.padding(3.dp))
+        Text("현재 8명 / 20명", modifier = modifier.padding(3.dp)) //TODO GETSTRING
+        Spacer(modifier.size(20.dp))
 
-                Spacer(modifier.size(20.dp))
+        Text("인증사진", fontSize = 16.sp, modifier = modifier.padding(3.dp))
+        PatPhotos()
+        Spacer(modifier.size(20.dp))
 
-                Text("인증 가능 시간", fontSize = 16.sp, modifier = modifier.padding(3.dp))
-//                CustomText("오전 11시부터 오후 11시까지", R.drawable.ic_alram)
+        Text(
+            "팟 정보", fontSize = 16.sp, modifier = modifier
+                .padding(3.dp)
+                .fillMaxWidth()
+        )
+        CustomText("강아지와 주 2회 산책해요", painterResource(id = R.drawable.ic_add))
 
-                Spacer(modifier.size(20.dp))
-                Text("인증 빈도", fontSize = 16.sp, modifier = modifier.padding(3.dp))
-                ProofFrequencyList()
+        Spacer(modifier.size(20.dp))
 
-                Spacer(modifier.size(20.dp))
-                Text("시작일-종료일", fontSize = 16.sp, modifier = modifier.padding(3.dp))
+        Text("인증 가능 시간", fontSize = 16.sp, modifier = modifier.padding(3.dp))
+        CustomText("오전 11시부터 오후 11시까지", painterResource(id = R.drawable.ic_alram))
 
-                Spacer(modifier.size(20.dp))
-                Text("인증 방법", fontSize = 16.sp, modifier = modifier.padding(3.dp))
-                Box(modifier.padding(10.dp)) {
+        Spacer(modifier.size(20.dp))
+        Text("인증 빈도", fontSize = 16.sp, modifier = modifier.padding(3.dp))
+        ProofFrequencyList()
+
+        Spacer(modifier.size(20.dp))
+        Text("시작일-종료일", fontSize = 16.sp, modifier = modifier.padding(3.dp))
+
+        Spacer(modifier.size(20.dp))
+        Text("인증 방법", fontSize = 16.sp, modifier = modifier.padding(3.dp))
+        Box(modifier.padding(10.dp)) {
 //                    CustomText("목줄을 찬 반려동물이 바깥 풍경과 함꼐 나오도록 사진을 찍어주세요.", "")
-                }
+        }
 
-                Spacer(modifier.size(20.dp))
-                Text("인증 수단", fontSize = 16.sp, modifier = modifier.padding(3.dp))
+        Spacer(modifier.size(20.dp))
+        Text("인증 수단", fontSize = 16.sp, modifier = modifier.padding(3.dp))
 //                CustomText("실시간 촬영", "")
 //                CustomText("갤러리에서 사진 가져오기", "")
 
-                Spacer(modifier.size(44.dp))
-                ParticipatePatButton()
-            }
-        }
+        Spacer(modifier.size(44.dp))
+        ParticipatePatButton()
     }
 }
 
@@ -268,7 +244,7 @@ fun PatPhotos(modifier: Modifier = Modifier) {
 @Composable
 fun PreviewPhotos(modifier: Modifier = Modifier) {
     Image(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         painter = painterResource(id = R.drawable.ic_add),
         contentDescription = null
     )
