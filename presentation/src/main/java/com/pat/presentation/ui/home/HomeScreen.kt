@@ -8,10 +8,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.orhanobut.logger.Logger
 import com.pat.presentation.R
 import com.pat.presentation.ui.home.components.HatPat
 import com.pat.presentation.ui.home.components.HomeCategory
@@ -22,7 +27,15 @@ import com.pat.presentation.ui.home.components.HomeTopBar
 import com.pat.presentation.ui.home.components.SearchTextField
 
 @Composable
-fun HomeScreenView() {
+fun HomeScreenView(
+    modifier: Modifier = Modifier,
+    viewModel : HomeViewModel = hiltViewModel(),
+
+    ) {
+    val uiState by viewModel.uiState.collectAsState()
+    LaunchedEffect(uiState.content){
+        Logger.t("MainTest").i("${uiState.content}")
+    }
 //    val content by viewModel.content.collectAsState()
     val scrollState = rememberScrollState()
 
