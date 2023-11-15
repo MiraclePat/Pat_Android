@@ -1,4 +1,4 @@
-package com.pat.presentation.ui.screens
+package com.pat.presentation.ui.home
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,14 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pat.presentation.R
-import com.pat.presentation.ui.components.HatPat
-import com.pat.presentation.ui.components.HomeCategory
-import com.pat.presentation.ui.components.HomeMyPat
-import com.pat.presentation.ui.components.RecentPat
-import com.pat.presentation.ui.navigations.BarIcon
-import com.pat.presentation.ui.navigations.HomeTopBar
-import com.pat.presentation.ui.navigations.SearchTextField
-
+import com.pat.presentation.ui.home.components.HatPat
+import com.pat.presentation.ui.home.components.HomeCategory
+import com.pat.presentation.ui.home.components.HomeMyPat
+import com.pat.presentation.ui.home.components.RecentPat
+import com.pat.presentation.ui.home.components.BarIcon
+import com.pat.presentation.ui.home.components.HomeTopBar
+import com.pat.presentation.ui.home.components.SearchTextField
 
 @Composable
 fun HomeScreenView() {

@@ -5,12 +5,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -20,13 +18,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.pat.presentation.R
-import com.pat.presentation.ui.screens.CertificationScreenView
-import com.pat.presentation.ui.screens.HomeScreenView
-import com.pat.presentation.ui.screens.MapScreenView
-import com.pat.presentation.ui.screens.SettingScreenView
+import com.pat.presentation.ui.proof.CertificationScreenView
+import com.pat.presentation.ui.map.MapScreenView
+import com.pat.presentation.ui.setting.SettingScreenView
 import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.PrimaryMain
 import com.pat.presentation.ui.theme.White
+import com.pat.presentation.ui.home.HomeScreenView
 
 const val HOME = "HOME"
 const val CERTIFICATION = "CERTIFICATION"
