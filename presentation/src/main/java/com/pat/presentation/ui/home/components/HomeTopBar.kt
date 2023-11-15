@@ -1,4 +1,4 @@
-package com.pat.presentation.ui.navigations
+package com.pat.presentation.ui.home.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
@@ -33,7 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.pat.presentation.ui.screens.HomeScreenView
+import com.pat.presentation.ui.home.HomeScreenView
 import com.pat.presentation.ui.theme.Gray100
 import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.Gray700

@@ -1,6 +1,5 @@
-package com.pat.presentation.ui.components
+package com.pat.presentation.ui.home.components
 
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,10 +26,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.pat.presentation.ui.screens.HomeScreenView
+import com.pat.presentation.ui.home.HomeScreenView
 import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.Gray700
-import com.pat.presentation.ui.theme.White
 
 
 @Composable
