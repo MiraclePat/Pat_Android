@@ -1,5 +1,6 @@
 package com.pat.data.repository
 
+import android.util.Log
 import com.pat.data.source.HomeDataSource
 import com.pat.data.util.exception
 import com.pat.domain.model.home.HomePatContent
@@ -19,6 +20,7 @@ class HomeRepositoryImpl @Inject constructor(
         return if (result.isSuccess) {
             Result.success(result.getOrThrow().content)
         } else {
+            Log.e("custom", "${result.exceptionOrNull()} ")
             Result.failure(result.exception())
         }
     }
