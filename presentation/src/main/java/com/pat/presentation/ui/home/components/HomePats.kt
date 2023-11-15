@@ -23,7 +23,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,7 +48,7 @@ fun HomePats(
     nowPerson: Int = 8,
     maxPerson: Int = 10,
     category: String = "환경",
-    categoryColor: Color = PrimaryMain,
+    categoryColor: Color = Color(0xFFE2FFEC),
     textColor: Color = Color(0xFF009D65),
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
@@ -54,39 +56,20 @@ fun HomePats(
     onPressed: () -> Unit = {}
 ) {
     Column(modifier.clickable { onClick }) {
-        AsyncImage(
-            modifier = modifier.size(140.dp, 140.dp),
-            model = "https://miraclepatbucket.s3.ap-northeast-2.amazonaws.com/repimgtest.JPG",
-            contentDescription = null
-        )
-
         Box(
             contentAlignment = Alignment.TopStart
         ) {
-
-//            Image(
-//                modifier = modifier.size(140.dp, 140.dp),
-//                painter = painterResource(id = R.drawable.pat),
-//                contentDescription = null
-//            )
-            Log.e("custom", "imageUri : $imgUri")
-//            AsyncImage(
-//                modifier = modifier.size(140.dp, 140.dp),
-//                model = "https://miraclepatbucket.s3.ap-northeast-2.amazonaws.com/repimgtest.JPG",
-//                contentDescription = null
-//            )
-
-//            GlideImage(modifier = modifier.size(140.dp, 140.dp), imageModel = { imgUri })
-//            Text(
-//                text = category,
-//                modifier = modifier
-//                    .padding(8.dp)
-//                    .background(color = categoryColor, shape = RoundedCornerShape(22.dp))
-//                    .width(41.dp)
-//                    .height(26.dp),
-//                textAlign = TextAlign.Center,
-//                color = textColor
-//            )
+            GlideImage(modifier = modifier.size(140.dp, 140.dp).clip(RoundedCornerShape(22.dp)), imageModel = { imgUri })
+            Text(
+                text = category,
+                modifier = modifier
+                    .padding(8.dp)
+                    .background(color = categoryColor, shape = RoundedCornerShape(22.dp))
+                    .width(41.dp)
+                    .height(26.dp),
+                textAlign = TextAlign.Center,
+                color = textColor
+            )
         }
         Text(text = title, style = MaterialTheme.typography.bodyLarge)
         Row() {
@@ -106,10 +89,6 @@ fun HomePats(
 
 @Composable
 fun Pats(modifier: Modifier = Modifier, content: List<HomePatContent>?) {
-    content?.forEach {
-        Log.e("custom", "$it")
-    }
-
     Column(modifier.padding(vertical = 20.dp, horizontal = 16.dp)) {
         Text(text = "지금 가장 핫한 팟에 동참해보세요!", style = MaterialTheme.typography.titleLarge)
         Spacer(Modifier.size(12.dp))
@@ -138,11 +117,4 @@ fun Pats(modifier: Modifier = Modifier, content: List<HomePatContent>?) {
 //            }
 //        }
 //    }
-}
-
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun Preview6() {
-    HomeScreenView()
 }
