@@ -5,6 +5,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -22,8 +23,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.pat.presentation.ui.screens.HomeScreenView
 import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.Gray700
@@ -34,7 +37,7 @@ import com.pat.presentation.ui.theme.White
 fun LocationButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
-    buttonColor: Color = White,
+    buttonColor: Color = MaterialTheme.colorScheme.background,
     text: String = "관악구",
     textColor: Color = Gray600,
     enabled: Boolean = true,
@@ -45,10 +48,6 @@ fun LocationButton(
 
     val isPressed by interactionSource.collectIsPressedAsState()
 
-    val verticalPadding by animateDpAsState(
-        targetValue = if (isPressed) 13.dp else 16.dp, label = ""
-    )
-
     LaunchedEffect(isPressed) {
         if (isPressed) onPressing()
         else onPressed()
@@ -56,10 +55,10 @@ fun LocationButton(
 
     Button(
         modifier = modifier
-            .height(60.dp)
+            .height(40.dp)
             .width(66.dp),
         interactionSource = interactionSource,
-        contentPadding = PaddingValues(vertical = verticalPadding),
+        contentPadding = PaddingValues(),
         colors = ButtonDefaults.buttonColors(
             containerColor = buttonColor
         ),
@@ -68,12 +67,15 @@ fun LocationButton(
             onClick()
         },
     ) {
-        Row() {
+        Row(modifier.fillMaxHeight(), verticalAlignment = Alignment.CenterVertically) {
             Text(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 text = text,
                 fontWeight = FontWeight.Bold,
-                color = textColor
+                fontSize = 16.sp,
+                color = textColor,
+                overflow = TextOverflow.Visible
+
             )
             Icon(
                 imageVector = Icons.Rounded.KeyboardArrowDown,
@@ -84,8 +86,8 @@ fun LocationButton(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showSystemUi = true, showBackground = true)
 @Composable
-fun DefaultPreview() {
+fun Preview3() {
     HomeScreenView()
 }
