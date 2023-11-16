@@ -6,19 +6,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import coil.compose.AsyncImage
+import com.pat.presentation.ui.post.PostScreenView
 
 @Composable
 fun MapScreenView() {
     val scrollState = rememberScrollState()
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        AsyncImage(
-            model = "https://miraclepatbucket.s3.ap-northeast-2.amazonaws.com/repimgtest.JPG",
-            contentDescription = null
-        )
-    }
+    PostScreenView()
 }
 

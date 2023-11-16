@@ -12,33 +12,39 @@ import com.pat.presentation.R
 
 val Typography = Typography(
     displayLarge = TextStyle(
-        fontFamily = FontFamily(Font(R.font.pretendard_black)),
+        fontFamily = FontFamily(Font(R.font.pretendard_bold)),
         fontWeight = FontWeight.Bold,
         fontSize = 18.sp,
         color = PrimaryMain,
     ),
     displaySmall = TextStyle(
-        fontFamily = FontFamily(Font(R.font.pretendard_black)),
+        fontFamily = FontFamily(Font(R.font.pretendard_medium)),
         fontWeight = FontWeight.Medium,
         fontSize = 13.sp,
         color = Gray700,
     ),
     titleLarge = TextStyle(
-        fontFamily = FontFamily(Font(R.font.pretendard_black)),
+        fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
         fontWeight = FontWeight.SemiBold,
         fontSize = 16.sp,
         color = Gray900,
     ),
     labelMedium = TextStyle(
-        fontFamily = FontFamily(Font(R.font.pretendard_black)),
+        fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
         fontWeight = FontWeight.SemiBold,
         fontSize = 14.sp,
         color = Gray900,
     ),
     labelSmall = TextStyle(
-        fontFamily = FontFamily(Font(R.font.pretendard_black)),
+        fontFamily = FontFamily(Font(R.font.pretendard_medium)),
         fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
+        color = Gray700,
+    ),
+    bodySmall = TextStyle(
+        fontFamily = FontFamily(Font(R.font.pretendard_medium)),
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
         color = Gray700,
     )
 )
