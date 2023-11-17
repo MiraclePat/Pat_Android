@@ -1,7 +1,5 @@
 package com.pat.presentation.ui.home.components
 
-import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -25,16 +23,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.pat.domain.model.home.HomePatContent
 import com.pat.presentation.R
-import com.pat.presentation.ui.home.HomeScreenView
-import com.pat.presentation.ui.theme.PrimaryMain
+import com.pat.presentation.ui.theme.Typography
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
@@ -55,34 +50,62 @@ fun HomePats(
     onPressing: () -> Unit = {},
     onPressed: () -> Unit = {}
 ) {
-    Column(modifier.clickable { onClick }) {
+    Column(
+        modifier
+            .clickable { onClick }) {
         Box(
-            contentAlignment = Alignment.TopStart
+//            contentAlignment = Alignment.TopStart
         ) {
-            GlideImage(modifier = modifier.size(140.dp, 140.dp).clip(RoundedCornerShape(22.dp)), imageModel = { imgUri })
-            Text(
-                text = category,
+            GlideImage(
+                modifier = modifier
+                    .size(140.dp, 140.dp)
+                    .clip(RoundedCornerShape(12.dp)),
+                imageModel = { imgUri })
+            Box(
                 modifier = modifier
                     .padding(8.dp)
-                    .background(color = categoryColor, shape = RoundedCornerShape(22.dp))
+                    .background(color = categoryColor, shape = RoundedCornerShape(8.dp))
                     .width(41.dp)
                     .height(26.dp),
-                textAlign = TextAlign.Center,
-                color = textColor
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = category,
+                    textAlign = TextAlign.Center,
+                    color = textColor,
+                    style = Typography.labelSmall
+                )
+            }
+        }
+        Spacer(Modifier.size(10.dp))
+        Text(text = title, style = Typography.labelMedium)
+        Spacer(Modifier.size(6.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                modifier = modifier.size(12.dp, 12.dp),
+                painter = painterResource(id = R.drawable.ic_map),
+                contentDescription = null
             )
+            Spacer(Modifier.size(4.dp))
+            Text(text = location, style = Typography.labelSmall)
         }
-        Text(text = title, style = MaterialTheme.typography.bodyLarge)
-        Row() {
-            Icon(painter = painterResource(id = R.drawable.ic_map), contentDescription = null)
-            Text(text = location)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                modifier = modifier.size(12.dp, 12.dp),
+                painter = painterResource(id = R.drawable.ic_calendar),
+                contentDescription = null
+            )
+            Spacer(Modifier.size(4.dp))
+            Text(text = startDate, style = Typography.labelSmall)
         }
-        Row() {
-            Icon(painter = painterResource(id = R.drawable.ic_calendar), contentDescription = null)
-            Text(text = startDate)
-        }
-        Row() {
-            Icon(painter = painterResource(id = R.drawable.ic_user), contentDescription = null)
-            Text(text = "$nowPerson / $maxPerson")
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                modifier = modifier.size(12.dp, 12.dp),
+                painter = painterResource(id = R.drawable.ic_user),
+                contentDescription = null
+            )
+            Spacer(Modifier.size(4.dp))
+            Text(text = "$nowPerson / $maxPerson", style = Typography.labelSmall)
         }
     }
 }
@@ -90,7 +113,10 @@ fun HomePats(
 @Composable
 fun Pats(modifier: Modifier = Modifier, content: List<HomePatContent>?) {
     Column(modifier.padding(vertical = 20.dp, horizontal = 16.dp)) {
-        Text(text = "지금 가장 핫한 팟에 동참해보세요!", style = MaterialTheme.typography.titleLarge)
+        Text(
+            text = stringResource(id = R.string.home_hot_pat_title),
+            style = Typography.titleLarge
+        )
         Spacer(Modifier.size(12.dp))
         LazyRow() {
             if (!content.isNullOrEmpty()) {
@@ -106,15 +132,25 @@ fun Pats(modifier: Modifier = Modifier, content: List<HomePatContent>?) {
             }
         }
     }
-//    Spacer(Modifier.size(20.dp))
-//    Column(modifier.padding(vertical = 20.dp, horizontal = 16.dp)) {
-//        Text(text = "최근 개설된 팟!", style = MaterialTheme.typography.titleLarge)
-//        Spacer(Modifier.size(12.dp))
-//        LazyRow() {
-//            items(5) {
-//                HomePats()
-//                Spacer(Modifier.size(10.dp))
-//            }
-//        }
-//    }
+    Spacer(Modifier.size(20.dp))
+    Column(modifier.padding(vertical = 20.dp, horizontal = 16.dp)) {
+        Text(
+            text = stringResource(id = R.string.home_recent_pat_title),
+            style = Typography.titleLarge
+        )
+        Spacer(Modifier.size(12.dp))
+        LazyRow() {
+            if (!content.isNullOrEmpty()) {
+                items(content) { pat ->
+                    HomePats(
+                        title = pat.patName, category = pat.category, nowPerson = pat.nowPerson,
+                        maxPerson = pat.maxPerson, startDate = pat.startDate, imgUri = pat.repImg
+                    )
+                    Spacer(Modifier.size(10.dp))
+                }
+            } else {
+                // TODO 팟이 아무것도 없을 때
+            }
+        }
+    }
 }

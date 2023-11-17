@@ -48,7 +48,7 @@ fun HomeScreenView(homeViewModel: HomeViewModel = hiltViewModel()) {
                     )
                 },
                 addButton = { BarIcon(onclick = {}, source = R.drawable.ic_add) },
-                alarmButton = { BarIcon(onclick = {}, source = R.drawable.ic_alram) })
+                alarmButton = { BarIcon(onclick = {}, source = R.drawable.ic_bell) })
         },
     ) { innerPadding ->
         Column(
