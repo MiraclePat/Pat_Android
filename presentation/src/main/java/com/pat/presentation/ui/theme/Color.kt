@@ -27,3 +27,11 @@ val Gray100 = Color(0xFFF5F5F5)
 val Gray50 = Color(0xFFFAFAFA)
 val White = Color(0xFFFFFFFF)
 
+val GreenBack = Color(0xFFCFFFDF)
+val GreenText = Color(0xFF189C45)
+
+val RedBack = Color(0xFFFFD9D9)
+val RedText = Color(0xFFFF4646)
+
+val SystemRed = Color(0xFFFF6262)
+val SystemBlue = Color(0xFF6BA6FF)

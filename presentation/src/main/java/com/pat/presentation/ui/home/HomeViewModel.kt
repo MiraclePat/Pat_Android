@@ -18,13 +18,11 @@ import javax.inject.Inject
 data class HomeUiState(
     val content: List<HomePatContent>? = null
 )
+
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getHomePatsUseCase: GetHomePatsUseCase,
 ) : ViewModel() {
-
-    //    private val _patContent = MutableStateFlow<List<HomePatContent>?>(null)
-//    val patContent: StateFlow<List<HomePatContent>?> get() = _patContent
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
@@ -33,12 +31,27 @@ class HomeViewModel @Inject constructor(
             val result = getHomePatsUseCase(HomePatRequestInfo())
             if (result.isSuccess) {
                 val content = result.getOrThrow()
-                Logger.t("MainTest").i("${content}")
                 _uiState.emit(HomeUiState(content = content))
             } else {
                 //TODO 에러 처리
             }
+        }
+    }
 
+    fun requestByCategory() {
+
+    }
+
+    fun post() {
+        viewModelScope.launch {
+            // TODO usecase 만들어지면 api 만들기
+//            val result = getHomePatsUseCase(HomePatRequestInfo())
+//            if (result.isSuccess) {
+//                val content = result.getOrThrow()
+//                _uiState.emit(HomeUiState(content = content))
+//            } else {
+//                //TODO 에러 처리
+//            }
         }
     }
 }

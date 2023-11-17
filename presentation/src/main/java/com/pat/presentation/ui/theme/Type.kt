@@ -48,3 +48,4 @@ val Typography = Typography(
         color = Gray700,
     )
 )
+

@@ -53,9 +53,7 @@ fun HomePats(
     Column(
         modifier
             .clickable { onClick }) {
-        Box(
-//            contentAlignment = Alignment.TopStart
-        ) {
+        Box() {
             GlideImage(
                 modifier = modifier
                     .size(140.dp, 140.dp)
@@ -141,10 +139,14 @@ fun Pats(modifier: Modifier = Modifier, content: List<HomePatContent>?) {
         Spacer(Modifier.size(12.dp))
         LazyRow() {
             if (!content.isNullOrEmpty()) {
-                items(content) { pat ->
+                items(content) { homePat ->
                     HomePats(
-                        title = pat.patName, category = pat.category, nowPerson = pat.nowPerson,
-                        maxPerson = pat.maxPerson, startDate = pat.startDate, imgUri = pat.repImg
+                        title = homePat.patName,
+                        category = homePat.category,
+                        nowPerson = homePat.nowPerson,
+                        maxPerson = homePat.maxPerson,
+                        startDate = homePat.startDate,
+                        imgUri = homePat.repImg
                     )
                     Spacer(Modifier.size(10.dp))
                 }
