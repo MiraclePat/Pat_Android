@@ -7,5 +7,7 @@
     <string name="text_map">맵</string>
     <string name="text_setting">마이페이지</string>
     <string name="home_empty_pat">아직 참여 중인 팟이 없어요.</string>
-    <string name="home_empty_pat2">아직 참여 중인 팟이 없어요.</string>
+    <string name="home_empty_pat2">팟에 동참하고 기적을 만들어보세요!</string>
+    <string name="home_hot_pat_title">지금 가장 핫한 팟에 동참해보세요!</string>
+    <string name="home_recent_pat_title">최근 개설된 팟</string>
 </resources>

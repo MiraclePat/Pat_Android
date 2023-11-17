@@ -21,6 +21,7 @@ import com.pat.presentation.R
 import com.pat.presentation.ui.home.HomeScreenView
 import com.pat.presentation.ui.theme.Gray700
 import com.pat.presentation.ui.theme.PrimaryMain
+import com.pat.presentation.ui.theme.Typography
 
 @Composable
 fun HomeMyPat(modifier: Modifier = Modifier) {
@@ -28,15 +29,11 @@ fun HomeMyPat(modifier: Modifier = Modifier) {
         Column() {
             Text(
                 text = stringResource(id = R.string.home_empty_pat),
-                color = PrimaryMain,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
+                style = Typography.displayLarge
             )
             Text(
                 text = stringResource(id = R.string.home_empty_pat2),
-                color = Gray700,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Medium
+                style = Typography.displaySmall
             )
         }
         Spacer(modifier.size(20.dp))
@@ -44,7 +41,7 @@ fun HomeMyPat(modifier: Modifier = Modifier) {
             modifier = modifier
                 .requiredHeight(65.dp)
                 .requiredWidth(124.dp),
-            painter = painterResource(id = R.drawable.pat),
+            painter = painterResource(id = R.drawable.ic_character_01),
             contentDescription = null
         )
     }
