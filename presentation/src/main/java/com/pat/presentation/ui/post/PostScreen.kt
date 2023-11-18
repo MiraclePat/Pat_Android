@@ -1,5 +1,6 @@
 package com.pat.presentation.ui.post
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,8 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -25,23 +24,26 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CheckBoxView
+import com.pat.presentation.ui.common.CustomPicker
 import com.pat.presentation.ui.common.CustomTextField
+import com.pat.presentation.ui.common.DateTimePickerView
+import com.pat.presentation.ui.common.ExampleImageView
 import com.pat.presentation.ui.common.FinalButton
+import com.pat.presentation.ui.common.SelectImageList
+import com.pat.presentation.ui.common.convertDateFormat
+import com.pat.presentation.ui.common.convertTimeFormat
 import com.pat.presentation.ui.theme.Gray100
-import com.pat.presentation.ui.theme.Gray300
-import com.pat.presentation.ui.theme.Gray500
-import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.GreenBack
 import com.pat.presentation.ui.theme.GreenText
 import com.pat.presentation.ui.theme.PrimaryMain
@@ -99,6 +101,16 @@ fun PostScreenView(modifier: Modifier = Modifier) {
 fun PostScreenBody(modifier: Modifier = Modifier) {
     val isRealTime = remember { mutableStateOf(false) }
     val isGallery = remember { mutableStateOf(false) }
+
+    val title = remember { mutableStateOf("") }
+    val maxPerson = remember { mutableIntStateOf(0) }
+    val patDetail = remember { mutableStateOf("") } // 팟 소개
+    val proofDetail = remember { mutableStateOf("") } // 인증 방법 설명
+    val startDate = remember { mutableStateOf("") }
+    val endDate = remember { mutableStateOf("") }
+    val startTime = remember { mutableStateOf("") }
+    val endTime = remember { mutableStateOf("") }
+
     Column() {
         Box(
             modifier
@@ -164,11 +176,37 @@ fun PostScreenBody(modifier: Modifier = Modifier) {
             Text(text = "시작일-종료일", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                TimePicker(text = "시작일 선택")
+                val startPressed = remember { mutableStateOf(false) }
+                CustomPicker(
+                    text = "시작일 선택",
+                    dateState = startDate,
+                    formatter = convertDateFormat,
+                    widthSize = 96.dp,
+                    content = {
+                        DateTimePickerView(
+                            onDateSelected = { startDate.value = it },
+                            onDismiss = { startPressed.value = !startPressed.value },
+                        )
+                    },
+                    clickState = startPressed
+                )
                 Spacer(modifier = modifier.padding(8.dp))
                 Text("부터 시작", style = Typography.bodySmall)
                 Spacer(modifier = modifier.padding(10.dp))
-                TimePicker(text = "종료일 선택")
+                val endPressed = remember { mutableStateOf(false) }
+                CustomPicker(
+                    text = "종료일 선택",
+                    dateState = endDate,
+                    formatter = convertDateFormat,
+                    widthSize = 96.dp,
+                    content = {
+                        DateTimePickerView(
+                            onDateSelected = { endDate.value = it },
+                            onDismiss = { endPressed.value = !endPressed.value },
+                        )
+                    },
+                    clickState = endPressed
+                )
                 Spacer(modifier = modifier.padding(8.dp))
                 Text("에 종료", style = Typography.bodySmall)
             }
@@ -177,11 +215,25 @@ fun PostScreenBody(modifier: Modifier = Modifier) {
             Text(text = "인증 가능 시간", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                TimePicker(text = "시작시간")
+                val startPressed = remember { mutableStateOf(false) }
+                CustomPicker(
+                    text = "시작시간",
+                    dateState = startTime,
+                    formatter = convertTimeFormat,
+                    content = {},
+                    clickState = startPressed
+                )
                 Spacer(modifier = modifier.padding(8.dp))
                 Text("부터", style = Typography.bodySmall)
                 Spacer(modifier = modifier.padding(10.dp))
-                TimePicker(text = "종료시간")
+                val endPressed = remember { mutableStateOf(false) }
+                CustomPicker(
+                    text = "종료시간",
+                    dateState = endTime,
+                    formatter = convertTimeFormat,
+                    content = {},
+                    clickState = endPressed
+                )
                 Spacer(modifier = modifier.padding(8.dp))
                 Text("까지", style = Typography.bodySmall)
             }
@@ -221,105 +273,7 @@ fun PostScreenBody(modifier: Modifier = Modifier) {
             }
             Spacer(modifier = modifier.size(55.dp))
 
-            FinalButton(text = "확정", onClick = {})
-        }
-    }
-}
-
-@Composable
-fun TimePicker(modifier: Modifier = Modifier, text: String) {
-    val widthSize = if (text.length == 4) 81.dp else 96.dp
-
-    Box(
-        modifier = modifier
-            .width(widthSize)
-            .height(36.dp)
-            .clip(RoundedCornerShape(100.dp))
-            .border(1.dp, color = Gray300, shape = RoundedCornerShape(100.dp))
-            .clickable { },
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            style = Typography.labelMedium,
-            color = Gray600,
-        )
-    }
-}
-
-@Composable
-fun SelectImage(modifier: Modifier = Modifier, imageIdx: Int = -1) {
-    val roundedCornerShape = if (imageIdx == -1) RoundedCornerShape(
-        topStart = 4.dp,
-        topEnd = 4.dp
-    ) else RoundedCornerShape(4.dp)
-    Box(
-        modifier
-            .height(140.dp)
-            .width(130.dp)
-            .clip(roundedCornerShape)
-            .background(Gray100)
-            .clickable {
-                // TODO click Event
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                modifier = modifier.size(24.dp),
-                painter = painterResource(id = R.drawable.ic_add),
-                contentDescription = null,
-                tint = Gray500
-            )
-            Box() {
-                if (imageIdx == -1) Text("사진 첨부하기", style = Typography.labelSmall)
-                else Text("사진$imageIdx 첨부하기", style = Typography.labelSmall)
-            }
-        }
-    }
-}
-
-@Composable
-fun SelectImageList(modifier: Modifier = Modifier) {
-    val imageList = listOf<Int>(1, 2, 3, 4, 5)
-
-    LazyRow() {
-        items(imageList) { imageIdx ->
-            SelectImage(imageIdx = imageIdx)
-            Spacer(modifier = modifier.padding(horizontal = 10.dp))
-        }
-    }
-}
-
-@Composable
-fun ExampleImageView(
-    modifier: Modifier = Modifier,
-    backColor: Color,
-    textColor: Color,
-    text: String,
-    onClick: () -> Unit = {}
-) {
-    Column(modifier.clickable {
-        onClick
-    }) {
-        SelectImage()
-        Box(
-            modifier
-                .clip(RoundedCornerShape(bottomEnd = 4.dp, bottomStart = 4.dp))
-                .background(backColor)
-                .height(26.dp)
-                .width(130.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = text,
-                style = Typography.labelMedium,
-                fontSize = 12.sp,
-                color = textColor
-            )
+            FinalButton(text = "확정", onClick = { Log.e("custom", "main startDate : $startDate") })
         }
     }
 }

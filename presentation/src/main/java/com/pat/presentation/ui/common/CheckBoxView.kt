@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import com.pat.presentation.R
 import com.pat.presentation.ui.theme.Gray300
 import com.pat.presentation.ui.theme.Gray800
+import com.pat.presentation.ui.theme.PrimaryMain
 
 @Composable
 fun CheckBoxView(
@@ -34,7 +35,7 @@ fun CheckBoxView(
                 .size(18.dp),
             checked = checked.value,
             colors = CheckboxDefaults.colors(
-                checkedColor = Gray300,
+                checkedColor = PrimaryMain,
                 uncheckedColor = Gray300
             ),
             onCheckedChange = {

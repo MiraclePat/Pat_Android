@@ -25,6 +25,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.pat.presentation.ui.theme.Gray200
 import com.pat.presentation.ui.theme.Gray400
+import com.pat.presentation.ui.theme.Gray800
 import com.pat.presentation.ui.theme.SystemBlue
 import com.pat.presentation.ui.theme.SystemRed
 import com.pat.presentation.ui.theme.Typography
@@ -35,7 +36,8 @@ import com.pat.presentation.ui.theme.White
 fun CustomTextField(
     modifier: Modifier = Modifier,
     placeholderText: String = "Placeholder",
-    style: TextStyle = Typography.labelMedium
+    style: TextStyle = Typography.labelMedium,
+    maxLine: Int = 1
 ) {
     var text by rememberSaveable { mutableStateOf("") }
     var isFocused by remember { mutableStateOf(false) }
@@ -53,10 +55,10 @@ fun CustomTextField(
         onValueChange = {
             text = it
         },
-        singleLine = true,
+        maxLines = maxLine,
         cursorBrush = SolidColor(SystemBlue),
         textStyle = style.copy(
-            color = Gray400,
+            color = Gray800,
         ),
         decorationBox = { innerTextField ->
             Row(

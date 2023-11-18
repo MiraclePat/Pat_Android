@@ -24,7 +24,7 @@ fun FinalButton(modifier: Modifier = Modifier, text: String, onClick: () -> Unit
             .height(46.dp)
             .clip(RoundedCornerShape(4.dp))
             .background(PrimaryMain)
-            .clickable { onClick }, contentAlignment = Alignment.Center
+            .clickable { onClick() }, contentAlignment = Alignment.Center
     ) {
         Text(
             text, style = Typography.labelMedium, color = White
