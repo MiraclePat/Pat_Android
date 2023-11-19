@@ -1,4 +1,4 @@
-package com.weit.data.di
+package com.pat.data.di
 
 import com.pat.data.BuildConfig
 import com.squareup.moshi.Moshi
@@ -12,6 +12,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Qualifier
 import javax.inject.Singleton
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+
 
 private const val BASE_URL = "http://43.200.73.58:8080/"
 
@@ -56,5 +58,6 @@ object NetworkModule {
     @Singleton
     @Provides
     fun provideMoshi(): Moshi = Moshi.Builder()
+        .add(KotlinJsonAdapterFactory())
         .build()
 }

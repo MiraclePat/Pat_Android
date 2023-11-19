@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -48,6 +50,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
@@ -64,6 +67,7 @@ import com.pat.presentation.ui.theme.Gray700
 import com.pat.presentation.ui.theme.Primary50
 import com.pat.presentation.ui.theme.PrimaryMain
 import com.pat.presentation.ui.theme.Typography
+import com.pat.presentation.ui.theme.White
 import com.skydoves.landscapist.glide.GlideImage
 
 
@@ -364,6 +368,41 @@ fun PreviewPhotos(modifier: Modifier = Modifier) {
 }
 
 @Composable
+fun DayButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+    text: String,
+    enabled: Boolean = true,
+    buttonColor : Color = Primary50,
+    textColor :Color = PrimaryMain,
+    border: Color = PrimaryMain
+) {
+
+    Button(
+        modifier = modifier
+            .requiredHeight(32.dp),
+        shape = RoundedCornerShape(22.dp),
+        contentPadding = PaddingValues(),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = buttonColor
+        ),
+        enabled = enabled,
+        border = BorderStroke(1.dp, border),
+        onClick = {
+            onClick()
+        },
+    ) {
+        Text(
+            modifier = modifier,
+            style = MaterialTheme.typography.bodyMedium,
+            text = text,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+            color = textColor
+        )
+    }
+}
+@Composable
 fun CategoryButtonList(stateList: String? = null) {
     // stateList는 서버에서 가져온다
     val days = listOf<String>("월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일")
@@ -374,15 +413,10 @@ fun CategoryButtonList(stateList: String? = null) {
         Row(
         ) {
             days.take(5).forEach { day ->
-                val categoryButton = if (day in proofDays) {
-                    CategoryButton(
-                        text = day,
-                        textColor = PrimaryMain,
-                        border = PrimaryMain,
-                        buttonColor = Primary50
-                    )
+                if (day in proofDays) {
+                    DayButton(text = day)
                 } else {
-                    CategoryButton(text = day)
+                    DayButton(text = day, buttonColor = White, textColor = Gray500,border=Gray500)
                 }
                 Spacer(modifier = Modifier.width(8.dp))
             }
@@ -392,15 +426,11 @@ fun CategoryButtonList(stateList: String? = null) {
         Row(
         ) {
             days.takeLast(2).forEach { day ->
-                val categoryButton = if (day in proofDays) {
-                    CategoryButton(
-                        text = day,
-                        textColor = PrimaryMain,
-                        border = PrimaryMain,
-                        buttonColor = Primary50
-                    )
-                } else {
-                    CategoryButton(text = day)
+               if (day in proofDays) {
+                   DayButton(text = day)
+
+               } else {
+                   DayButton(text = day, buttonColor = White, textColor = Gray500,border=Gray500)
                 }
                 Spacer(modifier = Modifier.width(8.dp))
             }

@@ -14,11 +14,11 @@ interface PatDetailContent {
     val bodyImg: List<String>
     val correctImg: String
     val incorrectImg: List<String>
-    val realtime: String //TODO 고치기
+    val realtime: Boolean
     val patDetail: String
     val category: String
     val nowPerson: Int
     val maxPerson: Int
-    val location: Int
+    val location: String
     val isWriter: Boolean
 }

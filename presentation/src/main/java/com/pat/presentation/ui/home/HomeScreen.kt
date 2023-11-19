@@ -1,6 +1,5 @@
 package com.pat.presentation.ui.home
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -22,10 +21,7 @@ import com.pat.presentation.R
 import com.pat.presentation.ui.home.components.BarIcon
 import com.pat.presentation.ui.home.components.HomeCategory
 import com.pat.presentation.ui.home.components.HomeMyPat
-import com.pat.presentation.ui.home.components.RecentPat
-import com.pat.presentation.ui.home.components.BarIcon
 import com.pat.presentation.ui.home.components.HomeTopBar
-import com.pat.presentation.ui.home.components.Pats
 import com.pat.presentation.ui.home.components.SearchTextField
 
 @Composable
@@ -59,9 +55,9 @@ fun HomeScreenView(homeViewModel: HomeViewModel = hiltViewModel()) {
         ) {
             HomeMyPat()
             HomeCategory()
-            HatPat()
+//            HatPat()
             Spacer(Modifier.size(20.dp))
-            RecentPat()
+//            RecentPat()
         }
     }
 }
