@@ -11,15 +11,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.orhanobut.logger.Logger
 import com.pat.presentation.R
-import com.pat.presentation.ui.home.components.BarIcon
+import com.pat.presentation.ui.common.BarIcon
 import com.pat.presentation.ui.home.components.HomeCategory
 import com.pat.presentation.ui.home.components.HomeMyPat
 import com.pat.presentation.ui.home.components.HomeTopBar
@@ -27,21 +24,29 @@ import com.pat.presentation.ui.home.components.Pats
 import com.pat.presentation.ui.home.components.SearchTextField
 
 @Composable
-fun HomeScreenView(homeViewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScreenView(
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    onNavigateToPost: () -> Unit
+) {
     val uiState by homeViewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
-    val textValue by remember { mutableStateOf(TextFieldValue()) }
+    val searchValue = remember { mutableStateOf("") }
 
     LaunchedEffect(uiState.content) {
         Logger.t("MainTest").i("${uiState.content}")
     }
+
     Scaffold(
         topBar = {
             HomeTopBar(
                 searchTextField = {
-                    SearchTextField()
+                    SearchTextField(state = searchValue)
                 },
-                addButton = { BarIcon(onclick = {}, source = R.drawable.ic_add) },
+                addButton = {
+                    BarIcon(onclick = {
+                        onNavigateToPost()
+                    }, source = R.drawable.ic_add)
+                },
                 alarmButton = { BarIcon(onclick = {}, source = R.drawable.ic_bell) })
         },
     ) { innerPadding ->
@@ -56,10 +61,4 @@ fun HomeScreenView(homeViewModel: HomeViewModel = hiltViewModel()) {
             Pats(content = uiState.content)
         }
     }
-}
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun Preview4() {
-    HomeScreenView()
 }

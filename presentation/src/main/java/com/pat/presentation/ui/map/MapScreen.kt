@@ -12,6 +12,6 @@ import com.pat.presentation.ui.post.PostScreenView
 fun MapScreenView() {
     val scrollState = rememberScrollState()
 
-    PostScreenView()
+//    PostScreenView()
 }
 

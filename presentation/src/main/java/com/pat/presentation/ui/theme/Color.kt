@@ -1,5 +1,6 @@
 package com.pat.presentation.ui.theme
 
+import android.os.Environment
 import androidx.compose.ui.graphics.Color
 
 val Purple80 = Color(0xFFD0BCFF)
@@ -35,3 +36,17 @@ val RedText = Color(0xFFFF4646)
 
 val SystemRed = Color(0xFFFF6262)
 val SystemBlue = Color(0xFF6BA6FF)
+
+val EnvironmentBackColor = Color(0xFFE2FFEC)
+val HealthBackColor = Color(0xFFEAFBFF)
+val HabitBackColor = Color(0xFFFFF6D5)
+val HobbyBackColor = Color(0xFFFFE5F5)
+val DailyBackColor = Color(0xFFFFEEED)
+val EtcBackColor = Gray300
+
+val EnvironmentTextColor = Color(0xFF009D65)
+val HealthTextColor = Color(0xFF2BA4BF)
+val HabitTextColor = Color(0xFFDE9301)
+val HobbyTextColor = Color(0xFFD46FAC)
+val DailyTextColor = Color(0xFFEB7168)
+val EtcTextColor = Gray500

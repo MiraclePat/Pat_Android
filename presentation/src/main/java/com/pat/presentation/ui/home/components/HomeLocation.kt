@@ -83,9 +83,3 @@ fun LocationButton(
         }
     }
 }
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun Preview3() {
-    HomeScreenView()
-}

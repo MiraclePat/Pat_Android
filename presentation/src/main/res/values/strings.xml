@@ -1,4 +1,13 @@
 <resources>
+    <string-array name="category_array">
+        <item>환경</item>
+        <item>건강</item>
+        <item>식습관</item>
+        <item>취미</item>
+        <item>일상</item>
+        <item>기타</item>
+    </string-array>
+
     <string name="title_activity_post_detail">PostDetailActivity</string>
     <string name="title_activity_post_screen">PostScreen</string>
     <string name="title_activity_main">MainActivity</string>
@@ -10,4 +19,12 @@
     <string name="home_empty_pat2">팟에 동참하고 기적을 만들어보세요!</string>
     <string name="home_hot_pat_title">지금 가장 핫한 팟에 동참해보세요!</string>
     <string name="home_recent_pat_title">최근 개설된 팟</string>
+    <string name="category_environment">환경</string>
+    <string name="category_health">건강</string>
+    <string name="category_habit">식습관</string>
+    <string name="category_hobby">취미</string>
+    <string name="category_daily">일상</string>
+    <string name="category_etc">기타</string>
+
+
 </resources>

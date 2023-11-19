@@ -1,21 +1,17 @@
 package com.pat.presentation.ui.home.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -25,10 +21,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.pat.domain.model.home.HomePatContent
 import com.pat.presentation.R
+import com.pat.presentation.ui.common.CategoryBox
 import com.pat.presentation.ui.theme.Typography
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -47,33 +43,21 @@ fun HomePats(
     textColor: Color = Color(0xFF009D65),
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    onPressing: () -> Unit = {},
     onPressed: () -> Unit = {}
 ) {
     Column(
         modifier
-            .clickable { onClick }) {
+            .clickable { onClick() }) {
         Box() {
             GlideImage(
                 modifier = modifier
                     .size(140.dp, 140.dp)
                     .clip(RoundedCornerShape(12.dp)),
                 imageModel = { imgUri })
-            Box(
-                modifier = modifier
-                    .padding(8.dp)
-                    .background(color = categoryColor, shape = RoundedCornerShape(8.dp))
-                    .width(41.dp)
-                    .height(26.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = category,
-                    textAlign = TextAlign.Center,
-                    color = textColor,
-                    style = Typography.labelSmall
-                )
-            }
+            CategoryBox(
+                modifier = modifier.padding(8.dp),
+                category = category,
+            )
         }
         Spacer(Modifier.size(10.dp))
         Text(text = title, style = Typography.labelMedium)

@@ -18,16 +18,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pat.presentation.ui.home.HomeScreenView
 import com.pat.presentation.ui.theme.Gray100
@@ -66,17 +62,18 @@ fun HomeTopBar(
 @Composable
 fun SearchTextField(
     modifier: Modifier = Modifier,
+    state: MutableState<String>
 ) {
-    var text by rememberSaveable { mutableStateOf("") }
+//    var text by rememberSaveable { mutableStateOf("") }
 
     BasicTextField(
         modifier = modifier
             .background(Gray100)
             .fillMaxWidth()
             .height(36.dp),
-        value = text,
+        value = state.value,
         onValueChange = {
-            text = it
+            state.value = it
         },
         singleLine = true,
         cursorBrush = SolidColor(Gray400),
@@ -99,7 +96,7 @@ fun SearchTextField(
                     Modifier
                         .padding(horizontal = 10.dp)
                 ) {
-                    if (text.isEmpty()) {
+                    if (state.value.isEmpty()) {
                         Text(
                             "어떤 팟을 찾고계신가요?",
                             style = Typography.labelMedium,
@@ -113,18 +110,3 @@ fun SearchTextField(
     )
 }
 
-@Composable
-fun BarIcon(
-    modifier: Modifier = Modifier,
-    onclick: () -> Unit = {},
-    source: Int,
-    contentDescription: String? = null
-) {
-    IconButton(modifier = modifier.size(32.dp), onClick = onclick) {
-        Icon(
-            painter = painterResource(id = source),
-            contentDescription = contentDescription,
-            tint = Gray700
-        )
-    }
-}

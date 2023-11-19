@@ -1,5 +1,6 @@
 package com.pat.presentation.ui.home.components
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -20,7 +21,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -62,20 +65,15 @@ fun CategoryButtonList() {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val buttonColor: Color
-
-
     val categories = listOf<String>("전체", "환경", "건강", "식습관", "취미", "생활")
+    var selectedCategory by remember { mutableStateOf(categories.first()) }
     categories.forEach { category ->
-        if (isPressed) {
-            CategoryButton(
-                text = category,
-                textColor = PrimaryMain,
-                border = PrimaryMain,
-                buttonColor = Primary50
-            )
-        } else {
-            CategoryButton(text = category)
-        }
+        CategoryButton(
+            text = category,
+            onClick = { selectedCategory = category
+                Log.e("custom", "클린 ; $isPressed")},
+            isSelected = selectedCategory == category
+        )
         Spacer(Modifier.size(10.dp))
     }
 }
@@ -85,23 +83,16 @@ fun CategoryButtonList() {
 fun CategoryButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
-    buttonColor: Color = White,
     text: String,
-    textColor: Color = Gray500,
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    border: Color = Gray500,
-    onPressing: () -> Unit = {},
-    onPressed: () -> Unit = {}
+    isSelected: Boolean = false
 ) {
-    val isPressed by interactionSource.collectIsPressedAsState()
     val habitWidth = if (text == "식습관") 58.dp else 47.dp
 
-//    LaunchedEffect(isPressed) {
-//        if (isPressed) onPressing()
-//        else onPressed()
-//    }
-
+    val buttonColor = if (isSelected) Primary50 else White
+    val textColor = if (isSelected) PrimaryMain else Gray500
+    val border = if (isSelected) PrimaryMain else Gray500
     Button(
         modifier = modifier
             .requiredHeight(32.dp)
@@ -127,10 +118,4 @@ fun CategoryButton(
             color = textColor
         )
     }
-}
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun Preview2() {
-    HomeScreenView()
 }

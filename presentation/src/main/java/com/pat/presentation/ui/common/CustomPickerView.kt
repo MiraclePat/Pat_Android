@@ -32,6 +32,7 @@ fun CustomPicker(
     clickState: MutableState<Boolean>
 ) {
     val borderColor = if (dateState.value.isEmpty()) Gray300 else PrimaryMain
+    val width = if (dateState.value.isEmpty()) widthSize else 85.dp
 
     if (clickState.value) {
         content()
@@ -40,7 +41,7 @@ fun CustomPicker(
         text = text,
         dateState = dateState,
         formatter = formatter,
-        widthSize = if (clickState.value) 85.dp else widthSize,
+        widthSize = width,
         borderColor = borderColor
     ) {
         clickState.value = true

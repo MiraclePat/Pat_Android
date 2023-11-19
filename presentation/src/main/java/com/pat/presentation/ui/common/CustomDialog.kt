@@ -1,34 +1,111 @@
 package com.pat.presentation.ui.common
 
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import com.pat.presentation.R
+import com.pat.presentation.ui.theme.Gray300
+import com.pat.presentation.ui.theme.Gray600
+import com.pat.presentation.ui.theme.Gray900
+import com.pat.presentation.ui.theme.PrimaryMain
+import com.pat.presentation.ui.theme.Typography
+import com.pat.presentation.ui.theme.White
 
 
-// 어쩌다가 공부하게 되어서 만들어 놓음,, 추후 사용할수도 있어서 파일만 만들어 놓습니다
 @Composable
 fun CustomDialog(
     modifier: Modifier = Modifier,
-    value: String,
-    setShowDialog: (Boolean) -> Unit,
-    setValue: (String) -> Unit,
-    content: @Composable () -> Unit,
+    okRequest: () -> Unit,
+    state: MutableState<Boolean>
 ) {
-    Dialog(onDismissRequest = { setShowDialog(false) }) {
-        Surface(
+    Dialog(onDismissRequest = { state.value = false }, properties = DialogProperties()) {
+        Box(
             modifier = modifier
-                .wrapContentWidth()
-                .wrapContentHeight(),
-            shape = RoundedCornerShape(16.dp),
-            color = Color.Gray
+                .requiredHeight(199.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(White),
+            contentAlignment = Alignment.TopCenter
         ) {
-            content()
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Spacer(modifier.padding(vertical = 7.dp))
+                Box(
+                    modifier
+                        .size(42.dp)
+                        .clip(CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        modifier = modifier,
+                        painter = painterResource(id = R.drawable.ic_warning),
+                        contentDescription = "warning",
+                        tint = Color.Unspecified
+                    )
+                }
+                Spacer(modifier.padding(vertical = 8.dp))
+                Text(
+                    text = "공고글 작성을 취소하시겠어요?",
+                    style = Typography.titleLarge,
+                    color = Gray900,
+                    fontSize = 18.sp
+                )
+                Spacer(modifier.padding(vertical = 12.dp))
+
+                Row(modifier.padding(horizontal = 24.dp)) {
+                    Box(
+                        modifier
+                            .weight(1f)
+                            .height(46.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(PrimaryMain)
+                            .clickable {
+                                state.value = false
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "계속 작성", style = Typography.labelMedium, color = White)
+                    }
+                    Spacer(modifier.padding(horizontal = 12.dp))
+                    Box(
+                        modifier
+                            .weight(1f)
+                            .height(46.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .border(1.dp, color = Gray300, RoundedCornerShape(4.dp))
+                            .background(White)
+                            .clickable {
+                                state.value = false
+                                okRequest()
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "작성 취소", style = Typography.labelMedium, color = Gray600)
+                    }
+                }
+            }
         }
     }
 }
