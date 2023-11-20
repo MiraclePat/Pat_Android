@@ -21,8 +21,8 @@ data class PatDetailContentDTO(
     @field:Json(name = "bodyImg") override val bodyImg: List<String>,
     @field:Json(name = "correctImg") override val correctImg: String,
     @field:Json(name = "incorrectImg") override val incorrectImg: List<String>,
-    @field:Json(name = "realtime") override val realtime: String,
+    @field:Json(name = "realtime") override val realtime: Boolean,
     @field:Json(name = "patDetail") override val patDetail: String,
-    @field:Json(name = "location") override val location: Int,
+    @field:Json(name = "location") override val location: String,
     @field:Json(name = "isWriter") override val isWriter: Boolean,
 ) : PatDetailContent
