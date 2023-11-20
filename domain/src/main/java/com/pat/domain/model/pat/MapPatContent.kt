@@ -1,12 +1,12 @@
-package com.pat.domain.model.home
+package com.pat.domain.model.pat
 
 
-interface HomePatContent {
+interface MapPatContent {
     val patId: Long
     val repImg: String
     val patName: String
     val startDate: String
     val category: String
-    val nowPerson: Int
-    val maxPerson: Int
+    val latitude: Double
+    val longitude: Double
 }
