@@ -46,10 +46,3 @@ fun HomeMyPat(modifier: Modifier = Modifier) {
         )
     }
 }
-
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun Preview() {
-    HomeScreenView()
-}

@@ -1,42 +1,36 @@
 package com.pat.presentation.ui.home.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.MutableState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.pat.presentation.ui.home.HomeScreenView
 import com.pat.presentation.ui.theme.Gray100
 import com.pat.presentation.ui.theme.Gray400
+import com.pat.presentation.ui.theme.Gray500
 import com.pat.presentation.ui.theme.Gray700
+import com.pat.presentation.ui.theme.Typography
 
 @Composable
 fun HomeTopBar(
@@ -49,94 +43,70 @@ fun HomeTopBar(
         modifier = modifier
             .background(color = MaterialTheme.colorScheme.background)
             .padding(horizontal = 16.dp, vertical = 22.dp)
-            .height(46.dp)
+            .height(38.dp)
             .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.End
     ) {
-        searchTextField()
+        Box(modifier.weight(1.0F)) {
+            searchTextField()
+        }
+        Spacer(modifier = modifier.padding(8.dp))
         addButton()
+        Spacer(modifier = modifier.padding(8.dp))
         alarmButton()
     }
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchTextField(
     modifier: Modifier = Modifier,
-    value: String,
-    hint: String = "",
-    isError: Boolean = false,
-    onValueChange: (String) -> Unit,
-    maxLines: Int = 1,
-    maxLength: Int = 10,
-    keyboardActions: KeyboardActions = KeyboardActions.Default,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    focusRequester: FocusRequester = FocusRequester(),
+    state: MutableState<String>
 ) {
-    var isFocused by remember { mutableStateOf(false) }
+//    var text by rememberSaveable { mutableStateOf("") }
 
-    TextField(
+    BasicTextField(
         modifier = modifier
-            .fillMaxHeight()
-            .focusRequester(focusRequester)
-            .onFocusChanged {
-                isFocused = it.hasFocus
-            },
-        colors = TextFieldDefaults.colors(
-            focusedTextColor = Gray100,
-            unfocusedTextColor = Gray100,
-            disabledTextColor = Gray100,
-            focusedContainerColor = Gray100,
-            unfocusedContainerColor = Gray100,
-            disabledContainerColor = Gray100,
-        ),
-        value = value,
-        placeholder = {
-            if (!isFocused) {
-                Text(
-                    modifier = modifier.requiredHeight(26.dp),
-                    text = hint,
-                    fontSize = 12.sp,
-                    textAlign = TextAlign.Center,
-                    overflow = TextOverflow.Visible
-                )
-            }
-        },
-        singleLine = maxLines == 1,
-        maxLines = maxLines,
+            .background(Gray100)
+            .fillMaxWidth()
+            .height(36.dp),
+        value = state.value,
         onValueChange = {
-            if (it.length > maxLength) onValueChange(value)
-            else onValueChange(it)
+            state.value = it
         },
-        keyboardActions = keyboardActions,
-        keyboardOptions = keyboardOptions,
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Rounded.Search,
-                contentDescription = null,
-                tint = Gray400
-            )
-        },
+        singleLine = true,
+        cursorBrush = SolidColor(Gray400),
+        textStyle = Typography.labelMedium.copy(
+            color = Gray400,
+        ),
+        decorationBox = { innerTextField ->
+            Row(
+                modifier
+                    .clip(RoundedCornerShape(4.dp))
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Search,
+                    contentDescription = null,
+                    tint = Gray400
+                )
+                Box(
+                    Modifier
+                        .padding(horizontal = 10.dp)
+                ) {
+                    if (state.value.isEmpty()) {
+                        Text(
+                            "어떤 팟을 찾고계신가요?",
+                            style = Typography.labelMedium,
+                            color = Gray500
+                        )
+                    }
+                    innerTextField()
+                }
+            }
+        }
     )
 }
 
-@Composable
-fun BarIcon(
-    onclick: () -> Unit = {},
-    source: Int,
-    contentDescription: String? = null
-) {
-    IconButton(onClick = onclick) {
-        Icon(
-            painter = painterResource(id = source),
-            contentDescription = contentDescription,
-            tint = Gray700
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    HomeScreenView()
-}

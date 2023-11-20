@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 @Composable
 fun SettingScreenView() {
     val scrollState = rememberScrollState()
+
     Surface {
         Text(text = "Hello, Setting")
     }

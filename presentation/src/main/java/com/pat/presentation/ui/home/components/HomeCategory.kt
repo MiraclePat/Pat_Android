@@ -67,19 +67,16 @@ fun CategoryButtonList(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
-    val buttonColor: Color
     val categories = listOf<String>("전체", "환경", "건강", "식습관", "취미", "생활")
     var selectedCategory by remember { mutableStateOf(categories.first()) }
-        categories.forEach { category ->
-            CategoryButton(
-                text = category,
-                onClick = { selectedCategory = category
-                          Log.e("custom", "클린 ; $isPressed")},
-                isSelected = selectedCategory == category
-            )
-            Spacer(Modifier.size(10.dp))
-        }
-
+    categories.forEach { category ->
+        CategoryButton(
+            text = category,
+            onClick = { selectedCategory = category },
+            isSelected = selectedCategory == category
+        )
+        Spacer(Modifier.size(10.dp))
+    }
 }
 
 
@@ -92,7 +89,6 @@ fun CategoryButton(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     isSelected: Boolean = false
 ) {
-    val isPressed by interactionSource.collectIsPressedAsState()
     val habitWidth = if (text == "식습관") 58.dp else 47.dp
 
     val buttonColor = if (isSelected) Primary50 else White
@@ -123,10 +119,4 @@ fun CategoryButton(
             color = textColor
         )
     }
-}
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun Preview2() {
-    HomeScreenView()
 }
