@@ -44,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.android.material.timepicker.TimeFormat
 import com.ozcanalasalvar.datepicker.compose.timepicker.WheelTimePicker
 import com.ozcanalasalvar.datepicker.model.Time
@@ -74,7 +75,8 @@ import com.pat.presentation.ui.theme.White
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostScreenView(onNavigateToHome: () -> Unit) {
+fun PostScreenView(onNavigateToHome: () -> Unit,
+                   postViewModel: PostViewModel = hiltViewModel()) {
     val scrollState = rememberScrollState()
     val declarationDialogState = remember { mutableStateOf(false) }
     if (declarationDialogState.value) {
@@ -313,7 +315,6 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
 
             FinalButton(text = "확정", onClick = {
                 val convertStartTime = convertTimeFormat(startTime.value)
-
                 Log.e("custom", "main startDate : $startDate")
                 Log.e("custom", "main title : ${title.value}")
                 Log.e("custom", "main maxPeople : ${maxPerson.value}")
