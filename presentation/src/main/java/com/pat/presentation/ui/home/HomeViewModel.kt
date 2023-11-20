@@ -3,10 +3,9 @@ package com.pat.presentation.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.orhanobut.logger.Logger
-import com.pat.domain.model.home.HomePatContent
-import com.pat.domain.model.home.HomePatRequestInfo
-import com.pat.domain.repository.HomeRepository
-import com.pat.domain.usecase.home.GetHomePatsUseCase
+import com.pat.domain.model.pat.HomePatContent
+import com.pat.domain.model.pat.HomePatRequestInfo
+import com.pat.domain.usecase.pat.GetHomePatsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

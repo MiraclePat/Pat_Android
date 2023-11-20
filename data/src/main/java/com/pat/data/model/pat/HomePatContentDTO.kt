@@ -1,6 +1,6 @@
-package com.pat.data.model.home
+package com.pat.data.model.pat
 
-import com.pat.domain.model.home.HomePatContent
+import com.pat.domain.model.pat.HomePatContent
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -13,4 +13,5 @@ data class HomePatContentDTO(
     @field:Json(name = "category") override val category: String,
     @field:Json(name = "nowPerson") override val nowPerson: Int,
     @field:Json(name = "maxPerson") override val maxPerson: Int,
+    @field:Json(name = "location") override val location: String,
 ) : HomePatContent
