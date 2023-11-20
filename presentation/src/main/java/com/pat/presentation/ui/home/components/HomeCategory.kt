@@ -64,14 +64,12 @@ fun HomeCategory(modifier: Modifier = Modifier) {
 fun CategoryButtonList() {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
-    val buttonColor: Color
     val categories = listOf<String>("전체", "환경", "건강", "식습관", "취미", "생활")
     var selectedCategory by remember { mutableStateOf(categories.first()) }
     categories.forEach { category ->
         CategoryButton(
             text = category,
-            onClick = { selectedCategory = category
-                Log.e("custom", "클린 ; $isPressed")},
+            onClick = { selectedCategory = category },
             isSelected = selectedCategory == category
         )
         Spacer(Modifier.size(10.dp))

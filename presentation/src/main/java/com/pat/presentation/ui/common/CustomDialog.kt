@@ -42,7 +42,7 @@ fun CustomDialog(
     okRequest: () -> Unit,
     state: MutableState<Boolean>
 ) {
-    Dialog(onDismissRequest = { state.value = false }, properties = DialogProperties()) {
+    Dialog(onDismissRequest = { state.value = false }) {
         Box(
             modifier = modifier
                 .requiredHeight(199.dp)
