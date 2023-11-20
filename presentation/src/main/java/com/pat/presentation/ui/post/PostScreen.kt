@@ -43,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBoxList
 import com.pat.presentation.ui.common.CheckBoxView
@@ -68,7 +69,8 @@ import com.pat.presentation.ui.theme.White
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostScreenView(onNavigateToHome: () -> Unit) {
+fun PostScreenView(onNavigateToHome: () -> Unit,
+                   postViewModel: PostViewModel = hiltViewModel()) {
     val scrollState = rememberScrollState()
     val declarationDialogState = remember { mutableStateOf(false) }
     if (declarationDialogState.value) {
