@@ -23,7 +23,8 @@ fun ExampleImageView(
     backColor: Color,
     textColor: Color,
     text: String,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    hasSource: String = ""
 ) {
     Column(modifier.clickable {
         onClick()

@@ -37,20 +37,15 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun requestByCategory() {
-
-    }
-
-    fun post() {
+    fun requestByCategory(category: String) {
         viewModelScope.launch {
-            // TODO usecase 만들어지면 api 만들기
-//            val result = getHomePatsUseCase(HomePatRequestInfo())
-//            if (result.isSuccess) {
-//                val content = result.getOrThrow()
-//                _uiState.emit(HomeUiState(content = content))
-//            } else {
-//                //TODO 에러 처리
-//            }
+            val result = getHomePatsUseCase(HomePatRequestInfo(category = category))
+            if (result.isSuccess) {
+                val content = result.getOrThrow()
+                _uiState.emit(HomeUiState(content = content))
+            } else {
+                //TODO 에러 처리
+            }
         }
     }
 }

@@ -20,6 +20,7 @@ import com.pat.presentation.R
 import com.pat.presentation.ui.common.BarIcon
 import com.pat.presentation.ui.home.components.HomeCategory
 import com.pat.presentation.ui.home.components.HomeMyPat
+import com.pat.presentation.ui.home.components.HomePats
 import com.pat.presentation.ui.home.components.HomeTopBar
 import com.pat.presentation.ui.home.components.Pats
 import com.pat.presentation.ui.home.components.SearchTextField

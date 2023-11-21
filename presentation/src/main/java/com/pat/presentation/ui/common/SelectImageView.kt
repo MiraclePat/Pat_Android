@@ -13,21 +13,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.pat.presentation.R
@@ -38,6 +30,7 @@ import com.pat.presentation.ui.theme.Typography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+fun SelectImage(modifier: Modifier = Modifier, imageIdx: Int = -1, hasSource: String = "") {
 fun SelectImage(modifier: Modifier = Modifier, imageIdx: Int = -1) {
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
@@ -46,6 +39,7 @@ fun SelectImage(modifier: Modifier = Modifier, imageIdx: Int = -1) {
         topStart = 4.dp,
         topEnd = 4.dp
     ) else RoundedCornerShape(4.dp)
+
     Box(
         modifier
             .height(140.dp)
@@ -57,6 +51,21 @@ fun SelectImage(modifier: Modifier = Modifier, imageIdx: Int = -1) {
             },
         contentAlignment = Alignment.Center
     ) {
+        if (hasSource != "") {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    modifier = modifier.size(24.dp),
+                    painter = painterResource(id = R.drawable.ic_add),
+                    contentDescription = null,
+                    tint = Gray500
+                )
+                Box() {
+                    if (imageIdx == -1) Text("사진 첨부하기", style = Typography.labelSmall)
+                    else Text("사진$imageIdx 첨부하기", style = Typography.labelSmall)
+                }
 
         if (showBottomSheet) {
             ModalBottomSheet(

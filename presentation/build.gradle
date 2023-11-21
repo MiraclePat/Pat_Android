@@ -50,6 +50,7 @@ android {
     }
 }
 
+
 dependencies {
     implementation project(":domain")
     implementation 'androidx.core:core-ktx:1.12.0'
@@ -125,6 +126,13 @@ dependencies {
     ksp 'com.github.bumptech.glide:ksp:4.15.1'
     implementation 'com.github.skydoves:landscapist-glide:2.2.12'
     ksp "android.arch.lifecycle:compiler:1.1.1"
+
+    // TimePicker
+    implementation 'com.github.ozcanalasalvar.picker:datepicker:2.0.7'
+    implementation 'com.github.ozcanalasalvar.picker:wheelview:2.0.7'
+
+    //For view based UI's
+    implementation 'androidx.compose.material3:material3:Tag'
 
 
 }

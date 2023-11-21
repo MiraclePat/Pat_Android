@@ -26,7 +26,7 @@ fun CustomPicker(
     modifier: Modifier = Modifier,
     text: String,
     dateState: MutableState<String>,
-    formatter: (String) -> String,
+    formatter: (String) -> String = { it -> it },
     widthSize: Dp = 85.dp,
     content: @Composable () -> Unit,
     clickState: MutableState<Boolean>
@@ -53,7 +53,7 @@ fun CustomPickerView(
     modifier: Modifier = Modifier,
     text: String,
     dateState: MutableState<String>,
-    formatter: (String) -> String,
+    formatter: (String) -> String = { it -> it },
     widthSize: Dp,
     borderColor: Color,
     onClick: () -> Unit
