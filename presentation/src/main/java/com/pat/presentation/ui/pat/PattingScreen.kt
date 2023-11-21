@@ -342,61 +342,75 @@ fun PattingScreen(
         }
         Spacer(modifier = modifier.padding(bottom = 24.dp))
         if (myProofState) {
-            Row() {
-                Text("인증 성공 횟수", style = Typography.titleLarge, color = Gray600, fontSize = 14.sp)
-                Spacer(modifier = modifier.weight(1f))
-                Text("3회 성공", style = Typography.titleLarge, color = PrimaryMain, fontSize = 18.sp)
-                Spacer(modifier = modifier.padding(end = 5.dp))
-                Text("/ 총 20회", style = Typography.labelSmall, color = Gray600, fontSize = 14.sp)
-            }
-            Row(modifier = modifier.padding(top = 12.dp)) {
-                Text("인증 실패 횟수", style = Typography.titleLarge, color = Gray600, fontSize = 14.sp)
-                Spacer(modifier = modifier.weight(1f))
-                Text("0회 실패", style = Typography.titleLarge, color = Gray600, fontSize = 18.sp)
-                Spacer(modifier = modifier.padding(end = 5.dp))
-                Text("/ 총 20회", style = Typography.labelSmall, color = Gray600, fontSize = 14.sp)
-            }
-            Spacer(modifier = modifier.padding(bottom = 28.dp))
-            Text("나의 인증사진", style = Typography.titleLarge, color = Gray800)
-
-            // TODO 연동 시 lazyRow로 수정
-            Row(modifier.padding(top = 12.dp)) {
-                SelectImage()
-                Spacer(modifier = modifier.padding(end = 10.dp))
-                SelectImage()
-            }
-            Row(modifier.padding(top = 24.dp)) {
-                RatioText(
-                    text = "성공률",
-                    textColor = SuccessTextColor,
-                    circleColor = SuccessCircleColor,
-                    percentage = 24
-                )
-                Spacer(modifier = modifier.padding(end = 12.dp))
-                RatioText(
-                    text = "실패율",
-                    textColor = FailTextColor,
-                    circleColor = FailCircleColor,
-                    percentage = 9
-                )
-                Spacer(modifier = modifier.padding(end = 12.dp))
-                RatioText(
-                    text = "남은 달성률",
-                    textColor = Gray700,
-                    circleColor = RemainColor,
-                    percentage = 100 - 24 - 9
-                )
-            }
-            PercentBar()
-            Spacer(modifier = modifier.padding(bottom = 36.dp))
+            ProofStatus(success = 24, fail = 8)
+        } else {
+            ProofStatus(success = 24, fail = 8, isAll = "전체 ")
         }
         FinalButton(text = "인증하기")
     }
 }
 
+@Composable
+fun ProofStatus(
+    modifier: Modifier = Modifier,
+    success: Int,
+    fail: Int,
+    isAll: String = "",
+    imgUriList: List<String> = listOf()
+) {
+    var title = if (isAll == "") "나의 인증사진" else "참여자들의 인증사진"
+    Row() {
+        Text("${isAll}인증 성공 횟수", style = Typography.titleLarge, color = Gray600, fontSize = 14.sp)
+        Spacer(modifier = modifier.weight(1f))
+        Text("3회 성공", style = Typography.titleLarge, color = PrimaryMain, fontSize = 18.sp)
+        Spacer(modifier = modifier.padding(end = 5.dp))
+        Text("/ 총 20회", style = Typography.labelSmall, color = Gray600, fontSize = 14.sp)
+    }
+    Row(modifier = modifier.padding(top = 12.dp)) {
+        Text("${isAll}인증 실패 횟수", style = Typography.titleLarge, color = Gray600, fontSize = 14.sp)
+        Spacer(modifier = modifier.weight(1f))
+        Text("0회 실패", style = Typography.titleLarge, color = Gray600, fontSize = 18.sp)
+        Spacer(modifier = modifier.padding(end = 5.dp))
+        Text("/ 총 20회", style = Typography.labelSmall, color = Gray600, fontSize = 14.sp)
+    }
+    Spacer(modifier = modifier.padding(bottom = 28.dp))
+    Text(title, style = Typography.titleLarge, color = Gray800)
+
+    // TODO 연동 시 lazyRow로 수정
+    Row(modifier.padding(top = 12.dp)) {
+        SelectImage()
+        Spacer(modifier = modifier.padding(end = 10.dp))
+        SelectImage()
+    }
+    Row(modifier.padding(top = 24.dp)) {
+        RatioText(
+            text = "성공률",
+            textColor = SuccessTextColor,
+            circleColor = SuccessCircleColor,
+            percentage = success
+        )
+        Spacer(modifier = modifier.padding(end = 12.dp))
+        RatioText(
+            text = "실패율",
+            textColor = FailTextColor,
+            circleColor = FailCircleColor,
+            percentage = fail
+        )
+        Spacer(modifier = modifier.padding(end = 12.dp))
+        RatioText(
+            text = "남은 달성률",
+            textColor = Gray700,
+            circleColor = RemainColor,
+            percentage = 100 - success - fail
+        )
+    }
+    PercentBar(success = success, fail = fail)
+    Spacer(modifier = modifier.padding(bottom = 36.dp))
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun PercentBar(modifier: Modifier = Modifier) {
+fun PercentBar(modifier: Modifier = Modifier, success: Int, fail: Int) {
     FlowRow(
         modifier
             .fillMaxWidth()
@@ -404,25 +418,22 @@ fun PercentBar(modifier: Modifier = Modifier) {
             .padding(top = 20.dp),
         horizontalArrangement = Arrangement.Center
     ) {
-        val success = 24 / 100f
-        val fail = 9 / 100f
-        val remain = (100 - 24 - 9) / 100f
         Box(
             modifier
-                .fillMaxWidth(success)
+                .fillMaxWidth(success / 100f)
                 .fillMaxHeight()
                 .clip(RoundedCornerShape(topStart = 100.dp, bottomStart = 100.dp))
                 .background(SuccessCircleColor)
         )
         Box(
             modifier
-                .fillMaxWidth(fail)
+                .fillMaxWidth(fail / 100f)
                 .fillMaxHeight()
                 .background(FailCircleColor)
         )
         Box(
             modifier
-                .fillMaxWidth(remain)
+                .fillMaxWidth((100 - success - fail) / 100f)
                 .fillMaxHeight()
                 .clip(RoundedCornerShape(topEnd = 100.dp, bottomEnd = 100.dp))
                 .background(Gray200)
