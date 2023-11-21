@@ -11,31 +11,35 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
+import com.orhanobut.logger.Logger
 import com.pat.presentation.R
-import com.pat.presentation.ui.proof.CertificationScreenView
+import com.pat.presentation.ui.home.HomeScreenView
 import com.pat.presentation.ui.map.MapScreenView
+import com.pat.presentation.ui.pat.PatDetailView
+import com.pat.presentation.ui.post.PostScreenView
+import com.pat.presentation.ui.proof.CertificationScreenView
 import com.pat.presentation.ui.setting.SettingScreenView
 import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.PrimaryMain
-import com.pat.presentation.ui.theme.White
-import com.pat.presentation.ui.home.HomeScreenView
-import com.pat.presentation.ui.post.PostScreenView
 import com.pat.presentation.ui.theme.Typography
+import com.pat.presentation.ui.theme.White
 
 const val HOME = "HOME"
 const val CERTIFICATION = "CERTIFICATION"
 const val MAP = "MAP"
 const val SETTING = "SETTING"
 const val POST = "POST"
+const val POST_DETAIL = "POST_DETAIL"
 
 sealed class BottomNavItem(
     val title: Int, val icon: Int, val iconFill: Int, val screenRoute: String,
@@ -61,6 +65,7 @@ fun NavigationGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = BottomNavItem.Home.screenRoute) {
         composable(BottomNavItem.Home.screenRoute) {
             HomeScreenView(
+                navController = navController,
                 onNavigateToPost = { navController.navigate(POST) })
         }
         composable(BottomNavItem.Certification.screenRoute) {
@@ -74,6 +79,17 @@ fun NavigationGraph(navController: NavHostController) {
         }
         composable(POST) {
             PostScreenView(onNavigateToHome = { navController.popBackStack() })
+        }
+        composable(
+            route = "patDetail/{patId}",
+            arguments = listOf(
+                navArgument("patId"){
+                    type = NavType.LongType
+                    defaultValue = -1
+                }
+            )){
+
+            PatDetailView()
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.pat.presentation.ui.pat
 
+import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -40,8 +41,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,15 +61,26 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.orhanobut.logger.Logger
+import com.pat.domain.model.pat.PatDetailContent
 import com.pat.presentation.R
+import com.pat.presentation.ui.common.CategoryBox
+import com.pat.presentation.ui.common.ExampleImageView
+import com.pat.presentation.ui.common.FinalButton
+import com.pat.presentation.ui.home.HomeViewModel
 import com.pat.presentation.ui.home.components.CategoryButton
 import com.pat.presentation.ui.theme.Gray200
 import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.Gray50
 import com.pat.presentation.ui.theme.Gray500
 import com.pat.presentation.ui.theme.Gray700
+import com.pat.presentation.ui.theme.GreenBack
+import com.pat.presentation.ui.theme.GreenText
 import com.pat.presentation.ui.theme.Primary50
 import com.pat.presentation.ui.theme.PrimaryMain
+import com.pat.presentation.ui.theme.RedBack
+import com.pat.presentation.ui.theme.RedText
 import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.ui.theme.White
 import com.skydoves.landscapist.glide.GlideImage
@@ -73,9 +88,11 @@ import com.skydoves.landscapist.glide.GlideImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostDetailView(modifier: Modifier = Modifier) {
+fun PatDetailView(
+    patDetailViewModel: PatDetailViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier) {
+    val uiState by patDetailViewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
-
     Scaffold(
         modifier = modifier
             .fillMaxSize(),
@@ -111,100 +128,141 @@ fun PostDetailView(modifier: Modifier = Modifier) {
                 .padding(innerPadding)
                 .verticalScroll(scrollState),
         ) {
-            PostDetailScreen()
+            PostDetailScreen(content = uiState.content, patDetailViewModel = patDetailViewModel)
         }
     }
 }
 
 @Composable
-fun PostDetailScreen(modifier: Modifier = Modifier) {
-    Image(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(160.dp),
-        painter = painterResource(id = R.drawable.ic_add),
-        contentDescription = null
-    )
-    Column(modifier = modifier.padding(10.dp)) {
-        Row() {
-            Box(
-                modifier = modifier
-                    .width(40.dp)
-                    .height(35.dp)
-                    .background(
-                        color = Color.Red,
-                        shape = RoundedCornerShape(8.dp)
-                    )
+fun PostDetailScreen(
+    content: PatDetailContent?,
+    patDetailViewModel: PatDetailViewModel,
+    modifier: Modifier = Modifier) {
+    var isOpenBtnClicked by remember { mutableStateOf(false) }
+    Logger.t("patdetail").i("${content}")
+    if(content != null) {
+        GlideImage(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(160.dp),
+            imageModel = { content.repImg })
+        Column(modifier = modifier.padding(10.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                CategoryBox(
+                    modifier = modifier.padding(8.dp),
+                    category = content.category,
+                )
                 Text(
-                    text = "일상",
-                    modifier = modifier
-                        .padding(8.dp)
-                        .align(Alignment.Center),
-                    color = Color.White,
-                    fontSize = 12.sp
+                    style = Typography.displayLarge,
+                    text = "강아지 산책",
+                    fontSize = 20.sp,
+                    color = Color.Black,
+                    modifier = modifier.padding(3.dp)
                 )
             }
+            Spacer(modifier.height(16.dp))
+            PatSimpleInfo(
+                location = content.location,
+                startDate = content.startDate,
+                endDate = content.endDate,
+                nowPerson = content.nowPerson,
+                maxPerson = content.maxPerson
+            )
+            Spacer(modifier.size(20.dp))
+            UserInfo()
+            Box(modifier = modifier
+                .fillMaxWidth()
+                .height(10.dp)
+                .background(Gray50))
+            Spacer(modifier.size(20.dp))
+
+            Text("팟 상세정보", fontSize = 16.sp, modifier = modifier.padding(3.dp))
+            GlideImage(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(160.dp),
+                imageModel = { content.bodyImg.first() }
+            )
+            Spacer(modifier.size(10.dp))
+            Column {
+                if (isOpenBtnClicked) {
+                    PatPhotos(patUriInfo = content.bodyImg)
+                } else {
+                    FinalButton(
+                        text = "펼쳐보기",
+                        backColor = White,
+                        textColor = PrimaryMain,
+                        stokeColor = PrimaryMain,
+                        stokeWidth = 1.dp,
+                        onClick = {
+                            isOpenBtnClicked = true
+                        }
+                    )
+                }
+            }
+            Spacer(modifier.size(20.dp))
+            Box(modifier = modifier
+                .fillMaxWidth()
+                .height(10.dp)
+                .background(Gray50))
+
             Text(
-                text = "강아지 산책",
-                fontSize = 20.sp,
-                modifier = modifier.padding(3.dp)
+                content.patDetail, fontSize = 16.sp, modifier = modifier
+                    .padding(3.dp)
+                    .fillMaxWidth()
+            )
+            CustomText("강아지와 주 2회 산책해요", painterResource(id = R.drawable.ic_chat_dot))
+
+            Spacer(modifier.size(20.dp))
+
+            Text("인증 가능 시간", fontSize = 16.sp, modifier = modifier.padding(3.dp))
+            CustomText("오전 11시부터 오후 11시까지", painterResource(id = R.drawable.ic_alram))
+
+            Spacer(modifier.size(20.dp))
+            Text("인증 빈도", fontSize = 16.sp, modifier = modifier.padding(3.dp))
+            CategoryButtonList()
+
+            Spacer(modifier.size(20.dp))
+
+            Text("시작일 - 종료일", fontSize = 16.sp, modifier = modifier.padding(3.dp))
+            DateText(startDate = content.startDate,endDate = content.endDate, painter = painterResource(id = R.drawable.ic_calendar))
+            Spacer(modifier.size(20.dp))
+
+            Box(modifier = modifier
+                .fillMaxWidth()
+                .height(10.dp)
+                .background(Gray50))
+
+            Spacer(modifier.size(20.dp))
+            Text("인증 방법", fontSize = 16.sp, modifier = modifier.padding(3.dp))
+            CustomText(
+                "목줄을 찬 반려동물이 바깥 풍경과 함꼐 나오도록 사진을 찍어주세요.",
+                painterResource(id = R.drawable.ic_chat_check)
+            )
+            Spacer(modifier.size(20.dp))
+            Row() {
+                ExampleImageView(text = "올바른 예시", backColor = GreenBack, textColor = GreenText)
+                Spacer(modifier = modifier.size(10.dp))
+                ExampleImageView(text = "잘못된 예시", backColor = RedBack, textColor = RedText)
+            }
+
+            Spacer(modifier.size(20.dp))
+            Text("인증 수단", fontSize = 16.sp, modifier = modifier.padding(3.dp))
+            if(content.realtime){
+                CustomText("실시간 촬영", painterResource(id = R.drawable.ic_camera))
+            }
+            Spacer(modifier.height(7.dp))
+            CustomText("갤러리에서 사진 가져오기", painterResource(id = R.drawable.ic_gallery))
+
+            Spacer(modifier.size(44.dp))
+            FinalButton(text = "팟 참여하기",
+                backColor = PrimaryMain,
+                textColor = White,
+                onClick = { patDetailViewModel.participatePat() }
             )
         }
-        Spacer(modifier.height(16.dp))
-        PatSimpleInfo()
-        Spacer(modifier.size(20.dp))
-        UserInfo()
-        Box(modifier = modifier.fillMaxWidth().height(10.dp).background(Gray50))
-        Spacer(modifier.size(20.dp))
-
-        //TODO 펼쳐보기 만들어야 함
-        Text("팟 상세정보", fontSize = 16.sp, modifier = modifier.padding(3.dp))
-//        PatPhotos()
-        Spacer(modifier.size(20.dp))
-        Box(modifier = modifier.fillMaxWidth().height(10.dp).background(Gray50))
-
-        Text(
-            "팟 소개", fontSize = 16.sp, modifier = modifier
-                .padding(3.dp)
-                .fillMaxWidth()
-        )
-        CustomText("강아지와 주 2회 산책해요", painterResource(id = R.drawable.ic_chat_dot))
-
-        Spacer(modifier.size(20.dp))
-
-        Text("인증 가능 시간", fontSize = 16.sp, modifier = modifier.padding(3.dp))
-        CustomText("오전 11시부터 오후 11시까지", painterResource(id = R.drawable.ic_alram))
-
-        Spacer(modifier.size(20.dp))
-        Text("인증 빈도", fontSize = 16.sp, modifier = modifier.padding(3.dp))
-        CategoryButtonList()
-
-        Spacer(modifier.size(20.dp))
-
-        Text("시작일 - 종료일", fontSize = 16.sp, modifier = modifier.padding(3.dp))
-        DateText(painter = painterResource(id = R.drawable.ic_calendar))
-        Spacer(modifier.size(20.dp))
-
-        Box(modifier = modifier.fillMaxWidth().height(10.dp).background(Gray50))
-
-        Spacer(modifier.size(20.dp))
-        Text("인증 방법", fontSize = 16.sp, modifier = modifier.padding(3.dp))
-        CustomText(
-            "목줄을 찬 반려동물이 바깥 풍경과 함꼐 나오도록 사진을 찍어주세요.",
-            painterResource(id = R.drawable.ic_chat_check)
-        )
-
-
-        Spacer(modifier.size(20.dp))
-        Text("인증 수단", fontSize = 16.sp, modifier = modifier.padding(3.dp))
-        CustomText("실시간 촬영", painterResource(id = R.drawable.ic_camera))
-        Spacer(modifier.height(7.dp))
-
-        CustomText("갤러리에서 사진 가져오기", painterResource(id = R.drawable.ic_gallery))
-
-        Spacer(modifier.size(44.dp))
-        ParticipatePatButton()
     }
 }
 
@@ -330,42 +388,22 @@ fun CustomText(
     }
 }
 
-@Composable
-fun ParticipatePatButton(
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(46.dp)
-            .clickable(onClick = {})
-            .clip(RoundedCornerShape(4.dp))
-            .background(color = PrimaryMain), contentAlignment = Alignment.Center
-    ) {
-        Text("팟 참여하기", color = Color.White, fontSize = 16.sp)
-    }
-}
-
 
 @Composable
-fun PatPhotos(modifier: Modifier = Modifier) {
-    Row() {
-        LazyRow() {
-            items(5) {
-                PreviewPhotos()
+fun PatPhotos(modifier: Modifier = Modifier, patUriInfo: List<String>) {
+    Column() {
+        patUriInfo.forEachIndexed { index, uri ->
+            if (index != 0) {
+                GlideImage(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .height(160.dp),
+                    imageModel = { uri })
             }
         }
     }
 }
 
-@Composable
-fun PreviewPhotos(modifier: Modifier = Modifier) {
-    Image(
-        modifier = modifier.fillMaxWidth(),
-        painter = painterResource(id = R.drawable.ic_add),
-        contentDescription = null
-    )
-}
 
 @Composable
 fun DayButton(
@@ -403,13 +441,10 @@ fun DayButton(
     }
 }
 @Composable
-fun CategoryButtonList(stateList: String? = null) {
-    // stateList는 서버에서 가져온다
+fun CategoryButtonList() {
     val days = listOf<String>("월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일")
-    val proofDays = listOf<String>("월요일", "목요일", "토요일")
-
+    val proofDays = listOf("월요일")
     Column {
-        // First row (월요일 to 금요일)
         Row(
         ) {
             days.take(5).forEach { day ->
@@ -438,11 +473,4 @@ fun CategoryButtonList(stateList: String? = null) {
     }
     Spacer(Modifier.size(10.dp))
 
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    PostDetailView()
 }

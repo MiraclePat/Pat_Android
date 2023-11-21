@@ -4,11 +4,11 @@ import com.pat.domain.model.pat.PatDetailContent
 import com.pat.domain.repository.PatRepository
 import javax.inject.Inject
 
-class GetPatDetailUseCase @Inject constructor(
+class ParticipatePatUseCase @Inject constructor(
     private val patRepository: PatRepository,
 ) {
     suspend operator fun invoke(
         patId: Long,
-    ): Result<PatDetailContent> =
-        patRepository.getPatDetail(patId)
+    ): Result<Unit> =
+        patRepository.participatePat(patId)
 }

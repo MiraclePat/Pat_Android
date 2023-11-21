@@ -6,7 +6,7 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class PatDetailContentDTO(
-    @field:Json(name = "id") override val patId: Long,
+    @field:Json(name = "patId") override val patId: Long,
     @field:Json(name = "repImg") override val repImg: String,
     @field:Json(name = "patName") override val patName: String,
     @field:Json(name = "startDate") override val startDate: String,

@@ -9,7 +9,7 @@ interface PatDetailContent {
     val endDate: String
     val startTime: String
     val endTime: String
-    val days: String
+    val days: String //TODO LIST로 바꿔야함
     val proofDetail: String
     val bodyImg: List<String>
     val correctImg: String
