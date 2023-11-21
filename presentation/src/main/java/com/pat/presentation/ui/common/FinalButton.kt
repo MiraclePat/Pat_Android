@@ -22,8 +22,15 @@ import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.ui.theme.White
 
 @Composable
-fun FinalButton(modifier: Modifier = Modifier, text: String, onClick: () -> Unit = {},
-                backColor: Color,textColor: Color,stokeColor: Color= PrimaryMain, stokeWidth: Dp = 0.dp) {
+fun FinalButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    onClick: () -> Unit = {},
+    backColor: Color = PrimaryMain,
+    textColor: Color = White,
+    stokeColor: Color = PrimaryMain,
+    stokeWidth: Dp = 0.dp
+) {
     Box(
         modifier
             .fillMaxWidth()

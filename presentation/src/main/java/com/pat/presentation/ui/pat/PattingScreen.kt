@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.sp
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
 import com.pat.presentation.ui.common.ExampleImageView
+import com.pat.presentation.ui.common.FinalButton
 import com.pat.presentation.ui.common.IconWithTextView
 import com.pat.presentation.ui.common.SelectImage
 import com.pat.presentation.ui.common.SimpleTextView
@@ -119,10 +120,11 @@ fun PattingScreen(
     var myProofState by remember { mutableStateOf(true) }
 
 
-    Column(modifier = modifier
-        .padding(16.dp)
-        .fillMaxWidth()
-        .fillMaxHeight()
+    Column(
+        modifier = modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+            .fillMaxHeight()
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -385,38 +387,46 @@ fun PattingScreen(
                     percentage = 100 - 24 - 9
                 )
             }
-            FlowRow(
-                modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .padding(top = 20.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                val success = 24 / 100f
-                val fail = 9 / 100f
-                val remain = (100 - 24 - 9) / 100f
-                Box(
-                    modifier
-                        .fillMaxWidth(success)
-                        .fillMaxHeight()
-                        .clip(RoundedCornerShape(topStart = 100.dp, bottomStart = 100.dp))
-                        .background(SuccessCircleColor)
-                )
-                Box(
-                    modifier
-                        .fillMaxWidth(fail)
-                        .fillMaxHeight()
-                        .background(FailCircleColor)
-                )
-                Box(
-                    modifier
-                        .fillMaxWidth(remain)
-                        .fillMaxHeight()
-                        .clip(RoundedCornerShape(topEnd = 100.dp, bottomEnd = 100.dp))
-                        .background(Gray200)
-                )
-            }
+            PercentBar()
+            Spacer(modifier = modifier.padding(bottom = 36.dp))
         }
+        FinalButton(text = "인증하기")
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun PercentBar(modifier: Modifier = Modifier) {
+    FlowRow(
+        modifier
+            .fillMaxWidth()
+            .height(50.dp)
+            .padding(top = 20.dp),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        val success = 24 / 100f
+        val fail = 9 / 100f
+        val remain = (100 - 24 - 9) / 100f
+        Box(
+            modifier
+                .fillMaxWidth(success)
+                .fillMaxHeight()
+                .clip(RoundedCornerShape(topStart = 100.dp, bottomStart = 100.dp))
+                .background(SuccessCircleColor)
+        )
+        Box(
+            modifier
+                .fillMaxWidth(fail)
+                .fillMaxHeight()
+                .background(FailCircleColor)
+        )
+        Box(
+            modifier
+                .fillMaxWidth(remain)
+                .fillMaxHeight()
+                .clip(RoundedCornerShape(topEnd = 100.dp, bottomEnd = 100.dp))
+                .background(Gray200)
+        )
     }
 }
 
