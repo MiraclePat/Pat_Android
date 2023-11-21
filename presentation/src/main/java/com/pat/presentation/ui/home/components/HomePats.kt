@@ -40,8 +40,6 @@ fun HomePats(
     nowPerson: Int = 8,
     maxPerson: Int = 10,
     category: String = "환경",
-    categoryColor: Color = Color(0xFFE2FFEC),
-    textColor: Color = Color(0xFF009D65),
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     onPressed: () -> Unit = {}
@@ -58,6 +56,7 @@ fun HomePats(
             CategoryBox(
                 modifier = modifier.padding(8.dp),
                 category = category,
+                isSelected = true
             )
         }
         Spacer(Modifier.size(10.dp))

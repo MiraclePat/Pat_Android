@@ -30,6 +30,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +44,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.android.material.timepicker.TimeFormat
+import com.ozcanalasalvar.datepicker.compose.timepicker.WheelTimePicker
+import com.ozcanalasalvar.datepicker.model.Time
+import com.ozcanalasalvar.datepicker.utils.DateUtils
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBoxList
 import com.pat.presentation.ui.common.CheckBoxView
@@ -53,6 +59,7 @@ import com.pat.presentation.ui.common.DateTimePickerView
 import com.pat.presentation.ui.common.ExampleImageView
 import com.pat.presentation.ui.common.FinalButton
 import com.pat.presentation.ui.common.SelectImageList
+import com.pat.presentation.ui.common.WheelTimePickerView
 import com.pat.presentation.ui.common.convertDateFormat
 import com.pat.presentation.ui.common.convertTimeFormat
 import com.pat.presentation.ui.theme.Gray100
@@ -68,7 +75,8 @@ import com.pat.presentation.ui.theme.White
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostScreenView(onNavigateToHome: () -> Unit) {
+fun PostScreenView(onNavigateToHome: () -> Unit,
+                   postViewModel: PostViewModel = hiltViewModel()) {
     val scrollState = rememberScrollState()
     val declarationDialogState = remember { mutableStateOf(false) }
     if (declarationDialogState.value) {
@@ -111,6 +119,7 @@ fun PostScreenView(onNavigateToHome: () -> Unit) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) {
     val isRealTime = remember { mutableStateOf(false) }         // 사진 선택
@@ -168,7 +177,6 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
             Text(text = "카테고리 선택", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
             Row {
-//                CategoryButtonList()
                 CategoryBoxList(state = category)
             }
             Spacer(modifier = modifier.size(36.dp))
@@ -241,11 +249,15 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
             Spacer(modifier = modifier.size(14.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 val startPressed = remember { mutableStateOf(false) }
+                val sheetState = rememberModalBottomSheetState()
                 CustomPicker(
                     text = "시작시간",
                     dateState = startTime,
-                    formatter = convertTimeFormat,
                     content = {
+                        WheelTimePickerView(onDismiss = {
+                            startPressed.value = !startPressed.value
+                            Log.e("custom", "startTime : $startTime")
+                        }, sheetState = sheetState, timeState = startTime)
                     },
                     clickState = startPressed
                 )
@@ -310,6 +322,7 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
                 Log.e("custom", "main maxPeople : ${maxPerson.value}")
                 Log.e("custom", "main maxPeople : ${day.value}")
                 Log.e("custom", "main maxPeople : ${category.value}")
+                Log.e("custom", "main startTime : ${convertStartTime}")
                 onNavigateToHome()
             })
         }
