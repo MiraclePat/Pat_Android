@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.pat.domain.model.pat.HomePatContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
@@ -31,7 +32,7 @@ import com.skydoves.landscapist.glide.GlideImage
 @Composable
 fun HomePats(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
+    onClick: () -> Unit,
     title: String = "강아지 산책",
     location: String = "서울시 관악구 신사동",
     startDate: String = "12.5(금) 시작",
@@ -92,7 +93,7 @@ fun HomePats(
 }
 
 @Composable
-fun Pats(modifier: Modifier = Modifier, content: List<HomePatContent>?) {
+fun Pats(navController: NavController, modifier: Modifier = Modifier, content: List<HomePatContent>?) {
     Column(modifier.padding(vertical = 20.dp, horizontal = 16.dp)) {
         Text(
             text = stringResource(id = R.string.home_hot_pat_title),
@@ -104,7 +105,8 @@ fun Pats(modifier: Modifier = Modifier, content: List<HomePatContent>?) {
                 items(content) { pat ->
                     HomePats(
                         title = pat.patName, category = pat.category, nowPerson = pat.nowPerson,
-                        maxPerson = pat.maxPerson, startDate = pat.startDate, imgUri = pat.repImg
+                        maxPerson = pat.maxPerson, startDate = pat.startDate, imgUri = pat.repImg,
+                        onClick = { navController.navigate("patDetail/${pat.patId}") }
                     )
                     Spacer(Modifier.size(10.dp))
                 }
@@ -129,7 +131,8 @@ fun Pats(modifier: Modifier = Modifier, content: List<HomePatContent>?) {
                         nowPerson = homePat.nowPerson,
                         maxPerson = homePat.maxPerson,
                         startDate = homePat.startDate,
-                        imgUri = homePat.repImg
+                        imgUri = homePat.repImg,
+                        onClick = { navController.navigate("patDetail/${homePat.patId}") }
                     )
                     Spacer(Modifier.size(10.dp))
                 }

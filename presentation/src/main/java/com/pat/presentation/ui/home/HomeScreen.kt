@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.orhanobut.logger.Logger
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.BarIcon
@@ -27,7 +28,8 @@ import com.pat.presentation.ui.home.components.SearchTextField
 @Composable
 fun HomeScreenView(
     homeViewModel: HomeViewModel = hiltViewModel(),
-    onNavigateToPost: () -> Unit
+    onNavigateToPost: () -> Unit,
+    navController: NavController,
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
@@ -59,7 +61,7 @@ fun HomeScreenView(
         ) {
             HomeMyPat()
             HomeCategory()
-            Pats(content = uiState.content)
+            Pats(navController = navController, content = uiState.content)
         }
     }
 }

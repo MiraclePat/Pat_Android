@@ -313,8 +313,10 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
             }
             Spacer(modifier = modifier.size(55.dp))
 
-            FinalButton(text = "확정", onClick = {
-                val convertStartTime = convertTimeFormat(startTime.value)
+            FinalButton(text = "확정",
+                backColor = PrimaryMain,
+                textColor = White,
+                onClick = {
                 Log.e("custom", "main startDate : $startDate")
                 Log.e("custom", "main title : ${title.value}")
                 Log.e("custom", "main maxPeople : ${maxPerson.value}")

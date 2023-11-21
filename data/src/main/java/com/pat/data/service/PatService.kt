@@ -39,7 +39,7 @@ interface PatService {
         @Query("topLatitude") topLatitude: Double?,
     ): ListResponse<MapPatContentDTO>
 
-    @GET("/api/test/pats/{patId}")
+    @GET("/api/test/pats/{pat-id}")
     suspend fun getPatDetail(
         @Path("pat-id") patId: Long,
     ): PatDetailContentDTO
