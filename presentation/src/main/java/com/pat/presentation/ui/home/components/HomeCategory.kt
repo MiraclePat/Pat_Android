@@ -67,7 +67,7 @@ fun CategoryButtonList(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
-    val categories = listOf<String>("전체", "환경", "건강", "식습관", "취미", "생활")
+    val categories = listOf<String>("전체", "환경", "건강", "식습관", "취미", "생활", "기타")
     var selectedCategory by remember { mutableStateOf(categories.first()) }
     categories.forEach { category ->
         CategoryButton(

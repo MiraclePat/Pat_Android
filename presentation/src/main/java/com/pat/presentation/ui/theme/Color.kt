@@ -50,3 +50,10 @@ val HabitTextColor = Color(0xFFDE9301)
 val HobbyTextColor = Color(0xFFD46FAC)
 val DailyTextColor = Color(0xFFEB7168)
 val EtcTextColor = Gray500
+
+val SuccessTextColor = Color(0xFF84B5FF)
+val SuccessCircleColor = Color(0xFFC3DBFF)
+
+val FailTextColor = Color(0xFFFF8A8A)
+val FailCircleColor = Color(0xFFFFCBCB)
+val RemainColor = Color(0xFFEEEEEE)

@@ -317,12 +317,6 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
                 backColor = PrimaryMain,
                 textColor = White,
                 onClick = {
-                Log.e("custom", "main startDate : $startDate")
-                Log.e("custom", "main title : ${title.value}")
-                Log.e("custom", "main maxPeople : ${maxPerson.value}")
-                Log.e("custom", "main maxPeople : ${day.value}")
-                Log.e("custom", "main maxPeople : ${category.value}")
-                Log.e("custom", "main startTime : ${convertStartTime}")
                 onNavigateToHome()
             })
         }
