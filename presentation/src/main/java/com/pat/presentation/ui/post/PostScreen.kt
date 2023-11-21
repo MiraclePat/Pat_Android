@@ -75,8 +75,10 @@ import com.pat.presentation.ui.theme.White
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostScreenView(onNavigateToHome: () -> Unit,
-                   postViewModel: PostViewModel = hiltViewModel()) {
+fun PostScreenView(
+    onNavigateToHome: () -> Unit,
+    postViewModel: PostViewModel = hiltViewModel()
+) {
     val scrollState = rememberScrollState()
     val declarationDialogState = remember { mutableStateOf(false) }
     if (declarationDialogState.value) {
@@ -249,15 +251,13 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
             Spacer(modifier = modifier.size(14.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 val startPressed = remember { mutableStateOf(false) }
-                val sheetState = rememberModalBottomSheetState()
                 CustomPicker(
                     text = "시작시간",
                     dateState = startTime,
                     content = {
                         WheelTimePickerView(onDismiss = {
                             startPressed.value = !startPressed.value
-                            Log.e("custom", "startTime : $startTime")
-                        }, sheetState = sheetState, timeState = startTime)
+                        }, timeState = startTime)
                     },
                     clickState = startPressed
                 )
@@ -268,8 +268,11 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
                 CustomPicker(
                     text = "종료시간",
                     dateState = endTime,
-                    formatter = convertTimeFormat,
-                    content = {},
+                    content = {
+                        WheelTimePickerView(onDismiss = {
+                            endPressed.value = !endPressed.value
+                        }, timeState = endTime)
+                    },
                     clickState = endPressed
                 )
                 Spacer(modifier = modifier.padding(8.dp))
@@ -317,8 +320,12 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
                 backColor = PrimaryMain,
                 textColor = White,
                 onClick = {
-                onNavigateToHome()
-            })
+                    val outputStartTime = convertTimeFormat(startTime.value)
+                    val outputEndTime = convertTimeFormat(endTime.value)
+                    Log.e("custom", "outputStartTime : $outputStartTime")
+                    Log.e("custom", "outputEndTime : $outputEndTime")
+                    onNavigateToHome()
+                })
         }
     }
 }
