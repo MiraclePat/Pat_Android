@@ -1,15 +1,8 @@
 package com.pat.presentation.ui.pat
 
-import android.util.Log
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,15 +13,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -38,9 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,17 +35,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -66,12 +48,11 @@ import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.PatDetailContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
+import com.pat.presentation.ui.common.IconWithTextView
 import com.pat.presentation.ui.common.ExampleImageView
 import com.pat.presentation.ui.common.FinalButton
-import com.pat.presentation.ui.home.HomeViewModel
-import com.pat.presentation.ui.home.components.CategoryButton
+import com.pat.presentation.ui.common.SimpleTextView
 import com.pat.presentation.ui.theme.Gray200
-import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.Gray50
 import com.pat.presentation.ui.theme.Gray500
 import com.pat.presentation.ui.theme.Gray700
@@ -90,7 +71,8 @@ import com.skydoves.landscapist.glide.GlideImage
 @Composable
 fun PatDetailView(
     patDetailViewModel: PatDetailViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier) {
+    modifier: Modifier = Modifier
+) {
     val uiState by patDetailViewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
     Scaffold(
@@ -107,7 +89,7 @@ fun PatDetailView(
                 navigationIcon = {
                     IconButton(onClick = { /*TODO*/ }) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBackIosNew,
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_back_arrow),
                             contentDescription = "Go back"
                         )
                     }
@@ -137,10 +119,11 @@ fun PatDetailView(
 fun PostDetailScreen(
     content: PatDetailContent?,
     patDetailViewModel: PatDetailViewModel,
-    modifier: Modifier = Modifier) {
+    modifier: Modifier = Modifier
+) {
     var isOpenBtnClicked by remember { mutableStateOf(false) }
     Logger.t("patdetail").i("${content}")
-    if(content != null) {
+    if (content != null) {
         GlideImage(
             modifier = modifier
                 .fillMaxWidth()
@@ -153,6 +136,7 @@ fun PostDetailScreen(
                 CategoryBox(
                     modifier = modifier.padding(8.dp),
                     category = content.category,
+                    isSelected = true
                 )
                 Text(
                     style = Typography.displayLarge,
@@ -172,10 +156,12 @@ fun PostDetailScreen(
             )
             Spacer(modifier.size(20.dp))
             UserInfo()
-            Box(modifier = modifier
-                .fillMaxWidth()
-                .height(10.dp)
-                .background(Gray50))
+            Box(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(10.dp)
+                    .background(Gray50)
+            )
             Spacer(modifier.size(20.dp))
 
             Text("팟 상세정보", fontSize = 16.sp, modifier = modifier.padding(3.dp))
@@ -203,22 +189,24 @@ fun PostDetailScreen(
                 }
             }
             Spacer(modifier.size(20.dp))
-            Box(modifier = modifier
-                .fillMaxWidth()
-                .height(10.dp)
-                .background(Gray50))
+            Box(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(10.dp)
+                    .background(Gray50)
+            )
 
             Text(
                 content.patDetail, fontSize = 16.sp, modifier = modifier
                     .padding(3.dp)
                     .fillMaxWidth()
             )
-            CustomText("강아지와 주 2회 산책해요", painterResource(id = R.drawable.ic_chat_dot))
+            IconWithTextView("강아지와 주 2회 산책해요", iconResource = R.drawable.ic_chat_dot)
 
             Spacer(modifier.size(20.dp))
 
             Text("인증 가능 시간", fontSize = 16.sp, modifier = modifier.padding(3.dp))
-            CustomText("오전 11시부터 오후 11시까지", painterResource(id = R.drawable.ic_alram))
+            IconWithTextView("오전 11시부터 오후 11시까지", iconResource = R.drawable.ic_alram)
 
             Spacer(modifier.size(20.dp))
             Text("인증 빈도", fontSize = 16.sp, modifier = modifier.padding(3.dp))
@@ -227,19 +215,25 @@ fun PostDetailScreen(
             Spacer(modifier.size(20.dp))
 
             Text("시작일 - 종료일", fontSize = 16.sp, modifier = modifier.padding(3.dp))
-            DateText(startDate = content.startDate,endDate = content.endDate, painter = painterResource(id = R.drawable.ic_calendar))
+            DateText(
+                startDate = content.startDate,
+                endDate = content.endDate,
+                iconResource = R.drawable.ic_calendar
+            )
             Spacer(modifier.size(20.dp))
 
-            Box(modifier = modifier
-                .fillMaxWidth()
-                .height(10.dp)
-                .background(Gray50))
+            Box(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(10.dp)
+                    .background(Gray50)
+            )
 
             Spacer(modifier.size(20.dp))
             Text("인증 방법", fontSize = 16.sp, modifier = modifier.padding(3.dp))
-            CustomText(
+            IconWithTextView(
                 "목줄을 찬 반려동물이 바깥 풍경과 함꼐 나오도록 사진을 찍어주세요.",
-                painterResource(id = R.drawable.ic_chat_check)
+                iconResource = R.drawable.ic_chat_check
             )
             Spacer(modifier.size(20.dp))
             Row() {
@@ -250,11 +244,11 @@ fun PostDetailScreen(
 
             Spacer(modifier.size(20.dp))
             Text("인증 수단", fontSize = 16.sp, modifier = modifier.padding(3.dp))
-            if(content.realtime){
-                CustomText("실시간 촬영", painterResource(id = R.drawable.ic_camera))
+            if (content.realtime) {
+                IconWithTextView("실시간 촬영", iconResource = R.drawable.ic_camera)
             }
             Spacer(modifier.height(7.dp))
-            CustomText("갤러리에서 사진 가져오기", painterResource(id = R.drawable.ic_gallery))
+            IconWithTextView("갤러리에서 사진 가져오기", iconResource = R.drawable.ic_gallery)
 
             Spacer(modifier.size(44.dp))
             FinalButton(text = "팟 참여하기",
@@ -269,13 +263,19 @@ fun PostDetailScreen(
 @Composable
 fun UserInfo(
     modifier: Modifier = Modifier,
-    userName : String ="유저 닉네임"
+    userName: String = "유저 닉네임"
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
-    ){
+    ) {
         //유저이미지정보
-        Text(userName, style = Typography.labelLarge, color = Gray700, fontSize = 15.sp, modifier = modifier.padding(end = 6.dp))
+        Text(
+            userName,
+            style = Typography.labelLarge,
+            color = Gray700,
+            fontSize = 15.sp,
+            modifier = modifier.padding(end = 6.dp)
+        )
         Text("개설자", style = Typography.displaySmall, color = Gray500, fontSize = 12.sp)
     }
 
@@ -291,43 +291,28 @@ fun PatSimpleInfo(
     maxPerson: Int = 10,
     textColor: Color = Color(0xFF009D65),
 ) {
-
     Column() {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(tint= Gray400 ,painter = painterResource(id = R.drawable.ic_map), contentDescription = null)
-            Spacer(modifier.width(6.dp))
-            Text(text = location)
-        }
+        SimpleTextView(text = location, vectorResource = R.drawable.ic_map, spacePadding = 6.dp)
         Spacer(modifier.height(8.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(tint= Gray400 ,
-                painter = painterResource(id = R.drawable.ic_calendar),
-                contentDescription = null
-            )
-            Spacer(modifier.width(6.dp))
-            Text(text = "$startDate - $endDate")
-        }
+        SimpleTextView(
+            text = "$startDate - $endDate",
+            vectorResource = R.drawable.ic_calendar,
+            spacePadding = 6.dp
+        )
         Spacer(modifier.height(8.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(tint= Gray400 ,painter = painterResource(id = R.drawable.ic_user), contentDescription = null)
-            Spacer(modifier.width(6.dp))
-            Text(text = "현재 $nowPerson / $maxPerson")
-        }
+        SimpleTextView(
+            text = "현재 $nowPerson / $maxPerson",
+            vectorResource = R.drawable.ic_user,
+            spacePadding = 6.dp
+        )
     }
-
 }
 
 @Composable
 fun DateText(
     startDate: String? = "11월 13일(월)",
     endDate: String? = "11월 27일(월)",
-    painter: Painter,
+    iconResource: Int,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -344,7 +329,7 @@ fun DateText(
                 .padding(10.dp),
         ) {
             Icon(
-                painter = painter, contentDescription = null, tint = PrimaryMain
+                imageVector = ImageVector.vectorResource(id = iconResource), contentDescription = null, tint = PrimaryMain
             )
 
             Spacer(modifier = modifier.width(8.dp))
@@ -355,35 +340,6 @@ fun DateText(
                 Text(text = "종료", color = PrimaryMain)
                 Text(text = "${endDate}")
             }
-        }
-    }
-}
-
-@Composable
-fun CustomText(
-    title: String,
-    painter: Painter,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .border(
-                BorderStroke(1.dp, Gray200),
-                shape = RoundedCornerShape(4.dp)
-            )
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(10.dp),
-        ) {
-            Icon(
-                painter = painter, contentDescription = null, tint = PrimaryMain
-            )
-
-            Spacer(modifier = modifier.width(8.dp))
-            Text(text = title, modifier = modifier.padding(3.dp))
         }
     }
 }
@@ -411,8 +367,8 @@ fun DayButton(
     onClick: () -> Unit = {},
     text: String,
     enabled: Boolean = true,
-    buttonColor : Color = Primary50,
-    textColor :Color = PrimaryMain,
+    buttonColor: Color = Primary50,
+    textColor: Color = PrimaryMain,
     border: Color = PrimaryMain
 ) {
 
@@ -440,6 +396,7 @@ fun DayButton(
         )
     }
 }
+
 @Composable
 fun CategoryButtonList() {
     val days = listOf<String>("월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일")
@@ -451,7 +408,12 @@ fun CategoryButtonList() {
                 if (day in proofDays) {
                     DayButton(text = day)
                 } else {
-                    DayButton(text = day, buttonColor = White, textColor = Gray500,border=Gray500)
+                    DayButton(
+                        text = day,
+                        buttonColor = White,
+                        textColor = Gray500,
+                        border = Gray500
+                    )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
             }
@@ -461,11 +423,16 @@ fun CategoryButtonList() {
         Row(
         ) {
             days.takeLast(2).forEach { day ->
-               if (day in proofDays) {
-                   DayButton(text = day)
+                if (day in proofDays) {
+                    DayButton(text = day)
 
-               } else {
-                   DayButton(text = day, buttonColor = White, textColor = Gray500,border=Gray500)
+                } else {
+                    DayButton(
+                        text = day,
+                        buttonColor = White,
+                        textColor = Gray500,
+                        border = Gray500
+                    )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
             }

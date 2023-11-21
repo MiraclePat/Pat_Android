@@ -27,11 +27,12 @@ import com.pat.presentation.ui.theme.Gray500
 import com.pat.presentation.ui.theme.Typography
 
 @Composable
-fun SelectImage(modifier: Modifier = Modifier, imageIdx: Int = -1) {
+fun SelectImage(modifier: Modifier = Modifier, imageIdx: Int = -1, hasSource: String = "") {
     val roundedCornerShape = if (imageIdx == -1) RoundedCornerShape(
         topStart = 4.dp,
         topEnd = 4.dp
     ) else RoundedCornerShape(4.dp)
+
     Box(
         modifier
             .height(140.dp)
@@ -43,19 +44,21 @@ fun SelectImage(modifier: Modifier = Modifier, imageIdx: Int = -1) {
             },
         contentAlignment = Alignment.Center
     ) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                modifier = modifier.size(24.dp),
-                painter = painterResource(id = R.drawable.ic_add),
-                contentDescription = null,
-                tint = Gray500
-            )
-            Box() {
-                if (imageIdx == -1) Text("사진 첨부하기", style = Typography.labelSmall)
-                else Text("사진$imageIdx 첨부하기", style = Typography.labelSmall)
+        if (hasSource != "") {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    modifier = modifier.size(24.dp),
+                    painter = painterResource(id = R.drawable.ic_add),
+                    contentDescription = null,
+                    tint = Gray500
+                )
+                Box() {
+                    if (imageIdx == -1) Text("사진 첨부하기", style = Typography.labelSmall)
+                    else Text("사진$imageIdx 첨부하기", style = Typography.labelSmall)
+                }
             }
         }
     }

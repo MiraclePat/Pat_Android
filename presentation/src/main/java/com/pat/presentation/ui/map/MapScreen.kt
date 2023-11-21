@@ -6,12 +6,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import coil.compose.AsyncImage
+import com.pat.presentation.ui.pat.PattingScreen
+import com.pat.presentation.ui.pat.PattingScreenView
 import com.pat.presentation.ui.post.PostScreenView
 
 @Composable
 fun MapScreenView() {
     val scrollState = rememberScrollState()
 
-//    PostScreenView()
+
+    PattingScreenView()
 }
 

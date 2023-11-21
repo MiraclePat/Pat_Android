@@ -4,28 +4,25 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.pat.domain.model.pat.HomePatContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
+import com.pat.presentation.ui.common.SimpleTextView
+import com.pat.presentation.ui.theme.Gray700
 import com.pat.presentation.ui.theme.Typography
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -62,38 +59,22 @@ fun HomePats(
         Spacer(Modifier.size(10.dp))
         Text(text = title, style = Typography.labelMedium)
         Spacer(Modifier.size(6.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                modifier = modifier.size(12.dp, 12.dp),
-                painter = painterResource(id = R.drawable.ic_map),
-                contentDescription = null
-            )
-            Spacer(Modifier.size(4.dp))
-            Text(text = location, style = Typography.labelSmall)
-        }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                modifier = modifier.size(12.dp, 12.dp),
-                painter = painterResource(id = R.drawable.ic_calendar),
-                contentDescription = null
-            )
-            Spacer(Modifier.size(4.dp))
-            Text(text = startDate, style = Typography.labelSmall)
-        }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                modifier = modifier.size(12.dp, 12.dp),
-                painter = painterResource(id = R.drawable.ic_user),
-                contentDescription = null
-            )
-            Spacer(Modifier.size(4.dp))
-            Text(text = "$nowPerson / $maxPerson", style = Typography.labelSmall)
-        }
+        SimpleTextView(text = location, vectorResource = R.drawable.ic_map, iconColor = Gray700)
+        SimpleTextView(text = startDate, vectorResource = R.drawable.ic_calendar, iconColor = Gray700)
+        SimpleTextView(
+            text = "$nowPerson / $maxPerson",
+            vectorResource = R.drawable.ic_user,
+            iconColor = Gray700
+        )
     }
 }
 
 @Composable
-fun Pats(navController: NavController, modifier: Modifier = Modifier, content: List<HomePatContent>?) {
+fun Pats(
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    content: List<HomePatContent>?
+) {
     Column(modifier.padding(vertical = 20.dp, horizontal = 16.dp)) {
         Text(
             text = stringResource(id = R.string.home_hot_pat_title),

@@ -79,7 +79,7 @@ fun CustomDialog(
                         modifier
                             .weight(1f)
                             .height(46.dp)
-                            .clip(RoundedCornerShape(4.dp))
+                            .clip(RoundedCornerShape(100.dp))
                             .background(PrimaryMain)
                             .clickable {
                                 state.value = false
@@ -93,7 +93,7 @@ fun CustomDialog(
                         modifier
                             .weight(1f)
                             .height(46.dp)
-                            .clip(RoundedCornerShape(4.dp))
+                            .clip(RoundedCornerShape(100.dp))
                             .border(1.dp, color = Gray300, RoundedCornerShape(4.dp))
                             .background(White)
                             .clickable {
