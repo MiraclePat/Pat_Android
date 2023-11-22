@@ -1,7 +1,5 @@
 package com.pat.presentation.ui.pat
 
-import android.health.connect.datatypes.units.Percentage
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,11 +38,10 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
 import com.pat.presentation.ui.common.ExampleImageView
@@ -76,7 +72,8 @@ import com.pat.presentation.ui.theme.Typography
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PattingScreenView(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController : NavController
 ) {
     val scrollState = rememberScrollState()
     Scaffold(
@@ -106,7 +103,7 @@ fun PattingScreenView(
                 .padding(innerPadding)
                 .verticalScroll(scrollState),
         ) {
-            PattingScreen()
+            PattingScreen(navController)
         }
     }
 }
@@ -114,6 +111,7 @@ fun PattingScreenView(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PattingScreen(
+    navController: NavController,
     modifier: Modifier = Modifier
 ) {
     var spreadState by remember { mutableStateOf(false) }
@@ -286,6 +284,7 @@ fun PattingScreen(
         Spacer(modifier.padding(bottom = 14.dp))
         Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             ExampleImageView(
+                navController = navController,
                 text = "올바른 예시",
                 backColor = GreenBack,
                 textColor = GreenText,
@@ -293,6 +292,7 @@ fun PattingScreen(
             )
             Spacer(modifier = modifier.size(10.dp))
             ExampleImageView(
+                navController = navController,
                 text = "잘못된 예시",
                 backColor = RedBack,
                 textColor = RedText,
@@ -342,9 +342,9 @@ fun PattingScreen(
         }
         Spacer(modifier = modifier.padding(bottom = 24.dp))
         if (myProofState) {
-            ProofStatus(success = 24, fail = 8)
+            ProofStatus(navController=navController,success = 24, fail = 8)
         } else {
-            ProofStatus(success = 24, fail = 8, isAll = "전체 ")
+            ProofStatus(navController=navController,success = 24, fail = 8, isAll = "전체 ")
         }
         FinalButton(text = "인증하기")
     }
@@ -352,6 +352,7 @@ fun PattingScreen(
 
 @Composable
 fun ProofStatus(
+    navController: NavController,
     modifier: Modifier = Modifier,
     success: Int,
     fail: Int,
@@ -378,9 +379,9 @@ fun ProofStatus(
 
     // TODO 연동 시 lazyRow로 수정
     Row(modifier.padding(top = 12.dp)) {
-        SelectImage()
+        SelectImage(navController=navController)
         Spacer(modifier = modifier.padding(end = 10.dp))
-        SelectImage()
+        SelectImage(navController=navController)
     }
     Row(modifier.padding(top = 24.dp)) {
         RatioText(

@@ -36,7 +36,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
@@ -44,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.PatDetailContent
 import com.pat.presentation.R
@@ -70,6 +70,7 @@ import com.skydoves.landscapist.glide.GlideImage
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PatDetailView(
+    navController: NavController,
     patDetailViewModel: PatDetailViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
@@ -110,13 +111,18 @@ fun PatDetailView(
                 .padding(innerPadding)
                 .verticalScroll(scrollState),
         ) {
-            PostDetailScreen(content = uiState.content, patDetailViewModel = patDetailViewModel)
+            PostDetailScreen(
+                navController = navController,
+                content = uiState.content,
+                patDetailViewModel = patDetailViewModel
+            )
         }
     }
 }
 
 @Composable
 fun PostDetailScreen(
+    navController: NavController,
     content: PatDetailContent?,
     patDetailViewModel: PatDetailViewModel,
     modifier: Modifier = Modifier
@@ -237,9 +243,19 @@ fun PostDetailScreen(
             )
             Spacer(modifier.size(20.dp))
             Row() {
-                ExampleImageView(text = "올바른 예시", backColor = GreenBack, textColor = GreenText)
+                ExampleImageView(
+                    navController = navController,
+                    text = "올바른 예시",
+                    backColor = GreenBack,
+                    textColor = GreenText,
+                )
                 Spacer(modifier = modifier.size(10.dp))
-                ExampleImageView(text = "잘못된 예시", backColor = RedBack, textColor = RedText)
+                ExampleImageView(
+                    navController = navController,
+                    text = "잘못된 예시",
+                    backColor = RedBack,
+                    textColor = RedText
+                )
             }
 
             Spacer(modifier.size(20.dp))
@@ -329,7 +345,9 @@ fun DateText(
                 .padding(10.dp),
         ) {
             Icon(
-                imageVector = ImageVector.vectorResource(id = iconResource), contentDescription = null, tint = PrimaryMain
+                imageVector = ImageVector.vectorResource(id = iconResource),
+                contentDescription = null,
+                tint = PrimaryMain
             )
 
             Spacer(modifier = modifier.width(8.dp))

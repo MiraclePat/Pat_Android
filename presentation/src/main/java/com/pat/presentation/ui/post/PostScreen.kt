@@ -44,11 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.android.material.timepicker.TimeFormat
-import com.ozcanalasalvar.datepicker.compose.timepicker.WheelTimePicker
-import com.ozcanalasalvar.datepicker.model.Time
-import com.ozcanalasalvar.datepicker.utils.DateUtils
+import androidx.navigation.NavController
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBoxList
 import com.pat.presentation.ui.common.CheckBoxView
@@ -75,8 +71,10 @@ import com.pat.presentation.ui.theme.White
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostScreenView(onNavigateToHome: () -> Unit,
-                   postViewModel: PostViewModel = hiltViewModel()) {
+fun PostScreenView(navController: NavController,
+                   onNavigateToHome: () -> Unit,
+                   ) {
+
     val scrollState = rememberScrollState()
     val declarationDialogState = remember { mutableStateOf(false) }
     if (declarationDialogState.value) {
@@ -114,14 +112,14 @@ fun PostScreenView(onNavigateToHome: () -> Unit,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            PostScreenBody(onNavigateToHome = onNavigateToHome)
+            PostScreenBody(navController=navController, onNavigateToHome = onNavigateToHome)
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) {
+fun PostScreenBody(navController: NavController,modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) {
     val isRealTime = remember { mutableStateOf(false) }         // 사진 선택
     val isGallery = remember { mutableStateOf(false) }          // 갤러리 선택
 
@@ -136,6 +134,9 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
     val day = remember { mutableStateOf("") }                   // 인증 빈도
     val category = remember { mutableStateOf("") }              // 카테고리
 
+    val bitmapState =remember {
+        mutableStateOf(null)
+    }
 
     Column() {
         Box(
@@ -188,7 +189,7 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
 
             Text(text = "팟 상세정보", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
-            SelectImageList()
+            SelectImageList(navController =navController, bitmapState = bitmapState)
             Spacer(modifier = modifier.size(36.dp))
 
             Text(text = "위치정보 유무", style = Typography.titleLarge)
@@ -297,9 +298,9 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
             Text(text = "인증사진 예시", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
             Row() {
-                ExampleImageView(text = "올바른 예시", backColor = GreenBack, textColor = GreenText)
+                ExampleImageView(navController = navController, text = "올바른 예시", backColor = GreenBack, textColor = GreenText, bitmapState = bitmapState )
                 Spacer(modifier = modifier.size(10.dp))
-                ExampleImageView(text = "잘못된 예시", backColor = RedBack, textColor = RedText)
+                ExampleImageView(navController= navController,text = "잘못된 예시", backColor = RedBack, textColor = RedText, bitmapState = bitmapState)
             }
             Spacer(modifier = modifier.size(36.dp))
 

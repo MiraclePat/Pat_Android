@@ -23,6 +23,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.orhanobut.logger.Logger
 import com.pat.presentation.R
+import com.pat.presentation.ui.common.SelectImage
+import com.pat.presentation.ui.common.SettingCamera
 import com.pat.presentation.ui.home.HomeScreenView
 import com.pat.presentation.ui.map.MapScreenView
 import com.pat.presentation.ui.pat.PatDetailView
@@ -69,16 +71,18 @@ fun NavigationGraph(navController: NavHostController) {
                 onNavigateToPost = { navController.navigate(POST) })
         }
         composable(BottomNavItem.Certification.screenRoute) {
-            CertificationScreenView()
+            CertificationScreenView(navController=navController)
         }
         composable(BottomNavItem.Map.screenRoute) {
-            MapScreenView()
+            MapScreenView(navController=navController)
         }
         composable(BottomNavItem.Setting.screenRoute) {
             SettingScreenView()
         }
         composable(POST) {
-            PostScreenView(onNavigateToHome = { navController.popBackStack() })
+            PostScreenView(
+                navController = navController,
+                onNavigateToHome = { navController.popBackStack() })
         }
         composable(
             route = "patDetail/{patId}",
@@ -88,9 +92,15 @@ fun NavigationGraph(navController: NavHostController) {
                     defaultValue = -1
                 }
             )){
-
-            PatDetailView()
+            PatDetailView(navController = navController,)
         }
+        composable("camera"){
+            SettingCamera(navController=navController)
+        }
+        composable("selectimage"){
+            PostScreenView(
+                navController = navController,
+                onNavigateToHome = { navController.popBackStack() })        }
     }
 }
 
