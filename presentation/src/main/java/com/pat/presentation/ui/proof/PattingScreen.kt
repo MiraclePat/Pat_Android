@@ -1,7 +1,5 @@
-package com.pat.presentation.ui.pat
+package com.pat.presentation.ui.proof
 
-import android.health.connect.datatypes.units.Percentage
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,6 +27,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,11 +40,12 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.orhanobut.logger.Logger
+import com.pat.domain.model.proof.ProofContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
 import com.pat.presentation.ui.common.ExampleImageView
@@ -53,6 +53,8 @@ import com.pat.presentation.ui.common.FinalButton
 import com.pat.presentation.ui.common.IconWithTextView
 import com.pat.presentation.ui.common.SelectImage
 import com.pat.presentation.ui.common.SimpleTextView
+import com.pat.presentation.ui.pat.CategoryButtonList
+import com.pat.presentation.ui.pat.DateText
 import com.pat.presentation.ui.theme.FailCircleColor
 import com.pat.presentation.ui.theme.FailTextColor
 import com.pat.presentation.ui.theme.Gray200
@@ -76,8 +78,13 @@ import com.pat.presentation.ui.theme.Typography
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PattingScreenView(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    pattingViewModel: ProofViewModel = hiltViewModel()
 ) {
+    val uiState by pattingViewModel.uiState.collectAsState()
+    LaunchedEffect(uiState.content) {
+        Logger.t("MainTest").i("${uiState.content}")
+    }
     val scrollState = rememberScrollState()
     Scaffold(
         modifier = modifier
@@ -106,15 +113,15 @@ fun PattingScreenView(
                 .padding(innerPadding)
                 .verticalScroll(scrollState),
         ) {
-            PattingScreen()
+            PattingScreen(content = uiState.content)
         }
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PattingScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    content: List<ProofContent>?
 ) {
     var spreadState by remember { mutableStateOf(false) }
     var myProofState by remember { mutableStateOf(true) }

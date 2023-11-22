@@ -2,7 +2,7 @@ package com.pat.presentation.ui.post
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pat.domain.model.pat.CreatePatDetail
+import com.pat.domain.model.pat.CreatePatInfoDetail
 import com.pat.domain.model.pat.CreatePatInfo
 import com.pat.domain.model.pat.HomePatContent
 import com.pat.domain.usecase.pat.CreatePatUseCase
@@ -20,7 +20,7 @@ class PostViewModel @Inject constructor(
     private val createPatUseCase: CreatePatUseCase,
 ) : ViewModel() {
     fun post(
-        pat: CreatePatDetail
+        pat: CreatePatInfoDetail
     ) {
         viewModelScope.launch {
             val result = createPatUseCase(

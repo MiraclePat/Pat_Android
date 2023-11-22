@@ -1,6 +1,6 @@
 package com.pat.domain.model.pat
 
-data class CreatePatDetail(
+data class CreatePatInfoDetail(
     val patName: String,
     val patDetail: String,
     val maxPerson: Int,
