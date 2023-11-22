@@ -25,12 +25,13 @@ class PostViewModel @Inject constructor(
     private val createPatUseCase: CreatePatUseCase,
 ) : ViewModel() {
 
-    private val _bitmap = MutableStateFlow<Bitmap?>(null)
+
+    private val _bitmap = MutableStateFlow<MutableList<Bitmap?>>(mutableListOf())
     val bitmap = _bitmap.asStateFlow()
     fun onTakePhoto(bitmap: Bitmap) {
-        _bitmap.value = bitmap
-        Logger.t("bitmaps").i("viewmodel에서${bitmap}")
+        _bitmap.value.add(bitmap)
     }
+
 
     fun post(
         pat: CreatePatDetail

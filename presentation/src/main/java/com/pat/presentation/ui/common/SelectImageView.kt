@@ -42,12 +42,9 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,9 +55,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import com.orhanobut.logger.Logger
 import com.pat.presentation.R
 import com.pat.presentation.ui.CameraPreview
@@ -213,9 +208,6 @@ fun SelectImage(
 //        }
 
 
-
-
-
         if (hasSource != "") {
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -346,17 +338,18 @@ private fun takePhoto(
 
 @Composable
 fun SelectImageList(
-    navController: NavController, modifier: Modifier = Modifier, bitmap: Bitmap?
+    navController: NavController, modifier: Modifier = Modifier, bitmapList: MutableList<Bitmap?>
 ) {
-    val imageList = listOf<Int>(1)
-    Logger.t("bitmaps").i("bitmap : ${bitmap}")
+    val maxSize = IntArray(5 - bitmapList.size) { it + 1 }
 
-//    LazyRow() {
-//        items(imageList) { imageIdx ->
-//            SelectImage(navController = navController, imageIdx = imageIdx, bitmap = bitmap)
-//            Spacer(modifier = modifier.padding(horizontal = 10.dp))
-//        }
-//    }
-
-    SelectImage(navController = navController, imageIdx = 0, bitmap = bitmap)
+    LazyRow() {
+        items(bitmapList) { bitmap ->
+            SelectImage(navController = navController, imageIdx = 0, bitmap = bitmap)
+            Spacer(modifier = modifier.padding(horizontal = 10.dp))
+        }
+        items(maxSize.toList()) { idx ->
+            SelectImage(navController = navController, imageIdx = idx, bitmap = null)
+            Spacer(modifier = modifier.padding(horizontal = 10.dp))
+        }
+    }
 }

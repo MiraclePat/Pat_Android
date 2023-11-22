@@ -46,7 +46,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.orhanobut.logger.Logger
 import com.pat.presentation.R
@@ -56,7 +55,6 @@ import com.pat.presentation.ui.common.CustomDialog
 import com.pat.presentation.ui.common.CustomPicker
 import com.pat.presentation.ui.common.CustomTextField
 import com.pat.presentation.ui.common.DateTimePickerView
-import com.pat.presentation.ui.common.ExampleImageView
 import com.pat.presentation.ui.common.FinalButton
 import com.pat.presentation.ui.common.SelectImageList
 import com.pat.presentation.ui.common.WheelTimePickerView
@@ -64,12 +62,8 @@ import com.pat.presentation.ui.common.convertDateFormat
 import com.pat.presentation.ui.common.convertTimeFormat
 import com.pat.presentation.ui.theme.Gray100
 import com.pat.presentation.ui.theme.Gray500
-import com.pat.presentation.ui.theme.GreenBack
-import com.pat.presentation.ui.theme.GreenText
 import com.pat.presentation.ui.theme.Primary50
 import com.pat.presentation.ui.theme.PrimaryMain
-import com.pat.presentation.ui.theme.RedBack
-import com.pat.presentation.ui.theme.RedText
 import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.ui.theme.White
 
@@ -149,8 +143,8 @@ fun PostScreenBody(
     val day = remember { mutableStateOf("") }                   // 인증 빈도
     val category = remember { mutableStateOf("") }              // 카테고리
 
-    val bitmap by viewModel.bitmap.collectAsState()
-    Logger.t("bitmaps").i("viewmodel에서 넘긴 ${bitmap}")
+    val bitmapList by viewModel.bitmap.collectAsState()
+//    Logger.t("bitmaps").i("viewmodel에서 넘긴 ${bitmapList}")
 
     Column() {
         Box(
@@ -203,7 +197,7 @@ fun PostScreenBody(
 
             Text(text = "팟 상세정보", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
-            SelectImageList(navController = navController, bitmap = bitmap)
+            SelectImageList(navController = navController, bitmapList = bitmapList)
             Spacer(modifier = modifier.size(36.dp))
 
             Text(text = "위치정보 유무", style = Typography.titleLarge)
