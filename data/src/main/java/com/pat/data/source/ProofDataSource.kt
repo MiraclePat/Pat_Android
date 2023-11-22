@@ -11,9 +11,10 @@ class ProofDataSource @Inject constructor(
 ) {
 
     suspend fun proofPat(
+        patId: Long,
         repImg: MultipartBody.Part,
     ) {
-        return service.proofPat(repImg)
+        return service.proofPat(patId, repImg)
     }
 
     suspend fun getMyProof(

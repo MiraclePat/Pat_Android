@@ -56,7 +56,7 @@ class ProofViewModel @Inject constructor(
 
     fun proof(proofImg: String) {
         viewModelScope.launch {
-            val result = proofPatUseCase(ProofPatInfo(proofImg))
+            val result = proofPatUseCase(1L, ProofPatInfo(proofImg))
             if (result.isSuccess) {
                 //TODO Request to Sever?
             } else {

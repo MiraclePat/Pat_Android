@@ -21,11 +21,11 @@ class ProofRepositoryImpl @Inject constructor(
     private val imageDataSource: ImageDataSource,
     private val moshi: Moshi,
 ) : ProofRepository {
-    override suspend fun proofPat(proofPatInfo: ProofPatInfo): Result<Unit> {
+    override suspend fun proofPat(patId:Long, proofPatInfo: ProofPatInfo): Result<Unit> {
         val result = runCatching {
             val proofImg = getMultipartImage(proofPatInfo.proofImg, "repImg")
 
-            proofDataSource.proofPat(proofImg)
+            proofDataSource.proofPat(patId, proofImg)
         }
         return if (result.isSuccess) {
             Result.success(result.getOrThrow())

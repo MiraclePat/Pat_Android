@@ -8,7 +8,8 @@ class ProofPatUseCase @Inject constructor(
     private val proofRepository: ProofRepository,
 ) {
     suspend operator fun invoke(
+        patId: Long,
         proofPatInfo: ProofPatInfo,
     ): Result<Unit> =
-        proofRepository.proofPat(proofPatInfo)
+        proofRepository.proofPat(patId, proofPatInfo)
 }

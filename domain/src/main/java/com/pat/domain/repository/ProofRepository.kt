@@ -6,6 +6,7 @@ import com.pat.domain.model.proof.ProofRequestInfo
 
 interface ProofRepository {
     suspend fun proofPat(
+        patId: Long,
         proofPatInfo: ProofPatInfo
     ): Result<Unit>
 
