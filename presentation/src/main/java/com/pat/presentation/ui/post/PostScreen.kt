@@ -33,6 +33,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -44,7 +46,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.orhanobut.logger.Logger
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBoxList
 import com.pat.presentation.ui.common.CheckBoxView
@@ -71,9 +75,11 @@ import com.pat.presentation.ui.theme.White
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostScreenView(navController: NavController,
-                   onNavigateToHome: () -> Unit,
-                   ) {
+fun PostScreenView(
+    navController: NavController,
+    onNavigateToHome: () -> Unit,
+    viewModel: PostViewModel
+) {
 
     val scrollState = rememberScrollState()
     val declarationDialogState = remember { mutableStateOf(false) }
@@ -112,14 +118,23 @@ fun PostScreenView(navController: NavController,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            PostScreenBody(navController=navController, onNavigateToHome = onNavigateToHome)
+            PostScreenBody(
+                navController = navController,
+                onNavigateToHome = onNavigateToHome,
+                viewModel = viewModel
+            )
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostScreenBody(navController: NavController,modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) {
+fun PostScreenBody(
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    onNavigateToHome: () -> Unit,
+    viewModel: PostViewModel
+) {
     val isRealTime = remember { mutableStateOf(false) }         // 사진 선택
     val isGallery = remember { mutableStateOf(false) }          // 갤러리 선택
 
@@ -134,9 +149,8 @@ fun PostScreenBody(navController: NavController,modifier: Modifier = Modifier, o
     val day = remember { mutableStateOf("") }                   // 인증 빈도
     val category = remember { mutableStateOf("") }              // 카테고리
 
-    val bitmapState =remember {
-        mutableStateOf(null)
-    }
+    val bitmap by viewModel.bitmap.collectAsState()
+    Logger.t("bitmaps").i("viewmodel에서 넘긴 ${bitmap}")
 
     Column() {
         Box(
@@ -189,7 +203,7 @@ fun PostScreenBody(navController: NavController,modifier: Modifier = Modifier, o
 
             Text(text = "팟 상세정보", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
-            SelectImageList(navController =navController, bitmapState = bitmapState)
+            SelectImageList(navController = navController, bitmap = bitmap)
             Spacer(modifier = modifier.size(36.dp))
 
             Text(text = "위치정보 유무", style = Typography.titleLarge)
@@ -298,9 +312,19 @@ fun PostScreenBody(navController: NavController,modifier: Modifier = Modifier, o
             Text(text = "인증사진 예시", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
             Row() {
-                ExampleImageView(navController = navController, text = "올바른 예시", backColor = GreenBack, textColor = GreenText, bitmapState = bitmapState )
-                Spacer(modifier = modifier.size(10.dp))
-                ExampleImageView(navController= navController,text = "잘못된 예시", backColor = RedBack, textColor = RedText, bitmapState = bitmapState)
+//                ExampleImageView(
+//                    navController = navController,
+//                    text = "올바른 예시",
+//                    backColor = GreenBack,
+//                    textColor = GreenText
+//                )
+//                Spacer(modifier = modifier.size(10.dp))
+//                ExampleImageView(
+//                    navController = navController,
+//                    text = "잘못된 예시",
+//                    backColor = RedBack,
+//                    textColor = RedText
+//                )
             }
             Spacer(modifier = modifier.size(36.dp))
 
@@ -318,8 +342,8 @@ fun PostScreenBody(navController: NavController,modifier: Modifier = Modifier, o
                 backColor = PrimaryMain,
                 textColor = White,
                 onClick = {
-                onNavigateToHome()
-            })
+                    onNavigateToHome()
+                })
         }
     }
 }

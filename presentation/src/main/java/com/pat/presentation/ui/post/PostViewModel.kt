@@ -10,6 +10,7 @@ import com.pat.domain.model.pat.HomePatContent
 import com.pat.domain.usecase.pat.CreatePatUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,12 +27,11 @@ class PostViewModel @Inject constructor(
 
     private val _bitmap = MutableStateFlow<Bitmap?>(null)
     val bitmap = _bitmap.asStateFlow()
-
     fun onTakePhoto(bitmap: Bitmap) {
         _bitmap.value = bitmap
         Logger.t("bitmaps").i("viewmodel에서${bitmap}")
-
     }
+
     fun post(
         pat: CreatePatDetail
     ) {

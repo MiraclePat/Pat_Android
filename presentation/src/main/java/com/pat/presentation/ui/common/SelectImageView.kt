@@ -80,7 +80,7 @@ fun SelectImage(
     imageIdx: Int = -1,
     hasSource: String = "",
     realTime: Boolean = true,
-    bitmapState: MutableState<Nothing?>
+    bitmap: Bitmap?
 ) {
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -101,10 +101,8 @@ fun SelectImage(
 //    val viewModel = viewModel<PostViewModel>()
 //    val bitmap by remember { viewModel.bitmap.collectAsState() }
 //    cameraImage = bitmap
-    val viewModel: PostViewModel = hiltViewModel()
-    val bitmap by viewModel.bitmap.collectAsState()
 
-    Logger.t("bitmaps").i("viewmodel에서 넘긴 ${bitmap}")
+
     Box(
         modifier
             .height(140.dp)
@@ -187,23 +185,32 @@ fun SelectImage(
                 }
             }
         }
-        if (showCameraImage) {
-            bitmap?.let {
-                Image(
-                    bitmap = it.asImageBitmap(),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxWidth(),
-                    contentScale = ContentScale.Crop
-                )
-            }
-        } else {
-            AsyncImage(
-                model = selectedImageUri,
+        Logger.t("bitmaps").i("Image Bitmap:  ${bitmap}")
+        bitmap?.let {
+            Image(
+                bitmap = it.asImageBitmap(),
                 contentDescription = null,
                 modifier = Modifier.fillMaxWidth(),
                 contentScale = ContentScale.Crop
             )
         }
+//        if (showCameraImage) {
+//            bitmap?.let {
+//                Image(
+//                    bitmap = it.asImageBitmap(),
+//                    contentDescription = null,
+//                    modifier = Modifier.fillMaxWidth(),
+//                    contentScale = ContentScale.Crop
+//                )
+//            }
+//        } else {
+//            AsyncImage(
+//                model = selectedImageUri,
+//                contentDescription = null,
+//                modifier = Modifier.fillMaxWidth(),
+//                contentScale = ContentScale.Crop
+//            )
+//        }
 
 
 
@@ -233,15 +240,9 @@ fun SelectImage(
 @Composable
 fun SettingCamera(
     navController: NavController,
-    bitmapState: MutableState<Bitmap>
+    viewModel: PostViewModel
 ) {
-    val viewModel: PostViewModel = hiltViewModel()
-
     val context: Context = LocalContext.current
-    var bitmap by remember {
-        mutableStateOf<Bitmap?>(null)
-    }
-    val scope = rememberCoroutineScope()
     val controller = remember {
         LifecycleCameraController(context).apply {
             setEnabledUseCases(
@@ -250,7 +251,6 @@ fun SettingCamera(
             )
         }
     }
-
 
     Box(
         modifier = Modifier
@@ -293,7 +293,6 @@ fun SettingCamera(
                         context = context,
                         controller = controller,
                         onPhotoTaken = viewModel::onTakePhoto,
-                        bitmapState = bitmapState
                     )
                 }
             ) {
@@ -311,7 +310,6 @@ private fun takePhoto(
     context: Context,
     controller: LifecycleCameraController,
     onPhotoTaken: (Bitmap) -> Unit,
-    bitmapState: MutableState<Bitmap>
 ) {
     controller.takePicture(
         ContextCompat.getMainExecutor(context),
@@ -333,13 +331,8 @@ private fun takePhoto(
                 )
 
                 onPhotoTaken(rotatedBitmap)
-//                Logger.t("bitmaps").i("navigation전${rotatedBitmap}")
-                navController.navigate("selectimage")
-                bitmapState.value = rotatedBitmap
-//                navController.popBackStack()
-//                Logger.t("bitmaps").i("navigation후${rotatedBitmap}")
-
-
+                navController.popBackStack()
+//                navController.navigate("selectimage")
             }
 
             override fun onError(exception: ImageCaptureException) {
@@ -353,15 +346,17 @@ private fun takePhoto(
 
 @Composable
 fun SelectImageList(
-    navController: NavController, modifier: Modifier = Modifier,
-    bitmapState: MutableState<Nothing?>
+    navController: NavController, modifier: Modifier = Modifier, bitmap: Bitmap?
 ) {
-    val imageList = listOf<Int>(1, 2, 3, 4, 5)
+    val imageList = listOf<Int>(1)
+    Logger.t("bitmaps").i("bitmap : ${bitmap}")
 
-    LazyRow() {
-        items(imageList) { imageIdx ->
-            SelectImage(navController = navController, imageIdx = imageIdx, bitmapState = bitmapState)
-            Spacer(modifier = modifier.padding(horizontal = 10.dp))
-        }
-    }
+//    LazyRow() {
+//        items(imageList) { imageIdx ->
+//            SelectImage(navController = navController, imageIdx = imageIdx, bitmap = bitmap)
+//            Spacer(modifier = modifier.padding(horizontal = 10.dp))
+//        }
+//    }
+
+    SelectImage(navController = navController, imageIdx = 0, bitmap = bitmap)
 }

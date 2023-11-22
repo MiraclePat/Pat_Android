@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -29,6 +30,7 @@ import com.pat.presentation.ui.home.HomeScreenView
 import com.pat.presentation.ui.map.MapScreenView
 import com.pat.presentation.ui.pat.PatDetailView
 import com.pat.presentation.ui.post.PostScreenView
+import com.pat.presentation.ui.post.PostViewModel
 import com.pat.presentation.ui.proof.CertificationScreenView
 import com.pat.presentation.ui.setting.SettingScreenView
 import com.pat.presentation.ui.theme.Gray400
@@ -64,6 +66,7 @@ sealed class BottomNavItem(
 
 @Composable
 fun NavigationGraph(navController: NavHostController) {
+    val postViewModel: PostViewModel = hiltViewModel()
     NavHost(navController = navController, startDestination = BottomNavItem.Home.screenRoute) {
         composable(BottomNavItem.Home.screenRoute) {
             HomeScreenView(
@@ -71,10 +74,10 @@ fun NavigationGraph(navController: NavHostController) {
                 onNavigateToPost = { navController.navigate(POST) })
         }
         composable(BottomNavItem.Certification.screenRoute) {
-            CertificationScreenView(navController=navController)
+            CertificationScreenView(navController = navController)
         }
         composable(BottomNavItem.Map.screenRoute) {
-            MapScreenView(navController=navController)
+            MapScreenView(navController = navController)
         }
         composable(BottomNavItem.Setting.screenRoute) {
             SettingScreenView()
@@ -82,25 +85,29 @@ fun NavigationGraph(navController: NavHostController) {
         composable(POST) {
             PostScreenView(
                 navController = navController,
-                onNavigateToHome = { navController.popBackStack() })
+                onNavigateToHome = { navController.popBackStack() },
+                viewModel = postViewModel
+            )
         }
         composable(
             route = "patDetail/{patId}",
             arguments = listOf(
-                navArgument("patId"){
+                navArgument("patId") {
                     type = NavType.LongType
                     defaultValue = -1
                 }
-            )){
-            PatDetailView(navController = navController,)
+            )) {
+            PatDetailView(navController = navController)
         }
-        composable("camera"){
-            SettingCamera(navController=navController)
+        composable("camera") {
+            SettingCamera(navController = navController, viewModel = postViewModel)
         }
-        composable("selectimage"){
+        composable("selectimage") {
             PostScreenView(
                 navController = navController,
-                onNavigateToHome = { navController.popBackStack() })        }
+                onNavigateToHome = { navController.popBackStack() }, viewModel = postViewModel
+            )
+        }
     }
 }
 

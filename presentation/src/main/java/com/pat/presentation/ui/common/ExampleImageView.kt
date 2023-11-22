@@ -30,14 +30,11 @@ fun ExampleImageView(
     text: String,
     onClick: () -> Unit = {},
     hasSource: String = "",
-    bitmapState: MutableState<Nothing?> = remember {
-        mutableListOf<Nothing>()
-    }
 ) {
     Column(modifier.clickable {
         onClick()
     }) {
-        SelectImage(navController = navController, bitmapState = bitmapState)
+//        SelectImage(navController = navController)
         Box(
             modifier
                 .clip(RoundedCornerShape(bottomEnd = 4.dp, bottomStart = 4.dp))

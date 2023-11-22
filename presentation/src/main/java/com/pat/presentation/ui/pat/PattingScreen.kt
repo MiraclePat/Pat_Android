@@ -379,9 +379,9 @@ fun ProofStatus(
 
     // TODO 연동 시 lazyRow로 수정
     Row(modifier.padding(top = 12.dp)) {
-        SelectImage(navController=navController)
+//        SelectImage(navController=navController)
         Spacer(modifier = modifier.padding(end = 10.dp))
-        SelectImage(navController=navController)
+//        SelectImage(navController=navController)
     }
     Row(modifier.padding(top = 24.dp)) {
         RatioText(
