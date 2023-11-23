@@ -194,7 +194,7 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
                     .fillMaxWidth()
                     .height(36.dp)
             ) {
-                SelectLocationButtonList(modifier.weight(1f), state = locationSelect)
+                SelectLocationButtonList(modifier.weight(1f), locationState = locationSelect)
             }
             Spacer(modifier = modifier.size(36.dp))
 
@@ -378,7 +378,7 @@ fun SelectDayButtonList(state: SnapshotStateList<String>) {
 @Composable
 fun SelectLocationButtonList(
     modifier: Modifier = Modifier,
-    state: MutableState<String>,
+    locationState: MutableState<String>,
     onClick: () -> Unit = {}
 ) {
     val days = listOf<String>("실제 주소 입력", "임의대로 입력", "위치정보 없음")
@@ -390,9 +390,9 @@ fun SelectLocationButtonList(
             text = location,
             onClick = {
                 onClick()
-                state.value = location
+                locationState.value = location
             },
-            isSelected = state.value == location,
+            isSelected = locationState.value == location,
             shape = RoundedCornerShape(100.dp),
             fontSize = 14.sp,
             borderColor = Gray300,

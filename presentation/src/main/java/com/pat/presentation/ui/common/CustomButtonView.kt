@@ -32,8 +32,8 @@ fun CustomButtonView(
     borderColor: Color,
     textColor : Color
 ) {
-    val buttonColor = if (isSelected) Primary50 else White
-    val textColorSet = if (isSelected) PrimaryMain else Gray500
+    val selectedButtonColor = if (isSelected) Primary50 else White
+    val selectedTextColor = if (isSelected) PrimaryMain else textColor
     val border = if (isSelected) PrimaryMain else borderColor
 
     Button(
@@ -41,7 +41,7 @@ fun CustomButtonView(
         shape = shape,
         contentPadding = PaddingValues(),
         colors = ButtonDefaults.buttonColors(
-            containerColor = buttonColor
+            containerColor = selectedButtonColor
         ),
         enabled = enabled,
         border = BorderStroke(1.dp, border),
@@ -53,7 +53,7 @@ fun CustomButtonView(
             style = Typography.displaySmall,
             text = text,
             fontSize = fontSize,
-            color = textColorSet
+            color = selectedTextColor
         )
     }
 }
