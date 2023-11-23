@@ -94,7 +94,7 @@ fun CustomDialog(
                             .weight(1f)
                             .height(46.dp)
                             .clip(RoundedCornerShape(100.dp))
-                            .border(1.dp, color = Gray300, RoundedCornerShape(4.dp))
+                            .border(1.dp, color = Gray300, RoundedCornerShape(100.dp))
                             .background(White)
                             .clickable {
                                 state.value = false

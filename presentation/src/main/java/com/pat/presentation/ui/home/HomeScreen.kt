@@ -1,5 +1,6 @@
 package com.pat.presentation.ui.home
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -20,7 +21,6 @@ import com.pat.presentation.R
 import com.pat.presentation.ui.common.BarIcon
 import com.pat.presentation.ui.home.components.HomeCategory
 import com.pat.presentation.ui.home.components.HomeMyPat
-import com.pat.presentation.ui.home.components.HomePats
 import com.pat.presentation.ui.home.components.HomeTopBar
 import com.pat.presentation.ui.home.components.Pats
 import com.pat.presentation.ui.home.components.SearchTextField
@@ -34,6 +34,7 @@ fun HomeScreenView(
     val uiState by homeViewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
     val searchValue = remember { mutableStateOf("") }
+    val categoryState = remember { mutableStateOf("전체") }
 
     LaunchedEffect(uiState.content) {
         Logger.t("MainTest").i("${uiState.content}")
@@ -60,7 +61,7 @@ fun HomeScreenView(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             HomeMyPat()
-            HomeCategory()
+            HomeCategory(state = categoryState)
             Pats(navController = navController, content = uiState.content)
         }
     }

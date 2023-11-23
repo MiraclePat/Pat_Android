@@ -1,6 +1,5 @@
 package com.pat.presentation.ui.home.components
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -21,6 +20,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,11 +36,12 @@ import com.pat.presentation.ui.home.HomeScreenView
 import com.pat.presentation.ui.theme.Gray500
 import com.pat.presentation.ui.theme.Primary50
 import com.pat.presentation.ui.theme.PrimaryMain
+import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.ui.theme.White
 
 
 @Composable
-fun HomeCategory(modifier: Modifier = Modifier) {
+fun HomeCategory(modifier: Modifier = Modifier, state: MutableState<String>) {
     val scrollState = rememberScrollState()
 
     Row(
@@ -55,25 +56,20 @@ fun HomeCategory(modifier: Modifier = Modifier) {
                 .padding(8.dp)
                 .horizontalScroll(scrollState)
         ) {
-            CategoryButtonList()
+            CategoryButtonList(state = state)
         }
     }
 }
 
 
 @Composable
-fun CategoryButtonList(
-
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
+fun CategoryButtonList(state: MutableState<String>) {
     val categories = listOf<String>("전체", "환경", "건강", "식습관", "취미", "생활", "기타")
-    var selectedCategory by remember { mutableStateOf(categories.first()) }
     categories.forEach { category ->
         CategoryButton(
             text = category,
-            onClick = { selectedCategory = category },
-            isSelected = selectedCategory == category
+            onClick = { state.value = category },
+            isSelected = state.value == category
         )
         Spacer(Modifier.size(10.dp))
     }
@@ -94,6 +90,7 @@ fun CategoryButton(
     val buttonColor = if (isSelected) Primary50 else White
     val textColor = if (isSelected) PrimaryMain else Gray500
     val border = if (isSelected) PrimaryMain else Gray500
+
     Button(
         modifier = modifier
             .requiredHeight(32.dp)
@@ -112,9 +109,8 @@ fun CategoryButton(
     ) {
         Text(
             modifier = modifier,
-            style = MaterialTheme.typography.bodyMedium,
+            style = Typography.displaySmall,
             text = text,
-            fontSize = 13.sp,
             fontWeight = FontWeight.Medium,
             color = textColor
         )
