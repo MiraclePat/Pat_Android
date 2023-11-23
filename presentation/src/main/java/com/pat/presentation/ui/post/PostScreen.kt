@@ -1,14 +1,12 @@
 package com.pat.presentation.ui.post
 
 import android.util.Log
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,37 +19,31 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.android.material.timepicker.TimeFormat
-import com.ozcanalasalvar.datepicker.compose.timepicker.WheelTimePicker
-import com.ozcanalasalvar.datepicker.model.Time
-import com.ozcanalasalvar.datepicker.utils.DateUtils
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBoxList
 import com.pat.presentation.ui.common.CheckBoxView
+import com.pat.presentation.ui.common.CustomButtonView
 import com.pat.presentation.ui.common.CustomDialog
 import com.pat.presentation.ui.common.CustomPicker
 import com.pat.presentation.ui.common.CustomTextField
@@ -63,10 +55,11 @@ import com.pat.presentation.ui.common.WheelTimePickerView
 import com.pat.presentation.ui.common.convertDateFormat
 import com.pat.presentation.ui.common.convertTimeFormat
 import com.pat.presentation.ui.theme.Gray100
+import com.pat.presentation.ui.theme.Gray300
 import com.pat.presentation.ui.theme.Gray500
+import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.GreenBack
 import com.pat.presentation.ui.theme.GreenText
-import com.pat.presentation.ui.theme.Primary50
 import com.pat.presentation.ui.theme.PrimaryMain
 import com.pat.presentation.ui.theme.RedBack
 import com.pat.presentation.ui.theme.RedText
@@ -135,8 +128,9 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
     val endDate = remember { mutableStateOf("") }               // 종료 날짜
     val startTime = remember { mutableStateOf("") }             // 시작 시간
     val endTime = remember { mutableStateOf("") }               // 종료 시간
-    val day = remember { mutableStateOf("") }                   // 인증 빈도
     val category = remember { mutableStateOf("") }              // 카테고리
+    val locationSelect = remember { mutableStateOf("") }        // 주소 입력 방식
+    val dayList = remember { mutableStateListOf<String>() }                   // 인증 빈도
 
 
     Column() {
@@ -193,9 +187,15 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
             SelectImageList()
             Spacer(modifier = modifier.size(36.dp))
 
-            Text(text = "위치정보 유무", style = Typography.titleLarge)
-            Spacer(modifier = modifier.size(14.dp))
-            // TODO 위치 정보 유무
+            Text(text = "위치정보", style = Typography.titleLarge)
+            Spacer(modifier = modifier.size(16.dp))
+            Row(
+                modifier
+                    .fillMaxWidth()
+                    .height(36.dp)
+            ) {
+                SelectLocationButtonList(modifier.weight(1f), state = locationSelect)
+            }
             Spacer(modifier = modifier.size(36.dp))
 
             Text(text = "팟 인원 설정", style = Typography.titleLarge)
@@ -288,7 +288,7 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
             Text(text = "인증 빈도", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
             Row() {
-                SelectDayButtonList(state = day)
+                SelectDayButtonList(state = dayList)
             }
             Spacer(modifier = modifier.size(36.dp))
 
@@ -324,6 +324,9 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
                     val outputEndTime = convertTimeFormat(endTime.value)
                     Log.e("custom", "outputStartTime : $outputStartTime")
                     Log.e("custom", "outputEndTime : $outputEndTime")
+                    dayList.forEach {
+                        Log.e("custom", "days : $it")
+                    }
                     onNavigateToHome()
                 })
         }
@@ -332,54 +335,27 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
 
 
 @Composable
-fun DayButtonView(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
-    text: String,
-    enabled: Boolean = true,
-    isSelected: Boolean = false
-) {
-    val buttonColor = if (isSelected) Primary50 else White
-    val textColor = if (isSelected) PrimaryMain else Gray500
-    val border = if (isSelected) PrimaryMain else Gray500
-
-    Button(
-        modifier = modifier
-            .requiredHeight(32.dp),
-        shape = RoundedCornerShape(22.dp),
-        contentPadding = PaddingValues(),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = buttonColor
-        ),
-        enabled = enabled,
-        border = BorderStroke(1.dp, border),
-        onClick = {
-            onClick()
-        },
-    ) {
-        Text(
-            modifier = modifier,
-            style = MaterialTheme.typography.bodyMedium,
-            text = text,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Medium,
-            color = textColor
-        )
-    }
-}
-
-@Composable
-fun SelectDayButtonList(state: MutableState<String>) {
+fun SelectDayButtonList(state: SnapshotStateList<String>) {
     val days = listOf<String>("월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일")
 
     @Composable
     fun dayButtonView(day: String) {
-        DayButtonView(
+        CustomButtonView(
+            modifier = Modifier.requiredHeight(32.dp),
             text = day,
             onClick = {
-                state.value = day
+                if (state.contains(day)) {
+                    state.remove(day)
+                } else {
+                    state.add(day)
+                }
+//                state.value = day
             },
-            isSelected = state.value == day
+            isSelected = state.contains(day),
+            shape = RoundedCornerShape(22.dp),
+            fontSize = 13.sp,
+            borderColor = Gray300,
+            textColor = Gray500
         )
         Spacer(Modifier.size(10.dp))
     }
@@ -396,5 +372,36 @@ fun SelectDayButtonList(state: MutableState<String>) {
                 dayButtonView(day)
             }
         }
+    }
+}
+
+@Composable
+fun SelectLocationButtonList(
+    modifier: Modifier = Modifier,
+    state: MutableState<String>,
+    onClick: () -> Unit = {}
+) {
+    val days = listOf<String>("실제 주소 입력", "임의대로 입력", "위치정보 없음")
+
+    @Composable
+    fun locationButtonView(location: String) {
+        CustomButtonView(
+            modifier = modifier,
+            text = location,
+            onClick = {
+                onClick()
+                state.value = location
+            },
+            isSelected = state.value == location,
+            shape = RoundedCornerShape(100.dp),
+            fontSize = 14.sp,
+            borderColor = Gray300,
+            textColor = Gray600
+        )
+        Spacer(Modifier.size(10.dp))
+    }
+
+    days.forEach { day ->
+        locationButtonView(day)
     }
 }
