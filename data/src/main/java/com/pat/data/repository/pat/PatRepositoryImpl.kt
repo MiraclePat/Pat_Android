@@ -6,7 +6,7 @@ import com.pat.data.source.ImageDataSource
 import com.pat.data.source.PatDataSource
 import com.pat.data.util.exception
 import com.pat.domain.model.exception.UnKnownException
-import com.pat.domain.model.pat.CreatePatDetail
+import com.pat.domain.model.pat.CreatePatInfoDetail
 import com.pat.domain.model.pat.CreatePatInfo
 import com.pat.domain.model.pat.HomePatContent
 import com.pat.domain.model.pat.HomePatRequestInfo
@@ -59,7 +59,7 @@ class PatRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun getMutipartImage(uri: String, partName: String): MultipartBody.Part{
+    private suspend fun getMultipartImage(uri: String, partName: String): MultipartBody.Part{
         val bytes = imageRepositoryImpl.getImageBytes(uri)
         val requestFile = bytes.toRequestBody("image/jpeg".toMediaType(), 0, bytes.size)
         val fileName = imageDataSource.getImageName(uri)
@@ -71,16 +71,16 @@ class PatRepositoryImpl @Inject constructor(
     }
     override suspend fun createPat(createPatInfo: CreatePatInfo): Result<Unit> {
         val result = runCatching {
-            val repImg = getMutipartImage(createPatInfo.repImg,"repImg")
-            val correctImg = getMutipartImage(createPatInfo.correctImg,"correctImg")
+            val repImg = getMultipartImage(createPatInfo.repImg,"repImg")
+            val correctImg = getMultipartImage(createPatInfo.correctImg,"correctImg")
             val incorrectImg = createPatInfo.incorrectImg.map{
-                getMutipartImage(it,"incorrectImg")
+                getMultipartImage(it,"incorrectImg")
             }
             val bodyImg = createPatInfo.bodyImg.map{
-                getMutipartImage(it,"bodyImg")
+                getMultipartImage(it,"bodyImg")
             }
 
-            val adapter= moshi.adapter(CreatePatDetail::class.java)
+            val adapter= moshi.adapter(CreatePatInfoDetail::class.java)
             val patInfoJson = adapter.toJson(createPatInfo.pat)
             val patRequestBody = patInfoJson.toRequestBody("application/json".toMediaTypeOrNull())
             val patPart = MultipartBody.Part.createFormData("pat", "pat", patRequestBody)
@@ -119,16 +119,16 @@ class PatRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updatePat(patId: Long, createPatInfo: CreatePatInfo): Result<Unit> {
-            val repImg = getMutipartImage(createPatInfo.repImg,"repImg")
-            val correctImg = getMutipartImage(createPatInfo.correctImg,"correctImg")
+            val repImg = getMultipartImage(createPatInfo.repImg,"repImg")
+            val correctImg = getMultipartImage(createPatInfo.correctImg,"correctImg")
             val incorrectImg = createPatInfo.incorrectImg.map{
-                getMutipartImage(it,"incorrectImg")
+                getMultipartImage(it,"incorrectImg")
             }
             val bodyImg = createPatInfo.bodyImg.map{
-                getMutipartImage(it,"bodyImg")
+                getMultipartImage(it,"bodyImg")
             }
 
-            val adapter= moshi.adapter(CreatePatDetail::class.java)
+            val adapter= moshi.adapter(CreatePatInfoDetail::class.java)
             val patInfoJson = adapter.toJson(createPatInfo.pat)
             val patRequestBody = patInfoJson.toRequestBody("application/json".toMediaTypeOrNull())
             val patPart = MultipartBody.Part.createFormData("pat", "pat", patRequestBody)

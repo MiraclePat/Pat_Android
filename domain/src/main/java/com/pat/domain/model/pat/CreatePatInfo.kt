@@ -5,5 +5,5 @@ data class CreatePatInfo(
     val correctImg: String,
     val incorrectImg:List<String>,
     val bodyImg:List<String>,
-    val pat: CreatePatDetail
+    val pat: CreatePatInfoDetail
 )
