@@ -1,6 +1,6 @@
 package com.pat.domain.model.proof
 
 interface ProofContent {
-    val id: Long
+    val proofId: Long
     val proofImg: String
 }

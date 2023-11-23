@@ -6,6 +6,6 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class ProofContentDTO(
-    @field:Json(name = "id") override val id: Long,
+    @field:Json(name = "id") override val proofId: Long,
     @field:Json(name = "proofImg") override val proofImg: String,
 ) : ProofContent
