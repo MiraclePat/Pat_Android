@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,57 +28,15 @@ import com.pat.presentation.ui.theme.Typography
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun HomePats(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit,
-    title: String = "강아지 산책",
-    location: String = "서울시 관악구 신사동",
-    startDate: String = "12.5(금) 시작",
-    imgUri: String,
-    nowPerson: Int = 8,
-    maxPerson: Int = 10,
-    category: String = "환경",
-    enabled: Boolean = true,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    onPressed: () -> Unit = {}
-) {
-    Column(
-        modifier
-            .clickable { onClick() }) {
-        Box() {
-            GlideImage(
-                modifier = modifier
-                    .size(140.dp, 140.dp)
-                    .clip(RoundedCornerShape(12.dp)),
-                imageModel = { imgUri })
-            CategoryBox(
-                modifier = modifier.padding(8.dp),
-                category = category,
-                isSelected = true
-            )
-        }
-        Spacer(Modifier.size(10.dp))
-        Text(text = title, style = Typography.labelMedium)
-        Spacer(Modifier.size(6.dp))
-        SimpleTextView(text = location, vectorResource = R.drawable.ic_map, iconColor = Gray700)
-        SimpleTextView(text = startDate, vectorResource = R.drawable.ic_calendar, iconColor = Gray700)
-        SimpleTextView(
-            text = "$nowPerson / $maxPerson",
-            vectorResource = R.drawable.ic_user,
-            iconColor = Gray700
-        )
-    }
-}
-
-@Composable
 fun Pats(
     navController: NavController,
     modifier: Modifier = Modifier,
-    content: List<HomePatContent>?
+    content: List<HomePatContent>?,
+    text: String = "디폴트"
 ) {
     Column(modifier.padding(vertical = 20.dp, horizontal = 16.dp)) {
         Text(
-            text = stringResource(id = R.string.home_hot_pat_title),
+            text = text,
             style = Typography.titleLarge
         )
         Spacer(Modifier.size(12.dp))
@@ -96,30 +55,52 @@ fun Pats(
             }
         }
     }
-    Spacer(Modifier.size(20.dp))
-    Column(modifier.padding(vertical = 20.dp, horizontal = 16.dp)) {
-        Text(
-            text = stringResource(id = R.string.home_recent_pat_title),
-            style = Typography.titleLarge
-        )
-        Spacer(Modifier.size(12.dp))
-        LazyRow() {
-            if (!content.isNullOrEmpty()) {
-                items(content) { homePat ->
-                    HomePats(
-                        title = homePat.patName,
-                        category = homePat.category,
-                        nowPerson = homePat.nowPerson,
-                        maxPerson = homePat.maxPerson,
-                        startDate = homePat.startDate,
-                        imgUri = homePat.repImg,
-                        onClick = { navController.navigate("patDetail/${homePat.patId}") }
-                    )
-                    Spacer(Modifier.size(10.dp))
-                }
-            } else {
-                // TODO 팟이 아무것도 없을 때
-            }
+}
+
+@Composable
+fun HomePats(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    title: String = "강아지 산책",
+    location: String = "서울시 관악구 신사동",
+    startDate: String = "12.5(금) 시작",
+    imgUri: String,
+    nowPerson: Int = 8,
+    maxPerson: Int = 10,
+    category: String = "환경",
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    onPressed: () -> Unit = {}
+) {
+    Column(
+        modifier
+            .wrapContentSize()
+            .clickable { onClick() }) {
+        Box() {
+            GlideImage(
+                modifier = modifier
+                    .size(140.dp, 140.dp)
+                    .clip(RoundedCornerShape(12.dp)),
+                imageModel = { imgUri })
+            CategoryBox(
+                modifier = modifier.padding(8.dp),
+                category = category,
+                isSelected = true
+            )
         }
+        Spacer(modifier.size(10.dp))
+        Text(text = title, style = Typography.labelMedium)
+        Spacer(modifier.size(6.dp))
+        SimpleTextView(text = location, vectorResource = R.drawable.ic_map, iconColor = Gray700)
+        SimpleTextView(
+            text = startDate,
+            vectorResource = R.drawable.ic_calendar,
+            iconColor = Gray700
+        )
+        SimpleTextView(
+            text = "$nowPerson / $maxPerson",
+            vectorResource = R.drawable.ic_user,
+            iconColor = Gray700
+        )
     }
 }
