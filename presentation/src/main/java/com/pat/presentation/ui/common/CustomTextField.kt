@@ -73,9 +73,9 @@ fun CustomTextField(
         decorationBox = { innerTextField ->
             Row(
                 modifier
-                    .padding(horizontal = 10.dp)
+                    .padding(horizontal = 10.dp, vertical = 12.dp)
                     .clip(RoundedCornerShape(4.dp)),
-                verticalAlignment = Alignment.CenterVertically
+//                verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
                     Modifier
