@@ -242,21 +242,22 @@ fun PostDetailScreen(
                 iconResource = R.drawable.ic_chat_check
             )
             Spacer(modifier.size(20.dp))
-            Row() {
-                ExampleImageView(
-                    navController = navController,
-                    text = "올바른 예시",
-                    backColor = GreenBack,
-                    textColor = GreenText,
-                )
-                Spacer(modifier = modifier.size(10.dp))
-                ExampleImageView(
-                    navController = navController,
-                    text = "잘못된 예시",
-                    backColor = RedBack,
-                    textColor = RedText
-                )
-            }
+//            Row() {
+//                ExampleImageView(
+//                    navController = navController,
+//                    text = "올바른 예시",
+//                    backColor = GreenBack,
+//                    textColor = GreenText,
+//                    bitmap =
+//                )
+//                Spacer(modifier = modifier.size(10.dp))
+//                ExampleImageView(
+//                    navController = navController,
+//                    text = "잘못된 예시",
+//                    backColor = RedBack,
+//                    textColor = RedText
+//                )
+//            }
 
             Spacer(modifier.size(20.dp))
             Text("인증 수단", fontSize = 16.sp, modifier = modifier.padding(3.dp))

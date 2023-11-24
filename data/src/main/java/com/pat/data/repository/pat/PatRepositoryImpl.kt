@@ -59,10 +59,9 @@ class PatRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun getMutipartImage(uri: String, partName: String): MultipartBody.Part{
-        val bytes = imageRepositoryImpl.getImageBytes(uri)
+    private suspend fun getMutipartImage(bytes: ByteArray, partName: String): MultipartBody.Part{
         val requestFile = bytes.toRequestBody("image/jpeg".toMediaType(), 0, bytes.size)
-        val fileName = imageDataSource.getImageName(uri)
+        val fileName = imageDataSource.getImageName()
         return MultipartBody.Part.createFormData(
             partName,
             "$fileName.jpeg",
@@ -73,9 +72,7 @@ class PatRepositoryImpl @Inject constructor(
         val result = runCatching {
             val repImg = getMutipartImage(createPatInfo.repImg,"repImg")
             val correctImg = getMutipartImage(createPatInfo.correctImg,"correctImg")
-            val incorrectImg = createPatInfo.incorrectImg.map{
-                getMutipartImage(it,"incorrectImg")
-            }
+            val incorrectImg = getMutipartImage(createPatInfo.incorrectImg,"incorrectImg")
             val bodyImg = createPatInfo.bodyImg.map{
                 getMutipartImage(it,"bodyImg")
             }
@@ -121,9 +118,7 @@ class PatRepositoryImpl @Inject constructor(
     override suspend fun updatePat(patId: Long, createPatInfo: CreatePatInfo): Result<Unit> {
             val repImg = getMutipartImage(createPatInfo.repImg,"repImg")
             val correctImg = getMutipartImage(createPatInfo.correctImg,"correctImg")
-            val incorrectImg = createPatInfo.incorrectImg.map{
-                getMutipartImage(it,"incorrectImg")
-            }
+            val incorrectImg = getMutipartImage(createPatInfo.incorrectImg,"incorrectImg")
             val bodyImg = createPatInfo.bodyImg.map{
                 getMutipartImage(it,"bodyImg")
             }

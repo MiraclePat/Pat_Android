@@ -45,7 +45,7 @@ class PatDataSource @Inject constructor(
     suspend fun createPat(
         repImg : MultipartBody.Part,
         correctImg : MultipartBody.Part,
-        incorrectImg: List<MultipartBody.Part>,
+        incorrectImg: MultipartBody.Part,
         bodyImg: List<MultipartBody.Part>,
         pat : MultipartBody.Part,
     ) {
@@ -56,7 +56,7 @@ class PatDataSource @Inject constructor(
         patId: Long,
         repImg : MultipartBody.Part,
         correctImg : MultipartBody.Part,
-        incorrectImg: List<MultipartBody.Part>,
+        incorrectImg: MultipartBody.Part,
         bodyImg: List<MultipartBody.Part>,
         pat : MultipartBody.Part,
     ): Response<Unit> {

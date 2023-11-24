@@ -283,21 +283,21 @@ fun PattingScreen(
         )
         Spacer(modifier.padding(bottom = 14.dp))
         Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-            ExampleImageView(
-                navController = navController,
-                text = "올바른 예시",
-                backColor = GreenBack,
-                textColor = GreenText,
-                hasSource = "여기에 사진 uri 추가"
-            )
-            Spacer(modifier = modifier.size(10.dp))
-            ExampleImageView(
-                navController = navController,
-                text = "잘못된 예시",
-                backColor = RedBack,
-                textColor = RedText,
-                hasSource = "여기에 uri 추가"
-            )
+//            ExampleImageView(
+//                navController = navController,
+//                text = "올바른 예시",
+//                backColor = GreenBack,
+//                textColor = GreenText,
+//                hasSource = "여기에 사진 uri 추가"
+//            )
+//            Spacer(modifier = modifier.size(10.dp))
+//            ExampleImageView(
+//                navController = navController,
+//                text = "잘못된 예시",
+//                backColor = RedBack,
+//                textColor = RedText,
+//                hasSource = "여기에 uri 추가"
+//            )
         }
         Spacer(modifier = modifier.padding(top = 28.dp))
         Box(

@@ -3,7 +3,7 @@ package com.pat.data.repository.image
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import com.pat.data.source.ImageDataSource
-import com.weit.domain.repository.image.ImageRepository
+import com.pat.domain.repository.image.ImageRepository
 import javax.inject.Inject
 
 class ImageRepositoryImpl @Inject constructor(
@@ -19,9 +19,11 @@ class ImageRepositoryImpl @Inject constructor(
         return bytes
     }
 
+
     fun Bitmap.getRotatedBitmap(degree: Float): Bitmap {
         val matrix = Matrix().apply { postRotate(degree) }
         return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true) ?: this
     }
+
 
 }

@@ -7,8 +7,8 @@ import com.pat.data.service.PatService
 import com.pat.data.source.ImageDataSource
 import com.pat.data.source.PatDataSource
 import com.pat.domain.repository.PatRepository
+import com.pat.domain.repository.image.ImageRepository
 import com.squareup.moshi.Moshi
-import com.weit.domain.repository.image.ImageRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -49,7 +49,7 @@ interface PatService {
     suspend fun createPat(
         @Part repImg : MultipartBody.Part,
         @Part correctImg : MultipartBody.Part,
-        @Part incorrectImg: List<MultipartBody.Part>,
+        @Part incorrectImg: MultipartBody.Part,
         @Part bodyImg: List<MultipartBody.Part>,
         @Part pat : MultipartBody.Part,
     )
@@ -60,7 +60,7 @@ interface PatService {
         @Path("pat-id") patId: Long,
         @Part repImg : MultipartBody.Part,
         @Part correctImg : MultipartBody.Part,
-        @Part incorrectImg: List<MultipartBody.Part>,
+        @Part incorrectImg: MultipartBody.Part,
         @Part bodyImg: List<MultipartBody.Part>,
         @Part pat : MultipartBody.Part,
     ): Response<Unit>

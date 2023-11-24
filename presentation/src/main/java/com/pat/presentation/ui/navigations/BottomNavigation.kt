@@ -99,8 +99,11 @@ fun NavigationGraph(navController: NavHostController) {
             )) {
             PatDetailView(navController = navController)
         }
-        composable("camera") {
-            SettingCamera(navController = navController, viewModel = postViewModel)
+        composable("camera/{bitmapType}") {backStackEntry ->
+            val bitmapType = backStackEntry.arguments?.getString("bitmapType")
+            if (bitmapType != null) {
+                SettingCamera(navController = navController, viewModel = postViewModel, bitmapType = bitmapType)
+            }
         }
         composable("selectimage") {
             PostScreenView(

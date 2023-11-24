@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.pat.presentation.ui.post.PostViewModel
 import com.pat.presentation.ui.theme.Typography
 
 @Composable
@@ -30,11 +31,14 @@ fun ExampleImageView(
     text: String,
     onClick: () -> Unit = {},
     hasSource: String = "",
+    bitmap: Bitmap?,
+    bitmapType: String,
+    viewModel : PostViewModel,
 ) {
     Column(modifier.clickable {
         onClick()
     }) {
-//        SelectImage(navController = navController)
+        SelectImage(navController = navController, bitmap= bitmap,bitmapType=bitmapType, viewModel = viewModel)
         Box(
             modifier
                 .clip(RoundedCornerShape(bottomEnd = 4.dp, bottomStart = 4.dp))

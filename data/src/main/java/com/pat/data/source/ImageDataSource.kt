@@ -6,19 +6,12 @@ import android.graphics.BitmapFactory
 import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
-import android.provider.MediaStore
-import com.pat.data.model.ListResponse
-import com.pat.data.model.pat.HomePatContentDTO
-import com.pat.data.model.pat.MapPatContentDTO
-import com.pat.data.model.pat.PatDetailContentDTO
-import com.pat.data.service.PatService
-import com.pat.domain.model.exception.ImageNotFoundException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.MultipartBody
-import retrofit2.Response
 import java.io.ByteArrayOutputStream
-import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 class ImageDataSource @Inject constructor(
@@ -56,19 +49,14 @@ class ImageDataSource @Inject constructor(
             else -> width to height
         }
 
-    suspend fun getImageName(uri: String): String =
-        withContext(Dispatchers.IO) {
-            val projection = arrayOf(MediaStore.Images.Media.DISPLAY_NAME)
-            val cursor = contentResolver.query(Uri.parse(uri), projection, null, null, null)
-            var imageName: String? = null
-            cursor?.use {
-                if (it.moveToFirst()) {
-                    val nameColumnIndex = it.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME)
-                    imageName = File(it.getString(nameColumnIndex)).nameWithoutExtension
-                }
-            }
-            imageName ?: throw ImageNotFoundException()
-        }
+    fun getImageName(): String {
+        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+        val randomString = (1..8)
+            .map { allowedChars.random() }
+            .joinToString("")
+        return "photo_${timestamp}_${randomString}"
+}
 
     suspend fun getRotate(uri: String): Float {
         var orientation : Float = 0f

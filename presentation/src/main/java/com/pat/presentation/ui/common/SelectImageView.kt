@@ -42,6 +42,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.orhanobut.logger.Logger
 import com.pat.presentation.R
+import com.pat.presentation.model.PatBitmap
 import com.pat.presentation.ui.CameraPreview
 import com.pat.presentation.ui.post.PostViewModel
 import com.pat.presentation.ui.theme.Gray100
@@ -75,28 +77,28 @@ fun SelectImage(
     imageIdx: Int = -1,
     hasSource: String = "",
     realTime: Boolean = true,
-    bitmap: Bitmap?
+    bitmap: Bitmap?,
+    bitmapType: String,
+    viewModel: PostViewModel,
 ) {
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
-    var showCameraImage by remember { mutableStateOf(false) }
+    val bodyBitmap by viewModel.bodyBitmap.collectAsState() //팟 상세이미지들
 
     val roundedCornerShape = if (imageIdx == -1) RoundedCornerShape(
         topStart = 4.dp,
         topEnd = 4.dp
     ) else RoundedCornerShape(4.dp)
-    var selectedImageUri by remember {
-        mutableStateOf<Uri?>(null)
-    }
+
 
     val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = { uri -> selectedImageUri = uri }
-    )
-//    val viewModel = viewModel<PostViewModel>()
-//    val bitmap by remember { viewModel.bitmap.collectAsState() }
-//    cameraImage = bitmap
+        onResult = { uri ->
+            showBottomSheet = false
+            viewModel.getBitmapByUri(uri, bitmapType)
 
+        }
+    )
 
     Box(
         modifier
@@ -109,6 +111,16 @@ fun SelectImage(
             },
         contentAlignment = Alignment.Center
     ) {
+        bitmap?.let {
+            Logger.t("bodyimage").i("selectimage에서 ${bitmap}")
+
+            Image(
+                bitmap = it.asImageBitmap(),
+                contentDescription = null,
+                modifier = Modifier.fillMaxWidth(),
+                contentScale = ContentScale.Crop
+            )
+        }
         if (showBottomSheet) {
             ModalBottomSheet(
                 onDismissRequest = {
@@ -131,8 +143,7 @@ fun SelectImage(
                         SelectButton(
                             text = "사진촬영",
                             onClick = {
-                                showCameraImage = true
-                                navController.navigate("camera")
+                                navController.navigate("camera/${bitmapType}")
                             },
                             backColor = Color.White,
                             textColor = PrimaryMain,
@@ -169,7 +180,6 @@ fun SelectImage(
                             singlePhotoPickerLauncher.launch(
                                 PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                             )
-                            showCameraImage = false
                         },
                         cornerSize = 100.dp,
                         backColor = Color.White,
@@ -180,32 +190,7 @@ fun SelectImage(
                 }
             }
         }
-        Logger.t("bitmaps").i("Image Bitmap:  ${bitmap}")
-        bitmap?.let {
-            Image(
-                bitmap = it.asImageBitmap(),
-                contentDescription = null,
-                modifier = Modifier.fillMaxWidth(),
-                contentScale = ContentScale.Crop
-            )
-        }
-//        if (showCameraImage) {
-//            bitmap?.let {
-//                Image(
-//                    bitmap = it.asImageBitmap(),
-//                    contentDescription = null,
-//                    modifier = Modifier.fillMaxWidth(),
-//                    contentScale = ContentScale.Crop
-//                )
-//            }
-//        } else {
-//            AsyncImage(
-//                model = selectedImageUri,
-//                contentDescription = null,
-//                modifier = Modifier.fillMaxWidth(),
-//                contentScale = ContentScale.Crop
-//            )
-//        }
+
 
 
         if (hasSource != "") {
@@ -232,7 +217,8 @@ fun SelectImage(
 @Composable
 fun SettingCamera(
     navController: NavController,
-    viewModel: PostViewModel
+    viewModel: PostViewModel,
+    bitmapType: String,
 ) {
     val context: Context = LocalContext.current
     val controller = remember {
@@ -285,6 +271,7 @@ fun SettingCamera(
                         context = context,
                         controller = controller,
                         onPhotoTaken = viewModel::onTakePhoto,
+                        bitmapType = bitmapType,
                     )
                 }
             ) {
@@ -301,36 +288,20 @@ private fun takePhoto(
     navController: NavController,
     context: Context,
     controller: LifecycleCameraController,
-    onPhotoTaken: (Bitmap) -> Unit,
+    onPhotoTaken: (ImageProxy, String) -> Unit,
+    bitmapType: String,
 ) {
     controller.takePicture(
         ContextCompat.getMainExecutor(context),
         object : ImageCapture.OnImageCapturedCallback() {
             override fun onCaptureSuccess(image: ImageProxy) {
                 super.onCaptureSuccess(image)
-
-                val matrix = Matrix().apply {
-                    postRotate(image.imageInfo.rotationDegrees.toFloat())
-                }
-                val rotatedBitmap = Bitmap.createBitmap(
-                    image.toBitmap(),
-                    0,
-                    0,
-                    image.width,
-                    image.height,
-                    matrix,
-                    true
-                )
-
-                onPhotoTaken(rotatedBitmap)
+                onPhotoTaken(image, bitmapType)
                 navController.popBackStack()
-//                navController.navigate("selectimage")
             }
 
             override fun onError(exception: ImageCaptureException) {
                 super.onError(exception)
-                Logger.t("bitmapis").i("${exception.message}")
-
             }
         }
     )
@@ -338,17 +309,35 @@ private fun takePhoto(
 
 @Composable
 fun SelectImageList(
-    navController: NavController, modifier: Modifier = Modifier, bitmapList: MutableList<Bitmap?>
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    bitmapList: List<Bitmap?>,
+    bitmapType: String,
+    viewModel: PostViewModel,
 ) {
+    Logger.t("bodyimage").i("selectimagelist에서 ${bitmapList}")
+
     val maxSize = IntArray(5 - bitmapList.size) { it + 1 }
 
     LazyRow() {
         items(bitmapList) { bitmap ->
-            SelectImage(navController = navController, imageIdx = 0, bitmap = bitmap)
+            SelectImage(
+                navController = navController,
+                imageIdx = 0,
+                bitmap = bitmap,
+                bitmapType = bitmapType,
+                viewModel = viewModel,
+            )
             Spacer(modifier = modifier.padding(horizontal = 10.dp))
         }
         items(maxSize.toList()) { idx ->
-            SelectImage(navController = navController, imageIdx = idx, bitmap = null)
+            SelectImage(
+                navController = navController,
+                imageIdx = idx,
+                bitmap = null,
+                bitmapType = bitmapType,
+                viewModel = viewModel,
+                )
             Spacer(modifier = modifier.padding(horizontal = 10.dp))
         }
     }

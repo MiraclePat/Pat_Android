@@ -1,7 +1,13 @@
 package com.pat.presentation.ui.post
 
+import android.graphics.Bitmap
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,6 +19,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
@@ -28,6 +35,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -38,32 +46,48 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.orhanobut.logger.Logger
 import com.pat.presentation.R
+import com.pat.presentation.model.PatBitmap
 import com.pat.presentation.ui.common.CategoryBoxList
 import com.pat.presentation.ui.common.CheckBoxView
 import com.pat.presentation.ui.common.CustomDialog
 import com.pat.presentation.ui.common.CustomPicker
 import com.pat.presentation.ui.common.CustomTextField
 import com.pat.presentation.ui.common.DateTimePickerView
+import com.pat.presentation.ui.common.ExampleImageView
 import com.pat.presentation.ui.common.FinalButton
+import com.pat.presentation.ui.common.SelectButton
 import com.pat.presentation.ui.common.SelectImageList
 import com.pat.presentation.ui.common.WheelTimePickerView
 import com.pat.presentation.ui.common.convertDateFormat
 import com.pat.presentation.ui.common.convertTimeFormat
+import com.pat.presentation.ui.post.components.SelectDayButtonList
+import com.pat.presentation.ui.post.components.SumView
 import com.pat.presentation.ui.theme.Gray100
 import com.pat.presentation.ui.theme.Gray500
+import com.pat.presentation.ui.theme.Gray600
+import com.pat.presentation.ui.theme.Gray800
+import com.pat.presentation.ui.theme.GreenBack
+import com.pat.presentation.ui.theme.GreenText
 import com.pat.presentation.ui.theme.Primary50
 import com.pat.presentation.ui.theme.PrimaryMain
+import com.pat.presentation.ui.theme.RedBack
+import com.pat.presentation.ui.theme.RedText
 import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.ui.theme.White
 
@@ -143,43 +167,16 @@ fun PostScreenBody(
     val day = remember { mutableStateOf("") }                   // 인증 빈도
     val category = remember { mutableStateOf("") }              // 카테고리
 
-    val bitmapList by viewModel.bitmap.collectAsState()
-//    Logger.t("bitmaps").i("viewmodel에서 넘긴 ${bitmapList}")
+    val bodyBitmap by viewModel.bodyBitmap.collectAsState() //팟 상세이미지들
+    Logger.t("bodyimage").i("갤러리에 사진 생성")
 
-    Column() {
-        Box(
-            modifier
-                .background(Gray100)
-                .fillMaxWidth()
-                .height(160.dp)
-                .clickable {
-                    // TODO click Event
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            Row(
-                modifier = modifier
-                    .width(141.dp)
-                    .height(36.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .border(1.dp, color = PrimaryMain)
-                    .background(White),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "썸네일 추가하기",
-                    style = Typography.labelMedium,
-                    color = PrimaryMain,
-                )
-                Spacer(modifier = modifier.size(4.dp))
-                Icon(
-                    modifier = modifier.size(16.dp),
-                    painter = painterResource(id = R.drawable.ic_add),
-                    contentDescription = "썸네일 추가"
-                )
-            }
-        }
+    val correctBitmap by viewModel.correctBitmap.collectAsState() //올바른 이미지
+    val incorrectBitmap by viewModel.incorrectBitmap.collectAsState() //나쁜이미지!
+    val repBitmap by viewModel.repBitmap.collectAsState() //썸네일
+
+
+    Column {
+       SumView(navController = navController, bitmap = repBitmap, viewModel = viewModel)
 
         Spacer(modifier = modifier.size(20.dp))
         Column(modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
@@ -197,7 +194,7 @@ fun PostScreenBody(
 
             Text(text = "팟 상세정보", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
-            SelectImageList(navController = navController, bitmapList = bitmapList)
+            SelectImageList(navController = navController, bitmapList = bodyBitmap, bitmapType = "BODY", viewModel = viewModel)
             Spacer(modifier = modifier.size(36.dp))
 
             Text(text = "위치정보 유무", style = Typography.titleLarge)
@@ -265,7 +262,6 @@ fun PostScreenBody(
                     content = {
                         WheelTimePickerView(onDismiss = {
                             startPressed.value = !startPressed.value
-                            Log.e("custom", "startTime : $startTime")
                         }, sheetState = sheetState, timeState = startTime)
                     },
                     clickState = startPressed
@@ -306,19 +302,25 @@ fun PostScreenBody(
             Text(text = "인증사진 예시", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
             Row() {
-//                ExampleImageView(
-//                    navController = navController,
-//                    text = "올바른 예시",
-//                    backColor = GreenBack,
-//                    textColor = GreenText
-//                )
-//                Spacer(modifier = modifier.size(10.dp))
-//                ExampleImageView(
-//                    navController = navController,
-//                    text = "잘못된 예시",
-//                    backColor = RedBack,
-//                    textColor = RedText
-//                )
+                ExampleImageView(
+                    navController = navController,
+                    text = "올바른 예시",
+                    backColor = GreenBack,
+                    textColor = GreenText,
+                    bitmap = correctBitmap,
+                    bitmapType = "CORRECT",
+                    viewModel = viewModel
+                )
+                Spacer(modifier = modifier.size(10.dp))
+                ExampleImageView(
+                    navController = navController,
+                    text = "잘못된 예시",
+                    backColor = RedBack,
+                    textColor = RedText,
+                    bitmap = incorrectBitmap,
+                    bitmapType = "INCORRECT",
+                    viewModel = viewModel
+                )
             }
             Spacer(modifier = modifier.size(36.dp))
 
@@ -326,9 +328,9 @@ fun PostScreenBody(
             Spacer(modifier = modifier.size(14.dp))
 
             Row {
-                CheckBoxView(checked = isRealTime, text = "실시간 촬영")
+                CheckBoxView(checked = isRealTime, text = "사진으로 인증")
                 Spacer(modifier = modifier.size(12.dp))
-                CheckBoxView(checked = isGallery, text = "갤러리에서 사진 가져오기")
+                CheckBoxView(checked = isGallery, text = "실시간 촬영과 사진 가능")
             }
             Spacer(modifier = modifier.size(55.dp))
 
@@ -336,77 +338,26 @@ fun PostScreenBody(
                 backColor = PrimaryMain,
                 textColor = White,
                 onClick = {
-                    onNavigateToHome()
+                    viewModel.post(
+                        patName = title.value,
+                        maxPerson = maxPerson.value.toInt(),
+                        patDetail = patDetail.value,
+                        proofDetail = proofDetail.value,
+                        startDate = startDate.value,
+                        endDate = endDate.value,
+                        startTime = startTime.value,
+                        endTime = endTime.value,
+                        days = "", //다중선택 pull받아야함
+                        category = category.value,
+                        latitude = 0.0,
+                        longitude = 0.0,
+                        location = "서울",
+                        realtime = isGallery.value,
+
+                    )
                 })
         }
     }
 }
 
 
-@Composable
-fun DayButtonView(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
-    text: String,
-    enabled: Boolean = true,
-    isSelected: Boolean = false
-) {
-    val buttonColor = if (isSelected) Primary50 else White
-    val textColor = if (isSelected) PrimaryMain else Gray500
-    val border = if (isSelected) PrimaryMain else Gray500
-
-    Button(
-        modifier = modifier
-            .requiredHeight(32.dp),
-        shape = RoundedCornerShape(22.dp),
-        contentPadding = PaddingValues(),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = buttonColor
-        ),
-        enabled = enabled,
-        border = BorderStroke(1.dp, border),
-        onClick = {
-            onClick()
-        },
-    ) {
-        Text(
-            modifier = modifier,
-            style = MaterialTheme.typography.bodyMedium,
-            text = text,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Medium,
-            color = textColor
-        )
-    }
-}
-
-@Composable
-fun SelectDayButtonList(state: MutableState<String>) {
-    val days = listOf<String>("월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일")
-
-    @Composable
-    fun dayButtonView(day: String) {
-        DayButtonView(
-            text = day,
-            onClick = {
-                state.value = day
-            },
-            isSelected = state.value == day
-        )
-        Spacer(Modifier.size(10.dp))
-    }
-
-    Column {
-        Row() {
-            days.take(5).forEach { day ->
-                dayButtonView(day)
-            }
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-        Row() {
-            days.takeLast(2).forEach { day ->
-                dayButtonView(day)
-            }
-        }
-    }
-}
