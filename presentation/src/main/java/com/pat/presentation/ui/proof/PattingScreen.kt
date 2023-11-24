@@ -36,8 +36,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
@@ -53,6 +51,7 @@ import com.pat.presentation.ui.common.FinalButton
 import com.pat.presentation.ui.common.IconWithTextView
 import com.pat.presentation.ui.common.SelectImage
 import com.pat.presentation.ui.common.SimpleTextView
+import com.pat.presentation.ui.common.setUnderLine
 import com.pat.presentation.ui.pat.CategoryButtonList
 import com.pat.presentation.ui.pat.DateText
 import com.pat.presentation.ui.theme.FailCircleColor
@@ -314,21 +313,12 @@ fun PattingScreen(
                 .background(Gray50)
         )
         Row(modifier = modifier.padding(top = 24.dp)) {
-            val underLine = modifier.drawBehind {
-                val strokeWidthPx = 1.dp.toPx()
-                val verticalOffset = size.height - 2.sp.toPx()
-                drawLine(
-                    color = PrimaryMain,
-                    strokeWidth = strokeWidthPx,
-                    start = Offset(0f, verticalOffset),
-                    end = Offset(size.width, verticalOffset)
-                )
-            }
+
             Box(modifier.clickable {
                 myProofState = true
             }) {
                 Text(
-                    modifier = if (myProofState) underLine else modifier,
+                    modifier = if (myProofState) setUnderLine else modifier,
                     text = "내 인증 현황",
                     style = Typography.titleLarge,
                     color = if (myProofState) Gray800 else Gray500
@@ -340,7 +330,7 @@ fun PattingScreen(
                 myProofState = false
             }) {
                 Text(
-                    modifier = if (!myProofState) underLine else modifier,
+                    modifier = if (!myProofState) setUnderLine else modifier,
                     text = "다른 참여자 인증",
                     style = Typography.titleLarge,
                     color = if (!myProofState) Gray800 else Gray500
@@ -365,7 +355,7 @@ fun ProofStatus(
     isAll: String = "",
     imgUriList: List<String> = listOf()
 ) {
-    var title = if (isAll == "") "나의 인증사진" else "참여자들의 인증사진"
+    val title = if (isAll == "") "나의 인증사진" else "참여자들의 인증사진"
     Row() {
         Text("${isAll}인증 성공 횟수", style = Typography.titleLarge, color = Gray600, fontSize = 14.sp)
         Spacer(modifier = modifier.weight(1f))

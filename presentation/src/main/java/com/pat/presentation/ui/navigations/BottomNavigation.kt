@@ -21,13 +21,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
-import com.orhanobut.logger.Logger
 import com.pat.presentation.R
 import com.pat.presentation.ui.home.HomeScreenView
 import com.pat.presentation.ui.map.MapScreenView
 import com.pat.presentation.ui.pat.PatDetailView
 import com.pat.presentation.ui.post.PostScreenView
-import com.pat.presentation.ui.proof.CertificationScreenView
+import com.pat.presentation.ui.proof.ProofScreenView
 import com.pat.presentation.ui.setting.SettingScreenView
 import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.PrimaryMain
@@ -69,7 +68,7 @@ fun NavigationGraph(navController: NavHostController) {
                 onNavigateToPost = { navController.navigate(POST) })
         }
         composable(BottomNavItem.Certification.screenRoute) {
-            CertificationScreenView()
+            ProofScreenView()
         }
         composable(BottomNavItem.Map.screenRoute) {
             MapScreenView()
