@@ -27,6 +27,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.pat.presentation.ui.theme.Gray200
 import com.pat.presentation.ui.theme.Gray400
@@ -40,6 +41,7 @@ import com.pat.presentation.ui.theme.White
 @Composable
 fun CustomTextField(
     modifier: Modifier = Modifier,
+    height: Dp = 46.dp,
     placeholderText: String,
     style: TextStyle = Typography.labelMedium,
     maxLength: Int,
@@ -53,7 +55,7 @@ fun CustomTextField(
 
     BasicTextField(modifier = modifier
         .fillMaxWidth()
-        .height(46.dp)
+        .height(height)
         .clip(RoundedCornerShape(4.dp))
         .onFocusChanged {
             isFocused = !isFocused
