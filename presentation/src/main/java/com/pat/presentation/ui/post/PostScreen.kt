@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -61,6 +62,7 @@ import com.pat.presentation.ui.theme.Gray500
 import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.GreenBack
 import com.pat.presentation.ui.theme.GreenText
+import com.pat.presentation.ui.theme.Primary50
 import com.pat.presentation.ui.theme.PrimaryMain
 import com.pat.presentation.ui.theme.RedBack
 import com.pat.presentation.ui.theme.RedText
@@ -196,12 +198,12 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
 
             Text(text = "위치정보", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(16.dp))
-            Row(
+            Column(
                 modifier
                     .fillMaxWidth()
-                    .height(36.dp)
+                    .wrapContentHeight()
             ) {
-                SelectLocationButtonList(modifier.weight(1f), locationState = locationSelect)
+                SelectLocationButtonList(locationState = locationSelect)
             }
             Spacer(modifier = modifier.size(36.dp))
 
@@ -289,7 +291,12 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
 
             Text(text = "팟 소개", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
-            CustomTextField(placeholderText = "최대 500자", state = patDetail, maxLength = 500)
+            CustomTextField(
+                placeholderText = "최대 500자",
+                state = patDetail,
+                maxLength = 500,
+                height = 197.dp
+            )
             Spacer(modifier = modifier.size(36.dp))
 
             Text(text = "인증 빈도", style = Typography.titleLarge)
@@ -387,10 +394,10 @@ fun SelectLocationButtonList(
     locationState: MutableState<String>,
     onClick: () -> Unit = {}
 ) {
-    val days = listOf<String>("실제 주소 입력", "임의대로 입력", "위치정보 없음")
+    val locationButtonText = listOf<String>("주소 검색", "임의대로 입력", "위치정보 없음")
 
     @Composable
-    fun locationButtonView(location: String) {
+    fun locationButtonView(modifier: Modifier, location: String) {
         CustomButtonView(
             modifier = modifier,
             text = location,
@@ -407,7 +414,67 @@ fun SelectLocationButtonList(
         Spacer(Modifier.size(10.dp))
     }
 
-    days.forEach { day ->
-        locationButtonView(day)
+    Row(modifier.fillMaxWidth()) {
+        locationButtonText.forEach { location ->
+            locationButtonView(modifier.weight(1f), location)
+        }
+    }
+    Spacer(modifier.padding(top = 16.dp))
+
+    when (locationState.value) {
+        "주소 검색" -> {
+            CustomTextField(placeholderText = "서초동 스타벅스", maxLength = 30)
+            Spacer(modifier.padding(bottom = 24.dp))
+            Text(
+                text = "아래 검색결과 중에서 선택해주세요!",
+                style = Typography.labelMedium,
+                fontSize = 13.sp,
+                color = PrimaryMain
+            )
+        }
+
+        "임의대로 입력" -> {
+            // maxLength 임시
+            Text(
+                text = "대략적인 위치정보를 입력해주세요.",
+                style = Typography.labelSmall,
+                color = PrimaryMain
+            )
+            Spacer(modifier.padding(bottom = 6.dp))
+            CustomTextField(placeholderText = "벚꽃나무 앞", maxLength = 30)
+        }
+
+        "위치정보 없음" -> Box(contentAlignment = Alignment.Center) {
+            Text("위치정보 없음 선택 시 지도에 나타나지 않아요.", style = Typography.bodySmall)
+        }
+
+        else -> {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier
+                        .width(42.dp)
+                        .height(26.dp)
+                        .clip(RoundedCornerShape(100.dp))
+                        .background(Primary50),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Tip!",
+                        style = Typography.labelMedium,
+                        fontSize = 12.sp,
+                        color = PrimaryMain
+                    )
+                }
+                Text(
+                    modifier = Modifier
+                        .padding(start = 6.dp)
+                        .weight(1f),
+                    text = "실 주소 입력시 정확한 위치 파악이 가능해요!",
+                    style = Typography.labelMedium,
+                    fontSize = 13.sp,
+                    color = PrimaryMain
+                )
+            }
+        }
     }
 }

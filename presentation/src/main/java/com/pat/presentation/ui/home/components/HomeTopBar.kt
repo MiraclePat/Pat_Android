@@ -8,13 +8,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,13 +22,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.pat.presentation.ui.home.HomeScreenView
 import com.pat.presentation.ui.theme.Gray100
 import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.Gray500
-import com.pat.presentation.ui.theme.Gray700
 import com.pat.presentation.ui.theme.Typography
 
 @Composable
@@ -62,10 +58,10 @@ fun HomeTopBar(
 @Composable
 fun SearchTextField(
     modifier: Modifier = Modifier,
-    state: MutableState<String>
+    state: MutableState<String>,
+    inputEnter: () -> Unit,
+    text: String = "어떤 팟을 찾고계신가요?"
 ) {
-//    var text by rememberSaveable { mutableStateOf("") }
-
     BasicTextField(
         modifier = modifier
             .background(Gray100)
@@ -80,6 +76,7 @@ fun SearchTextField(
         textStyle = Typography.labelMedium.copy(
             color = Gray400,
         ),
+        keyboardActions = KeyboardActions { inputEnter() },
         decorationBox = { innerTextField ->
             Row(
                 modifier
@@ -98,7 +95,7 @@ fun SearchTextField(
                 ) {
                     if (state.value.isEmpty()) {
                         Text(
-                            "어떤 팟을 찾고계신가요?",
+                            text,
                             style = Typography.labelMedium,
                             color = Gray500
                         )

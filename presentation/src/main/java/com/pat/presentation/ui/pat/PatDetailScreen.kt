@@ -116,9 +116,9 @@ fun PatDetailView(
 
 @Composable
 fun PostDetailScreen(
+    modifier: Modifier = Modifier,
     content: PatDetailContent,
     patDetailViewModel: PatDetailViewModel,
-    modifier: Modifier = Modifier
 ) {
     var isOpenBtnClicked by remember { mutableStateOf(false) }
     Logger.t("patdetail").i("${content}")
@@ -244,6 +244,15 @@ fun PostDetailScreen(
         Text("인증 수단", fontSize = 16.sp, modifier = modifier.padding(3.dp))
         if (content.realtime) {
             IconWithTextView("실시간 촬영", iconResource = R.drawable.ic_camera)
+            Spacer(modifier.size(44.dp))
+            FinalButton(text = "팟 참여하기",
+                backColor = PrimaryMain,
+                textColor = White,
+                onClick = {
+                    patDetailViewModel.participatePat()
+                    navigation()
+                }
+            )
         }
         Spacer(modifier.height(7.dp))
         IconWithTextView("갤러리에서 사진 가져오기", iconResource = R.drawable.ic_gallery)

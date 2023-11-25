@@ -1,5 +1,6 @@
 package com.pat.presentation.ui.pat
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -56,11 +57,13 @@ class PatDetailViewModel @Inject constructor(
 
     fun participatePat() {
         viewModelScope.launch {
+            Log.e("custom", "patid : $patId")
             val result = participatePatUseCase(patId)
             if (result.isSuccess) {
-
+                result.getOrThrow()
+                Log.e("custom", "성공")
             } else {
-                //TODO 에러 처리
+                Log.e("custom", "fail")
             }
         }
     }
