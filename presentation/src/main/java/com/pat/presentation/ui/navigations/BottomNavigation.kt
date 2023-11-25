@@ -87,8 +87,7 @@ fun NavigationGraph(navController: NavHostController) {
                     defaultValue = -1
                 }
             )){
-
-            PatDetailView()
+            PatDetailView(navigation = { navController.popBackStack() })
         }
     }
 }
