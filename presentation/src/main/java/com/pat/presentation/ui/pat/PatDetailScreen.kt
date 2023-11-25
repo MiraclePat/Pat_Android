@@ -70,8 +70,9 @@ import com.skydoves.landscapist.glide.GlideImage
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PatDetailView(
+    modifier: Modifier = Modifier,
+    navigation: () -> Unit,
     patDetailViewModel: PatDetailViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier
 ) {
     val uiState by patDetailViewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
@@ -110,16 +111,21 @@ fun PatDetailView(
                 .padding(innerPadding)
                 .verticalScroll(scrollState),
         ) {
-            PostDetailScreen(content = uiState.content, patDetailViewModel = patDetailViewModel)
+            PostDetailScreen(
+                content = uiState.content,
+                patDetailViewModel = patDetailViewModel,
+                navigation = navigation
+            )
         }
     }
 }
 
 @Composable
 fun PostDetailScreen(
+    modifier: Modifier = Modifier,
     content: PatDetailContent?,
     patDetailViewModel: PatDetailViewModel,
-    modifier: Modifier = Modifier
+    navigation: () -> Unit
 ) {
     var isOpenBtnClicked by remember { mutableStateOf(false) }
     Logger.t("patdetail").i("${content}")
@@ -254,7 +260,10 @@ fun PostDetailScreen(
             FinalButton(text = "팟 참여하기",
                 backColor = PrimaryMain,
                 textColor = White,
-                onClick = { patDetailViewModel.participatePat() }
+                onClick = {
+                    patDetailViewModel.participatePat()
+                    navigation()
+                }
             )
         }
     }
@@ -329,7 +338,9 @@ fun DateText(
                 .padding(10.dp),
         ) {
             Icon(
-                imageVector = ImageVector.vectorResource(id = iconResource), contentDescription = null, tint = PrimaryMain
+                imageVector = ImageVector.vectorResource(id = iconResource),
+                contentDescription = null,
+                tint = PrimaryMain
             )
 
             Spacer(modifier = modifier.width(8.dp))
