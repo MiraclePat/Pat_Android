@@ -70,7 +70,7 @@ interface PatService {
         @Path("pat-id") patId: Long,
     ): Response<Unit>
 
-    @DELETE("/api/test/pats/{patId}")
+    @DELETE("/api/test/pats/{pat-id}")
     suspend fun deletePat(
         @Path("pat-id") patId: Long,
     ): Response<Unit>

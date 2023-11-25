@@ -4,12 +4,16 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.orhanobut.logger.Logger
+import com.pat.domain.model.pat.CreatePatInfo
+import com.pat.domain.model.pat.CreatePatInfoDetail
 import com.pat.domain.model.pat.HomePatContent
 import com.pat.domain.model.pat.HomePatRequestInfo
 import com.pat.domain.model.pat.PatDetailContent
+import com.pat.domain.usecase.pat.DeletePatUseCase
 import com.pat.domain.usecase.pat.GetHomePatsUseCase
 import com.pat.domain.usecase.pat.GetPatDetailUseCase
 import com.pat.domain.usecase.pat.ParticipatePatUseCase
+import com.pat.domain.usecase.pat.UpdatePatUseCase
 import com.pat.presentation.ui.home.HomeUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +32,8 @@ class PatDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getPatDetailUseCase: GetPatDetailUseCase,
     private val participatePatUseCase: ParticipatePatUseCase,
+    private val deletePatUseCase: DeletePatUseCase,
+    private val updatePatUseCase: UpdatePatUseCase,
 ) : ViewModel() {
     private val patId = savedStateHandle.get<Long?>(
         key = "patId"
@@ -48,7 +54,7 @@ class PatDetailViewModel @Inject constructor(
         }
     }
 
-    fun participatePat(){
+    fun participatePat() {
         viewModelScope.launch {
             val result = participatePatUseCase(patId)
             if (result.isSuccess) {
@@ -59,4 +65,26 @@ class PatDetailViewModel @Inject constructor(
         }
     }
 
+    fun deletePat(patId: Long) {
+        viewModelScope.launch {
+            val result = deletePatUseCase(patId)
+            if (result.isSuccess) {
+                result.getOrThrow()
+            } else {
+                //TODO 에러 처리
+            }
+        }
+    }
+
+    fun updatePat(patId: Long, pat: CreatePatInfoDetail) {
+        viewModelScope.launch {
+            val result =
+                updatePatUseCase(patId, CreatePatInfo("", "", listOf(), listOf(), pat))
+            if (result.isSuccess) {
+                result.getOrThrow()
+            } else {
+                //TODO 에러 처리
+            }
+        }
+    }
 }

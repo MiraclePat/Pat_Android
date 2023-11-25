@@ -1,4 +1,4 @@
-package com.pat.presentation.ui.post
+package com.pat.presentation.ui.pat
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
@@ -10,10 +10,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -27,24 +27,28 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.pat.domain.model.pat.CreatePatInfoDetail
+import com.pat.domain.model.pat.PatDetailContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBoxList
 import com.pat.presentation.ui.common.CheckBoxView
-import com.pat.presentation.ui.common.CustomButtonView
 import com.pat.presentation.ui.common.CustomDialog
 import com.pat.presentation.ui.common.CustomPicker
 import com.pat.presentation.ui.common.CustomTextField
@@ -55,10 +59,11 @@ import com.pat.presentation.ui.common.SelectImageList
 import com.pat.presentation.ui.common.WheelTimePickerView
 import com.pat.presentation.ui.common.convertDateFormat
 import com.pat.presentation.ui.common.convertTimeFormat
+import com.pat.presentation.ui.common.convertTimeViewFormat
+import com.pat.presentation.ui.navigations.HOME
+import com.pat.presentation.ui.post.SelectDayButtonList
+import com.pat.presentation.ui.post.SelectLocationButtonList
 import com.pat.presentation.ui.theme.Gray100
-import com.pat.presentation.ui.theme.Gray300
-import com.pat.presentation.ui.theme.Gray500
-import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.GreenBack
 import com.pat.presentation.ui.theme.GreenText
 import com.pat.presentation.ui.theme.PrimaryMain
@@ -66,111 +71,148 @@ import com.pat.presentation.ui.theme.RedBack
 import com.pat.presentation.ui.theme.RedText
 import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.ui.theme.White
+import com.skydoves.landscapist.glide.GlideImage
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostScreenView(
-    onNavigateToHome: () -> Unit,
-    postViewModel: PostViewModel = hiltViewModel()
+fun PatUpdateView(
+    modifier: Modifier = Modifier,
+    patDetailViewModel: PatDetailViewModel = hiltViewModel(),
+    navController: NavController,
 ) {
+    val uiState by patDetailViewModel.uiState.collectAsState()
+    val deleteDialogState = remember { mutableStateOf(false) }
+    val updateDialogState = remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
-    val declarationDialogState = remember { mutableStateOf(false) }
     BackHandler {
-        declarationDialogState.value = true
+        updateDialogState.value = true
     }
-    if (declarationDialogState.value) {
+    if (updateDialogState.value) {
         CustomDialog(
-            okRequest = onNavigateToHome, state = declarationDialogState,
-            message = "공고글 작성을 취소하시겠어요?",
+            okRequest = { navController.popBackStack() }, state = updateDialogState,
+            message = "공고글 수정을 취소하시겠어요?",
             cancelMessage = "계속 작성",
             okMessage = "작성 취소"
         )
     }
+    if (deleteDialogState.value) {
+        CustomDialog(
+            okRequest = {
+                if (uiState.content != null) patDetailViewModel.deletePat(uiState.content!!.patId)
+                navController.popBackStack(
+                    route = HOME,
+                    inclusive = false
+                )
+            },
+            state = deleteDialogState,
+            message = "이 공고글을 삭제하시겠어요?",
+            cancelMessage = "공고글 유지",
+            okMessage = "삭제하기"
+        )
+    }
     Scaffold(
+        modifier = modifier
+            .fillMaxSize(),
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "공고글 작성",
-                        fontSize = 14.sp,
-                        style = Typography.labelMedium
+                        text = "공고글 수정",
+                        fontSize = 14.sp
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = {
-                        declarationDialogState.value = !declarationDialogState.value
-                    }) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_back_arrow),
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_back_arrow),
                             contentDescription = "Go back"
                         )
                     }
-                }
+                },
+                actions = {
+                    IconButton(onClick = {
+                        deleteDialogState.value = true
+                    }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_delete),
+                            contentDescription = "Delete"
+                        )
+                    }
+                },
             )
         }
     ) { innerPadding ->
-
         Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .verticalScroll(scrollState),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            PostScreenBody(onNavigateToHome = onNavigateToHome)
+            if (uiState.content != null) {
+                PatUpdateScreen(
+                    content = uiState.content!!,
+                    patDetailViewModel = patDetailViewModel,
+                    navController = navController
+                )
+            }
         }
     }
 }
 
+
 @Composable
-fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) {
+fun PatUpdateScreen(
+    modifier: Modifier = Modifier,
+    content: PatDetailContent,
+    patDetailViewModel: PatDetailViewModel,
+    navController: NavController,
+) {
     val isRealTime = remember { mutableStateOf(false) }         // 사진 선택
     val isGallery = remember { mutableStateOf(false) }          // 갤러리 선택
 
-    val title = rememberSaveable { mutableStateOf("") }         // 팟 제목
-    val maxPerson = rememberSaveable { mutableStateOf("") }     // 최대 인원
-    val patDetail = rememberSaveable { mutableStateOf("") }     // 팟 소개
-    val proofDetail = rememberSaveable { mutableStateOf("") }   // 인증 방법 설명
-    val startDate = remember { mutableStateOf("") }             // 시작 날짜
-    val endDate = remember { mutableStateOf("") }               // 종료 날짜
-    val startTime = remember { mutableStateOf("") }             // 시작 시간
-    val endTime = remember { mutableStateOf("") }               // 종료 시간
-    val category = remember { mutableStateOf("") }              // 카테고리
-    val locationSelect = remember { mutableStateOf("") }        // 주소 입력 방식
-    val dayList = remember { mutableStateListOf<String>() }                   // 인증 빈도
-
+    val title = rememberSaveable { mutableStateOf(content.patName) }         // 팟 제목
+    val maxPerson = rememberSaveable { mutableStateOf(content.maxPerson.toString()) }     // 최대 인원
+    val patDetail = rememberSaveable { mutableStateOf(content.patDetail) }     // 팟 소개
+    val proofDetail = rememberSaveable { mutableStateOf(content.proofDetail) }   // 인증 방법 설명
+    val startDate = remember { mutableStateOf(content.startDate) }             // 시작 날짜
+    val endDate = remember { mutableStateOf(content.endDate) }               // 종료 날짜
+    val startTime =
+        remember { mutableStateOf(convertTimeViewFormat(content.startTime)) }             // 시작 시간
+    val endTime =
+        remember { mutableStateOf(convertTimeViewFormat(content.endTime)) }               // 종료 시간
+    val category = remember { mutableStateOf(content.category) }              // 카테고리
+    val locationSelect = remember { mutableStateOf(content.location) }        // 주소 입력 방식
+    val dayList = remember { mutableStateListOf(content.days) }                   // 인증 빈도
 
     Column() {
-        Box(
-            modifier
-                .background(Gray100)
-                .fillMaxWidth()
-                .height(160.dp)
-                .clickable {
-                    // TODO click Event
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            Row(
+        Box(contentAlignment = Alignment.BottomEnd) {
+            GlideImage(
                 modifier = modifier
-                    .width(141.dp)
-                    .height(36.dp)
+                    .background(Gray100)
+                    .fillMaxWidth()
+                    .height(160.dp)
+                    .clickable {
+                        // TODO click Event
+                    }, imageModel = { content.repImg })
+            Row(
+                modifier
+                    .width(160.dp)
+                    .height(60.dp)
+                    .padding(12.dp)
                     .clip(RoundedCornerShape(4.dp))
-                    .border(1.dp, color = PrimaryMain)
-                    .background(White),
+                    .background(White)
+                    .border(1.dp, PrimaryMain, RoundedCornerShape(4.dp)),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.Center,
             ) {
-                Text(
-                    text = "썸네일 추가하기",
-                    style = Typography.labelMedium,
-                    color = PrimaryMain,
-                )
-                Spacer(modifier = modifier.size(4.dp))
+                Text("썸네일 변경하기", style = Typography.bodySmall, color = PrimaryMain)
                 Icon(
-                    modifier = modifier.size(16.dp),
-                    painter = painterResource(id = R.drawable.ic_add),
-                    contentDescription = "썸네일 추가"
+                    modifier = modifier
+                        .padding(start = 4.dp)
+                        .size(16.dp),
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_add),
+                    contentDescription = null,
+                    tint = PrimaryMain
                 )
             }
         }
@@ -329,85 +371,12 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
                 onClick = {
                     val outputStartTime = convertTimeFormat(startTime.value)
                     val outputEndTime = convertTimeFormat(endTime.value)
-                    Log.e("custom", "outputStartTime : $outputStartTime")
-                    Log.e("custom", "outputEndTime : $outputEndTime")
-                    dayList.forEach {
-                        Log.e("custom", "days : $it")
-                    }
-                    onNavigateToHome()
+//                    patDetailViewModel.updatePat(content.patId, CreatePatInfoDetail())
+                    navController.popBackStack(
+                        route = HOME,
+                        inclusive = false
+                    )
                 })
         }
-    }
-}
-
-
-@Composable
-fun SelectDayButtonList(state: SnapshotStateList<String>) {
-    val days = listOf<String>("월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일")
-
-    @Composable
-    fun dayButtonView(day: String) {
-        CustomButtonView(
-            modifier = Modifier.requiredHeight(32.dp),
-            text = day,
-            onClick = {
-                if (state.contains(day)) {
-                    state.remove(day)
-                } else {
-                    state.add(day)
-                }
-            },
-            isSelected = state.contains(day),
-            shape = RoundedCornerShape(22.dp),
-            fontSize = 13.sp,
-            borderColor = Gray300,
-            textColor = Gray500
-        )
-        Spacer(Modifier.size(10.dp))
-    }
-
-    Column {
-        Row() {
-            days.take(5).forEach { day ->
-                dayButtonView(day)
-            }
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-        Row() {
-            days.takeLast(2).forEach { day ->
-                dayButtonView(day)
-            }
-        }
-    }
-}
-
-@Composable
-fun SelectLocationButtonList(
-    modifier: Modifier = Modifier,
-    locationState: MutableState<String>,
-    onClick: () -> Unit = {}
-) {
-    val days = listOf<String>("실제 주소 입력", "임의대로 입력", "위치정보 없음")
-
-    @Composable
-    fun locationButtonView(location: String) {
-        CustomButtonView(
-            modifier = modifier,
-            text = location,
-            onClick = {
-                onClick()
-                locationState.value = location
-            },
-            isSelected = locationState.value == location,
-            shape = RoundedCornerShape(100.dp),
-            fontSize = 14.sp,
-            borderColor = Gray300,
-            textColor = Gray600
-        )
-        Spacer(Modifier.size(10.dp))
-    }
-
-    days.forEach { day ->
-        locationButtonView(day)
     }
 }

@@ -25,6 +25,7 @@ import com.pat.presentation.R
 import com.pat.presentation.ui.home.HomeScreenView
 import com.pat.presentation.ui.map.MapScreenView
 import com.pat.presentation.ui.pat.PatDetailView
+import com.pat.presentation.ui.pat.PatUpdateView
 import com.pat.presentation.ui.post.PostScreenView
 import com.pat.presentation.ui.proof.ProofScreenView
 import com.pat.presentation.ui.setting.SettingScreenView
@@ -87,8 +88,17 @@ fun NavigationGraph(navController: NavHostController) {
                     defaultValue = -1
                 }
             )){
-
-            PatDetailView()
+            PatDetailView(navController = navController)
+        }
+        composable(
+            route = "patUpdate/{patId}",
+            arguments = listOf(
+                navArgument("patId"){
+                    type = NavType.LongType
+                    defaultValue = -1
+                }
+            )){
+            PatUpdateView(navController = navController)
         }
     }
 }
