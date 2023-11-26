@@ -29,6 +29,8 @@ import com.pat.presentation.ui.common.SettingCamera
 import com.pat.presentation.ui.home.HomeScreenView
 import com.pat.presentation.ui.map.MapScreenView
 import com.pat.presentation.ui.pat.PatDetailView
+import com.pat.presentation.ui.pat.PattingViewModel
+import com.pat.presentation.ui.pat.SettingPattingCamera
 import com.pat.presentation.ui.post.PostScreenView
 import com.pat.presentation.ui.post.PostViewModel
 import com.pat.presentation.ui.proof.CertificationScreenView
@@ -67,6 +69,8 @@ sealed class BottomNavItem(
 @Composable
 fun NavigationGraph(navController: NavHostController) {
     val postViewModel: PostViewModel = hiltViewModel()
+    val pattingViewModel: PattingViewModel = hiltViewModel()
+
     NavHost(navController = navController, startDestination = BottomNavItem.Home.screenRoute) {
         composable(BottomNavItem.Home.screenRoute) {
             HomeScreenView(
@@ -77,7 +81,7 @@ fun NavigationGraph(navController: NavHostController) {
             CertificationScreenView(navController = navController)
         }
         composable(BottomNavItem.Map.screenRoute) {
-            MapScreenView(navController = navController)
+            MapScreenView(navController = navController,viewModel=pattingViewModel)
         }
         composable(BottomNavItem.Setting.screenRoute) {
             SettingScreenView()
@@ -105,12 +109,17 @@ fun NavigationGraph(navController: NavHostController) {
                 SettingCamera(navController = navController, viewModel = postViewModel, bitmapType = bitmapType)
             }
         }
-        composable("selectimage") {
-            PostScreenView(
-                navController = navController,
-                onNavigateToHome = { navController.popBackStack() }, viewModel = postViewModel
-            )
+        composable("pattingCamera") {
+            SettingPattingCamera(navController = navController, viewModel = pattingViewModel)
         }
+//        composable("selectimage") {
+//            PostScreenView(
+//                navController = navController,
+//                onNavigateToHome = { navController.popBackStack() }, viewModel = postViewModel
+//            )
+//        }
+
+
     }
 }
 

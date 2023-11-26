@@ -24,9 +24,12 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,13 +45,17 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.orhanobut.logger.Logger
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
 import com.pat.presentation.ui.common.ExampleImageView
 import com.pat.presentation.ui.common.FinalButton
 import com.pat.presentation.ui.common.IconWithTextView
+import com.pat.presentation.ui.common.SelectButton
 import com.pat.presentation.ui.common.SelectImage
 import com.pat.presentation.ui.common.SimpleTextView
+import com.pat.presentation.ui.post.PostViewModel
+import com.pat.presentation.ui.post.components.PostRepImageView
 import com.pat.presentation.ui.theme.FailCircleColor
 import com.pat.presentation.ui.theme.FailTextColor
 import com.pat.presentation.ui.theme.Gray200
@@ -73,7 +80,8 @@ import com.pat.presentation.ui.theme.Typography
 @Composable
 fun PattingScreenView(
     modifier: Modifier = Modifier,
-    navController : NavController
+    navController : NavController,
+    viewModel: PattingViewModel
 ) {
     val scrollState = rememberScrollState()
     Scaffold(
@@ -103,20 +111,25 @@ fun PattingScreenView(
                 .padding(innerPadding)
                 .verticalScroll(scrollState),
         ) {
-            PattingScreen(navController)
+            PattingScreen(navController,viewModel)
         }
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun PattingScreen(
     navController: NavController,
-    modifier: Modifier = Modifier
+    viewModel: PattingViewModel,
+    modifier: Modifier = Modifier,
 ) {
     var spreadState by remember { mutableStateOf(false) }
     var myProofState by remember { mutableStateOf(true) }
-
+    val sheetState = rememberModalBottomSheetState()
+    var showBottomSheet by remember { mutableStateOf(false) }
+//    Logger.t("MainTest").i("${showBottomSheet}")
+    val proofBitmap by viewModel.proofBitmap.collectAsState() //인증사진
+    val bottomSheetState by viewModel.bottomSheetState.collectAsState()
 
     Column(
         modifier = modifier
@@ -346,7 +359,46 @@ fun PattingScreen(
         } else {
             ProofStatus(navController=navController,success = 24, fail = 8, isAll = "전체 ")
         }
-        FinalButton(text = "인증하기")
+        FinalButton(text = "인증하기", onClick = {showBottomSheet= true})
+        if (showBottomSheet || bottomSheetState) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    showBottomSheet = false
+                    viewModel.clearBitmap()
+                },
+                sheetState = sheetState
+            ) {
+                Column(
+                    modifier = modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    Text(
+                        text = "인증할 사진을 첨부해주세요!",
+                        style = Typography.labelMedium,
+                        color = PrimaryMain,
+                    )
+
+                    Spacer(modifier.padding(bottom = 16.dp))
+
+                    ProofImageView(navController = navController, bitmap = proofBitmap, viewModel = viewModel, realTime = true)
+
+                    Spacer(modifier.padding(bottom = 32.dp))
+
+                    SelectButton(
+                        text = "인증하기",
+                        onClick = { },
+                        backColor = Color.White,
+                        textColor = PrimaryMain,
+                        cornerSize = 100.dp,
+                        stokeColor = PrimaryMain,
+                        stokeWidth = 1.dp
+                    )
+                }
+            }
+        }
+
+
+
     }
 }
 

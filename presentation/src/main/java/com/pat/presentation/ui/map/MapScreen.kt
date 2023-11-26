@@ -9,13 +9,14 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.pat.presentation.ui.pat.PattingScreen
 import com.pat.presentation.ui.pat.PattingScreenView
+import com.pat.presentation.ui.pat.PattingViewModel
 import com.pat.presentation.ui.post.PostScreenView
 
 @Composable
-fun MapScreenView(navController : NavController) {
+fun MapScreenView(navController : NavController, viewModel: PattingViewModel) {
     val scrollState = rememberScrollState()
 
 
-    PattingScreenView(navController=navController)
+    PattingScreenView(navController=navController, viewModel = viewModel)
 }
 

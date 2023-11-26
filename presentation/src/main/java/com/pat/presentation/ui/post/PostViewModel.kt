@@ -207,6 +207,7 @@ class PostViewModel @Inject constructor(
                 )
             )
             if (result.isSuccess) {
+                _searchPlaceResult.emit(result.getOrThrow())
                 Logger.t("patdetail").i("${result.getOrThrow()}")
             } else {
                 //TODO 에러 처리

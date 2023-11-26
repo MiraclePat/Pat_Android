@@ -1,68 +1,36 @@
 package com.pat.presentation.ui.post
 
-import android.graphics.Bitmap
-import android.net.Uri
 import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import com.orhanobut.logger.Logger
 import com.pat.presentation.R
-import com.pat.presentation.model.PatBitmap
 import com.pat.presentation.ui.common.CategoryBoxList
 import com.pat.presentation.ui.common.CheckBoxView
 import com.pat.presentation.ui.common.CustomDialog
@@ -71,20 +39,14 @@ import com.pat.presentation.ui.common.CustomTextField
 import com.pat.presentation.ui.common.DateTimePickerView
 import com.pat.presentation.ui.common.ExampleImageView
 import com.pat.presentation.ui.common.FinalButton
-import com.pat.presentation.ui.common.SelectButton
 import com.pat.presentation.ui.common.SelectImageList
 import com.pat.presentation.ui.common.WheelTimePickerView
 import com.pat.presentation.ui.common.convertDateFormat
 import com.pat.presentation.ui.common.convertTimeFormat
+import com.pat.presentation.ui.post.components.PostRepImageView
 import com.pat.presentation.ui.post.components.SelectDayButtonList
-import com.pat.presentation.ui.post.components.SumView
-import com.pat.presentation.ui.theme.Gray100
-import com.pat.presentation.ui.theme.Gray500
-import com.pat.presentation.ui.theme.Gray600
-import com.pat.presentation.ui.theme.Gray800
 import com.pat.presentation.ui.theme.GreenBack
 import com.pat.presentation.ui.theme.GreenText
-import com.pat.presentation.ui.theme.Primary50
 import com.pat.presentation.ui.theme.PrimaryMain
 import com.pat.presentation.ui.theme.RedBack
 import com.pat.presentation.ui.theme.RedText
@@ -168,7 +130,6 @@ fun PostScreenBody(
     val category = remember { mutableStateOf("") }              // 카테고리
 
     val bodyBitmap by viewModel.bodyBitmap.collectAsState() //팟 상세이미지들
-    Logger.t("bodyimage").i("갤러리에 사진 생성")
 
     val correctBitmap by viewModel.correctBitmap.collectAsState() //올바른 이미지
     val incorrectBitmap by viewModel.incorrectBitmap.collectAsState() //나쁜이미지!
@@ -176,7 +137,7 @@ fun PostScreenBody(
 
 
     Column {
-       SumView(navController = navController, bitmap = repBitmap, viewModel = viewModel)
+        PostRepImageView(navController = navController, bitmap = repBitmap, viewModel = viewModel)
 
         Spacer(modifier = modifier.size(20.dp))
         Column(modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {

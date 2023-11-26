@@ -1,9 +1,7 @@
-package com.pat.presentation.ui.common
+package com.pat.presentation.ui.pat
 
-import androidx.core.content.ContextCompat
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Matrix
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -16,6 +14,7 @@ import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,8 +28,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cameraswitch
@@ -56,12 +53,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.orhanobut.logger.Logger
 import com.pat.presentation.R
-import com.pat.presentation.model.PatBitmap
 import com.pat.presentation.ui.CameraPreview
+import com.pat.presentation.ui.common.SelectButton
 import com.pat.presentation.ui.post.PostViewModel
 import com.pat.presentation.ui.theme.Gray100
 import com.pat.presentation.ui.theme.Gray500
@@ -69,18 +67,18 @@ import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.Gray800
 import com.pat.presentation.ui.theme.PrimaryMain
 import com.pat.presentation.ui.theme.Typography
+import com.pat.presentation.ui.theme.White
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SelectImage(
+fun ProofImageView(
     navController: NavController,
     modifier: Modifier = Modifier,
     imageIdx: Int = -1,
     hasSource: String = "",
     realTime: Boolean = true,
     bitmap: Bitmap?,
-    bitmapType: String,
-    viewModel: PostViewModel,
+    viewModel: PattingViewModel,
 ) {
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -97,7 +95,7 @@ fun SelectImage(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
             showBottomSheet = false
-            viewModel.getBitmapByUri(uri, bitmapType)
+            viewModel.getBitmapByUri(uri)
             selectedImageUri = uri
         }
     )
@@ -114,8 +112,6 @@ fun SelectImage(
         contentAlignment = Alignment.Center
     ) {
         bitmap?.let {
-            Logger.t("bodyimage").i("selectimage에서 ${bitmap}")
-
             Image(
                 bitmap = it.asImageBitmap(),
                 contentDescription = null,
@@ -153,7 +149,7 @@ fun SelectImage(
                         SelectButton(
                             text = "사진촬영",
                             onClick = {
-                                navController.navigate("camera/${bitmapType}")
+                                navController.navigate("pattingCamera")
                             },
                             backColor = Color.White,
                             textColor = PrimaryMain,
@@ -226,10 +222,9 @@ fun SelectImage(
 }
 
 @Composable
-fun SettingCamera(
+fun SettingPattingCamera(
     navController: NavController,
-    viewModel: PostViewModel,
-    bitmapType: String,
+    viewModel: PattingViewModel,
 ) {
     val context: Context = LocalContext.current
     val controller = remember {
@@ -277,12 +272,11 @@ fun SettingCamera(
 
             IconButton(
                 onClick = {
-                    takePhoto(
+                    takeProofPhoto(
                         navController = navController,
                         context = context,
                         controller = controller,
                         onPhotoTaken = viewModel::onTakePhoto,
-                        bitmapType = bitmapType,
                     )
                 }
             ) {
@@ -295,19 +289,18 @@ fun SettingCamera(
     }
 }
 
-private fun takePhoto(
+private fun takeProofPhoto(
     navController: NavController,
     context: Context,
     controller: LifecycleCameraController,
-    onPhotoTaken: (ImageProxy, String) -> Unit,
-    bitmapType: String,
+    onPhotoTaken: (ImageProxy) -> Unit,
 ) {
     controller.takePicture(
         ContextCompat.getMainExecutor(context),
         object : ImageCapture.OnImageCapturedCallback() {
             override fun onCaptureSuccess(image: ImageProxy) {
                 super.onCaptureSuccess(image)
-                onPhotoTaken(image, bitmapType)
+                onPhotoTaken(image)
                 navController.popBackStack()
             }
 
@@ -316,40 +309,4 @@ private fun takePhoto(
             }
         }
     )
-}
-
-@Composable
-fun SelectImageList(
-    navController: NavController,
-    modifier: Modifier = Modifier,
-    bitmapList: List<Bitmap?>,
-    bitmapType: String,
-    viewModel: PostViewModel,
-) {
-    Logger.t("bodyimage").i("selectimagelist에서 ${bitmapList}")
-
-    val maxSize = IntArray(5 - bitmapList.size) { it + 1 }
-
-    LazyRow() {
-        items(bitmapList) { bitmap ->
-            SelectImage(
-                navController = navController,
-                imageIdx = 0,
-                bitmap = bitmap,
-                bitmapType = bitmapType,
-                viewModel = viewModel,
-            )
-            Spacer(modifier = modifier.padding(horizontal = 10.dp))
-        }
-        items(maxSize.toList()) { idx ->
-            SelectImage(
-                navController = navController,
-                imageIdx = idx,
-                bitmap = null,
-                bitmapType = bitmapType,
-                viewModel = viewModel,
-                )
-            Spacer(modifier = modifier.padding(horizontal = 10.dp))
-        }
-    }
 }

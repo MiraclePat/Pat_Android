@@ -39,7 +39,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.pat.presentation.R
-import com.pat.presentation.model.PatBitmap
 import com.pat.presentation.ui.common.SelectButton
 import com.pat.presentation.ui.post.PostViewModel
 import com.pat.presentation.ui.theme.Gray100
@@ -49,7 +48,7 @@ import com.pat.presentation.ui.theme.White
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SumView(
+fun PostRepImageView(
     modifier: Modifier = Modifier,
     navController: NavController,
     bitmap: Bitmap?,
