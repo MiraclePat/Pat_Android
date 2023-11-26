@@ -1,5 +1,6 @@
 package com.pat.presentation.ui.common
 
+import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -21,23 +22,12 @@ val convertDateFormat: (String) -> (String) = { inputDateString ->
     outputFormat.format(date)
 }
 
-val convertTimeFormat: (String) -> (String) = { inputDateString ->
-    val outputFormat = SimpleDateFormat("hh:mm:00", Locale.getDefault())
-    val date = if (inputDateString.isNotEmpty()) {
-        val inputFormat = SimpleDateFormat("a h시 m분", Locale.getDefault())
-        inputFormat.parse(inputDateString.replace("오전", "AM").replace("오후", "PM"))!!
-    } else {
-        Date()
-    }
-    outputFormat.format(date)
-}
-
-fun convertTimeText(input: String): String {
-    val inputFormat = SimpleDateFormat("a:hh:mm", Locale.getDefault())
-    val outputFormat = SimpleDateFormat("a h시 m분", Locale.getDefault())
-
-    val date: Date = inputFormat.parse(input) ?: return "잘못된 형식"
-
-    return outputFormat.format(date).replace("AM", "오전")
-        .replace("PM", "오후")
+val convertTimeFormat: (String) -> (String) = { inputTimeString ->
+    val tempList = inputTimeString.split(" ")
+    val am = tempList.first()
+    // TODO 예외처리
+    // 만약 입력이 빈 값이면 hour 은 0으로 처리 됩니다. 예외 처리 필요!
+    val hour = tempList.last().replace("시", "").toIntOrNull() ?: 0
+    val result = if (am == "오전") hour.toString() else (hour + 12).toString()
+    result.padStart(2, '0')+":00:00"
 }

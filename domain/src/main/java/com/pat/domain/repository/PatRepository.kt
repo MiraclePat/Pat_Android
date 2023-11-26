@@ -32,5 +32,4 @@ interface PatRepository {
     suspend fun deletePat(patId: Long): Result<Unit>
 
     suspend fun withdrawPat(patId: Long): Result<Unit>
-
 }

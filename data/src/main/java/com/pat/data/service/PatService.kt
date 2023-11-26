@@ -51,31 +51,31 @@ interface PatService {
         @Part correctImg : MultipartBody.Part,
         @Part incorrectImg: MultipartBody.Part,
         @Part bodyImg: List<MultipartBody.Part>,
-        @Part pat : MultipartBody.Part,
+        @Part pat: MultipartBody.Part,
     )
 
     @Multipart
-    @PATCH("/api/test/pats/{patId}")
+    @PATCH("/api/test/pats/{pat-id}")
     suspend fun updatePat(
         @Path("pat-id") patId: Long,
-        @Part repImg : MultipartBody.Part,
-        @Part correctImg : MultipartBody.Part,
+        @Part repImg: MultipartBody.Part,
+        @Part correctImg: MultipartBody.Part,
         @Part incorrectImg: MultipartBody.Part,
         @Part bodyImg: List<MultipartBody.Part>,
-        @Part pat : MultipartBody.Part,
+        @Part pat: MultipartBody.Part,
     ): Response<Unit>
 
-    @POST("/api/test/pats/{patId}")
+    @POST("/api/test/pats/{pat-id}")
     suspend fun participatePat(
         @Path("pat-id") patId: Long,
     ): Response<Unit>
 
-    @DELETE("/api/test/pats/{patId}")
+    @DELETE("/api/test/pats/{pat-id}")
     suspend fun deletePat(
         @Path("pat-id") patId: Long,
     ): Response<Unit>
 
-    @DELETE("/api/test/pats/{patId}/withdraw")
+    @DELETE("/api/test/pats/{pat-id}/withdraw")
     suspend fun withdrawPat(
         @Path("pat-id") patId: Long,
     ): Response<Unit>

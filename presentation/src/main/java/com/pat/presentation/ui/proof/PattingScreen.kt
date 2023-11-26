@@ -1,4 +1,4 @@
-package com.pat.presentation.ui.pat
+package com.pat.presentation.ui.proof
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,6 +30,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,8 +39,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
@@ -46,6 +46,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.orhanobut.logger.Logger
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.orhanobut.logger.Logger
+import com.pat.domain.model.proof.ProofContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
 import com.pat.presentation.ui.common.ExampleImageView
@@ -54,6 +57,9 @@ import com.pat.presentation.ui.common.IconWithTextView
 import com.pat.presentation.ui.common.SelectButton
 import com.pat.presentation.ui.common.SelectImage
 import com.pat.presentation.ui.common.SimpleTextView
+import com.pat.presentation.ui.common.setUnderLine
+import com.pat.presentation.ui.pat.CategoryButtonList
+import com.pat.presentation.ui.pat.DateText
 import com.pat.presentation.ui.post.PostViewModel
 import com.pat.presentation.ui.post.components.PostRepImageView
 import com.pat.presentation.ui.theme.FailCircleColor
@@ -82,7 +88,12 @@ fun PattingScreenView(
     modifier: Modifier = Modifier,
     navController : NavController,
     viewModel: PattingViewModel
+    pattingViewModel: ProofViewModel = hiltViewModel()
 ) {
+    val uiState by pattingViewModel.uiState.collectAsState()
+    LaunchedEffect(uiState.content) {
+        Logger.t("MainTest").i("${uiState.content}")
+    }
     val scrollState = rememberScrollState()
     Scaffold(
         modifier = modifier
@@ -111,7 +122,7 @@ fun PattingScreenView(
                 .padding(innerPadding)
                 .verticalScroll(scrollState),
         ) {
-            PattingScreen(navController,viewModel)
+            PattingScreen(navController,viewModel,uiState.content)
         }
     }
 }
@@ -121,6 +132,7 @@ fun PattingScreenView(
 fun PattingScreen(
     navController: NavController,
     viewModel: PattingViewModel,
+    content: List<ProofContent>?
     modifier: Modifier = Modifier,
 ) {
     var spreadState by remember { mutableStateOf(false) }
@@ -296,21 +308,19 @@ fun PattingScreen(
         )
         Spacer(modifier.padding(bottom = 14.dp))
         Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-//            ExampleImageView(
-//                navController = navController,
-//                text = "올바른 예시",
-//                backColor = GreenBack,
-//                textColor = GreenText,
-//                hasSource = "여기에 사진 uri 추가"
-//            )
-//            Spacer(modifier = modifier.size(10.dp))
-//            ExampleImageView(
-//                navController = navController,
-//                text = "잘못된 예시",
-//                backColor = RedBack,
-//                textColor = RedText,
-//                hasSource = "여기에 uri 추가"
-//            )
+            ExampleImageView(
+                text = "올바른 예시",
+                backColor = GreenBack,
+                textColor = GreenText,
+                hasSource = "여기에 사진 uri 추가"
+            )
+            Spacer(modifier = modifier.size(10.dp))
+            ExampleImageView(
+                text = "잘못된 예시",
+                backColor = RedBack,
+                textColor = RedText,
+                hasSource = "여기에 uri 추가"
+            )
         }
         Spacer(modifier = modifier.padding(top = 28.dp))
         Box(
@@ -320,21 +330,12 @@ fun PattingScreen(
                 .background(Gray50)
         )
         Row(modifier = modifier.padding(top = 24.dp)) {
-            val underLine = modifier.drawBehind {
-                val strokeWidthPx = 1.dp.toPx()
-                val verticalOffset = size.height - 2.sp.toPx()
-                drawLine(
-                    color = PrimaryMain,
-                    strokeWidth = strokeWidthPx,
-                    start = Offset(0f, verticalOffset),
-                    end = Offset(size.width, verticalOffset)
-                )
-            }
+
             Box(modifier.clickable {
                 myProofState = true
             }) {
                 Text(
-                    modifier = if (myProofState) underLine else modifier,
+                    modifier = if (myProofState) setUnderLine else modifier,
                     text = "내 인증 현황",
                     style = Typography.titleLarge,
                     color = if (myProofState) Gray800 else Gray500
@@ -346,7 +347,7 @@ fun PattingScreen(
                 myProofState = false
             }) {
                 Text(
-                    modifier = if (!myProofState) underLine else modifier,
+                    modifier = if (!myProofState) setUnderLine else modifier,
                     text = "다른 참여자 인증",
                     style = Typography.titleLarge,
                     color = if (!myProofState) Gray800 else Gray500
@@ -404,14 +405,13 @@ fun PattingScreen(
 
 @Composable
 fun ProofStatus(
-    navController: NavController,
     modifier: Modifier = Modifier,
     success: Int,
     fail: Int,
     isAll: String = "",
     imgUriList: List<String> = listOf()
 ) {
-    var title = if (isAll == "") "나의 인증사진" else "참여자들의 인증사진"
+    val title = if (isAll == "") "나의 인증사진" else "참여자들의 인증사진"
     Row() {
         Text("${isAll}인증 성공 횟수", style = Typography.titleLarge, color = Gray600, fontSize = 14.sp)
         Spacer(modifier = modifier.weight(1f))

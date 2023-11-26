@@ -74,10 +74,10 @@ class PatRepositoryImpl @Inject constructor(
             val correctImg = getMutipartImage(createPatInfo.correctImg,"correctImg")
             val incorrectImg = getMutipartImage(createPatInfo.incorrectImg,"incorrectImg")
             val bodyImg = createPatInfo.bodyImg.map{
-                getMutipartImage(it,"bodyImg")
+                getMultipartImage(it,"bodyImg")
             }
 
-            val adapter= moshi.adapter(CreatePatDetail::class.java)
+            val adapter= moshi.adapter(CreatePatInfoDetail::class.java)
             val patInfoJson = adapter.toJson(createPatInfo.pat)
             val patRequestBody = patInfoJson.toRequestBody("application/json".toMediaTypeOrNull())
             val patPart = MultipartBody.Part.createFormData("pat", "pat", patRequestBody)
@@ -123,7 +123,7 @@ class PatRepositoryImpl @Inject constructor(
                 getMutipartImage(it,"bodyImg")
             }
 
-            val adapter= moshi.adapter(CreatePatDetail::class.java)
+            val adapter= moshi.adapter(CreatePatInfoDetail::class.java)
             val patInfoJson = adapter.toJson(createPatInfo.pat)
             val patRequestBody = patInfoJson.toRequestBody("application/json".toMediaTypeOrNull())
             val patPart = MultipartBody.Part.createFormData("pat", "pat", patRequestBody)

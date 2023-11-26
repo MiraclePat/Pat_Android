@@ -3,12 +3,17 @@ package com.pat.data.di
 import android.content.Context
 import com.pat.data.repository.image.ImageRepositoryImpl
 import com.pat.data.repository.pat.PatRepositoryImpl
+import com.pat.data.repository.proof.ProofRepositoryImpl
 import com.pat.data.service.PatService
+import com.pat.data.service.ProofService
 import com.pat.data.source.ImageDataSource
 import com.pat.data.source.PatDataSource
+import com.pat.data.source.ProofDataSource
 import com.pat.domain.repository.PatRepository
+import com.pat.domain.repository.ProofRepository
 import com.pat.domain.repository.image.ImageRepository
 import com.squareup.moshi.Moshi
+import com.weit.domain.repository.image.ImageRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -51,4 +56,22 @@ class MainModule {
         ImageDataSource(context.contentResolver)
 
 
+    @ActivityRetainedScoped
+    @Provides
+    fun provideProofRepository(dataSource: ProofDataSource,
+                             imageRepositoryImpl: ImageRepositoryImpl,
+                             imageDataSource: ImageDataSource,
+                             moshi: Moshi,
+    ): ProofRepository =
+        ProofRepositoryImpl(dataSource, imageRepositoryImpl, imageDataSource,moshi)
+
+    @ActivityRetainedScoped
+    @Provides
+    fun provideProofDataSource(service: ProofService): ProofDataSource =
+        ProofDataSource(service)
+
+    @ActivityRetainedScoped
+    @Provides
+    fun provideProofService(@NormalNetworkObject retrofit: Retrofit): ProofService =
+        retrofit.create(ProofService::class.java)
 }

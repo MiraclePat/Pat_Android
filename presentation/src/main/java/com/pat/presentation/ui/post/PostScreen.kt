@@ -1,30 +1,50 @@
 package com.pat.presentation.ui.post
 
 import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,6 +53,7 @@ import com.orhanobut.logger.Logger
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBoxList
 import com.pat.presentation.ui.common.CheckBoxView
+import com.pat.presentation.ui.common.CustomButtonView
 import com.pat.presentation.ui.common.CustomDialog
 import com.pat.presentation.ui.common.CustomPicker
 import com.pat.presentation.ui.common.CustomTextField
@@ -45,6 +66,10 @@ import com.pat.presentation.ui.common.convertDateFormat
 import com.pat.presentation.ui.common.convertTimeFormat
 import com.pat.presentation.ui.post.components.PostRepImageView
 import com.pat.presentation.ui.post.components.SelectDayButtonList
+import com.pat.presentation.ui.theme.Gray100
+import com.pat.presentation.ui.theme.Gray300
+import com.pat.presentation.ui.theme.Gray500
+import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.GreenBack
 import com.pat.presentation.ui.theme.GreenText
 import com.pat.presentation.ui.theme.PrimaryMain
@@ -58,7 +83,8 @@ import com.pat.presentation.ui.theme.White
 fun PostScreenView(
     navController: NavController,
     onNavigateToHome: () -> Unit,
-    viewModel: PostViewModel
+    viewModel: PostViewModel,
+    onNavigateToHome: () -> Unit,
 ) {
 
     val scrollState = rememberScrollState()
@@ -101,7 +127,8 @@ fun PostScreenView(
             PostScreenBody(
                 navController = navController,
                 onNavigateToHome = onNavigateToHome,
-                viewModel = viewModel
+                viewModel = viewModel,
+                onNavigateToHome = onNavigateToHome
             )
         }
     }
@@ -113,7 +140,8 @@ fun PostScreenBody(
     navController: NavController,
     modifier: Modifier = Modifier,
     onNavigateToHome: () -> Unit,
-    viewModel: PostViewModel
+    viewModel: PostViewModel,
+    onNavigateToHome: () -> Unit
 ) {
     val isRealTime = remember { mutableStateOf(false) }         // 사진 선택
     val isGallery = remember { mutableStateOf(false) }          // 갤러리 선택
@@ -126,8 +154,9 @@ fun PostScreenBody(
     val endDate = remember { mutableStateOf("") }               // 종료 날짜
     val startTime = remember { mutableStateOf("") }             // 시작 시간
     val endTime = remember { mutableStateOf("") }               // 종료 시간
-    val day = remember { mutableStateOf("") }                   // 인증 빈도
     val category = remember { mutableStateOf("") }              // 카테고리
+    val locationSelect = remember { mutableStateOf("") }        // 주소 입력 방식
+    val dayList = remember { mutableStateListOf<String>() }                   // 인증 빈도
 
     val bodyBitmap by viewModel.bodyBitmap.collectAsState() //팟 상세이미지들
 
@@ -158,9 +187,15 @@ fun PostScreenBody(
             SelectImageList(navController = navController, bitmapList = bodyBitmap, bitmapType = "BODY", viewModel = viewModel)
             Spacer(modifier = modifier.size(36.dp))
 
-            Text(text = "위치정보 유무", style = Typography.titleLarge)
-            Spacer(modifier = modifier.size(14.dp))
-            // TODO 위치 정보 유무
+            Text(text = "위치정보", style = Typography.titleLarge)
+            Spacer(modifier = modifier.size(16.dp))
+            Column(
+                modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+            ) {
+                SelectLocationButtonList(locationState = locationSelect)
+            }
             Spacer(modifier = modifier.size(36.dp))
 
             Text(text = "팟 인원 설정", style = Typography.titleLarge)
@@ -216,14 +251,13 @@ fun PostScreenBody(
             Spacer(modifier = modifier.size(14.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 val startPressed = remember { mutableStateOf(false) }
-                val sheetState = rememberModalBottomSheetState()
                 CustomPicker(
                     text = "시작시간",
                     dateState = startTime,
                     content = {
                         WheelTimePickerView(onDismiss = {
                             startPressed.value = !startPressed.value
-                        }, sheetState = sheetState, timeState = startTime)
+                        }, timeState = startTime)
                     },
                     clickState = startPressed
                 )
@@ -234,8 +268,11 @@ fun PostScreenBody(
                 CustomPicker(
                     text = "종료시간",
                     dateState = endTime,
-                    formatter = convertTimeFormat,
-                    content = {},
+                    content = {
+                        WheelTimePickerView(onDismiss = {
+                            endPressed.value = !endPressed.value
+                        }, timeState = endTime)
+                    },
                     clickState = endPressed
                 )
                 Spacer(modifier = modifier.padding(8.dp))
@@ -245,13 +282,18 @@ fun PostScreenBody(
 
             Text(text = "팟 소개", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
-            CustomTextField(placeholderText = "최대 500자", state = patDetail, maxLength = 500)
+            CustomTextField(
+                placeholderText = "최대 500자",
+                state = patDetail,
+                maxLength = 500,
+                height = 197.dp
+            )
             Spacer(modifier = modifier.size(36.dp))
 
             Text(text = "인증 빈도", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
             Row() {
-                SelectDayButtonList(state = day)
+                SelectDayButtonList(state = dayList)
             }
             Spacer(modifier = modifier.size(36.dp))
 
@@ -299,6 +341,8 @@ fun PostScreenBody(
                 backColor = PrimaryMain,
                 textColor = White,
                 onClick = {
+                    val outputStartTime = convertTimeFormat(startTime.value)
+                    val outputEndTime = convertTimeFormat(endTime.value)
                     viewModel.post(
                         patName = title.value,
                         maxPerson = maxPerson.value.toInt(),
@@ -306,19 +350,150 @@ fun PostScreenBody(
                         proofDetail = proofDetail.value,
                         startDate = startDate.value,
                         endDate = endDate.value,
-                        startTime = startTime.value,
-                        endTime = endTime.value,
+                        startTime = outputStartTime,
+                        endTime = outputEndTime,
                         days = "", //다중선택 pull받아야함
                         category = category.value,
                         latitude = 0.0,
                         longitude = 0.0,
                         location = "서울",
                         realtime = isGallery.value,
-
-                    )
+                        )
+                    onNavigateToHome()
                 })
         }
     }
 }
 
 
+@Composable
+fun SelectDayButtonList(state: SnapshotStateList<String>) {
+    val days = listOf<String>("월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일")
+
+    @Composable
+    fun dayButtonView(day: String) {
+        CustomButtonView(
+            modifier = Modifier.requiredHeight(32.dp),
+            text = day,
+            onClick = {
+                if (state.contains(day)) {
+                    state.remove(day)
+                } else {
+                    state.add(day)
+                }
+//                state.value = day
+            },
+            isSelected = state.contains(day),
+            shape = RoundedCornerShape(22.dp),
+            fontSize = 13.sp,
+            borderColor = Gray300,
+            textColor = Gray500
+        )
+        Spacer(Modifier.size(10.dp))
+    }
+
+    Column {
+        Row() {
+            days.take(5).forEach { day ->
+                dayButtonView(day)
+            }
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        Row() {
+            days.takeLast(2).forEach { day ->
+                dayButtonView(day)
+            }
+        }
+    }
+}
+
+@Composable
+fun SelectLocationButtonList(
+    modifier: Modifier = Modifier,
+    locationState: MutableState<String>,
+    onClick: () -> Unit = {}
+) {
+    val locationButtonText = listOf<String>("주소 검색", "임의대로 입력", "위치정보 없음")
+
+    @Composable
+    fun locationButtonView(modifier: Modifier, location: String) {
+        CustomButtonView(
+            modifier = modifier,
+            text = location,
+            onClick = {
+                onClick()
+                locationState.value = location
+            },
+            isSelected = locationState.value == location,
+            shape = RoundedCornerShape(100.dp),
+            fontSize = 14.sp,
+            borderColor = Gray300,
+            textColor = Gray600
+        )
+        Spacer(Modifier.size(10.dp))
+    }
+
+    Row(modifier.fillMaxWidth()) {
+        locationButtonText.forEach { location ->
+            locationButtonView(modifier.weight(1f), location)
+        }
+    }
+    Spacer(modifier.padding(top = 16.dp))
+
+    when (locationState.value) {
+        "주소 검색" -> {
+            CustomTextField(placeholderText = "서초동 스타벅스", maxLength = 30)
+            Spacer(modifier.padding(bottom = 24.dp))
+            Text(
+                text = "아래 검색결과 중에서 선택해주세요!",
+                style = Typography.labelMedium,
+                fontSize = 13.sp,
+                color = PrimaryMain
+            )
+        }
+
+        "임의대로 입력" -> {
+            // maxLength 임시
+            Text(
+                text = "대략적인 위치정보를 입력해주세요.",
+                style = Typography.labelSmall,
+                color = PrimaryMain
+            )
+            Spacer(modifier.padding(bottom = 6.dp))
+            CustomTextField(placeholderText = "벚꽃나무 앞", maxLength = 30)
+        }
+
+        "위치정보 없음" -> Box(contentAlignment = Alignment.Center) {
+            Text("위치정보 없음 선택 시 지도에 나타나지 않아요.", style = Typography.bodySmall)
+        }
+
+        else -> {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier
+                        .width(42.dp)
+                        .height(26.dp)
+                        .clip(RoundedCornerShape(100.dp))
+                        .background(Primary50),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Tip!",
+                        style = Typography.labelMedium,
+                        fontSize = 12.sp,
+                        color = PrimaryMain
+                    )
+                }
+                Text(
+                    modifier = Modifier
+                        .padding(start = 6.dp)
+                        .weight(1f),
+                    text = "실 주소 입력시 정확한 위치 파악이 가능해요!",
+                    style = Typography.labelMedium,
+                    fontSize = 13.sp,
+                    color = PrimaryMain
+                )
+            }
+        }
+    }
+}

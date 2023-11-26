@@ -22,7 +22,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
-import com.orhanobut.logger.Logger
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.SelectImage
 import com.pat.presentation.ui.common.SettingCamera
@@ -34,6 +33,7 @@ import com.pat.presentation.ui.pat.SettingPattingCamera
 import com.pat.presentation.ui.post.PostScreenView
 import com.pat.presentation.ui.post.PostViewModel
 import com.pat.presentation.ui.proof.CertificationScreenView
+import com.pat.presentation.ui.proof.ProofScreenView
 import com.pat.presentation.ui.setting.SettingScreenView
 import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.PrimaryMain
@@ -112,14 +112,6 @@ fun NavigationGraph(navController: NavHostController) {
         composable("pattingCamera") {
             SettingPattingCamera(navController = navController, viewModel = pattingViewModel)
         }
-//        composable("selectimage") {
-//            PostScreenView(
-//                navController = navController,
-//                onNavigateToHome = { navController.popBackStack() }, viewModel = postViewModel
-//            )
-//        }
-
-
     }
 }
 
