@@ -10,8 +10,11 @@ import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.CreatePatDetail
 import com.pat.domain.model.pat.CreatePatInfo
 import com.pat.domain.model.pat.HomePatContent
+import com.pat.domain.model.place.PlaceDetailInfo
+import com.pat.domain.model.place.PlaceSearchRequestInfo
 import com.pat.domain.usecase.image.GetByteArrayByUriUseCase
 import com.pat.domain.usecase.pat.CreatePatUseCase
+import com.pat.domain.usecase.place.GetSearchPlaceUseCase
 import com.pat.presentation.model.PatBitmap
 import com.pat.presentation.ui.MainActivity_GeneratedInjector
 import com.pat.presentation.util.image.byteArrayToBitmap
@@ -19,6 +22,7 @@ import com.pat.presentation.util.image.getCompressedBytes
 import com.pat.presentation.util.image.getRotatedBitmap
 import com.pat.presentation.util.image.getScaledBitmap
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,8 +46,19 @@ data class PostBytes(
 class PostViewModel @Inject constructor(
     private val createPatUseCase: CreatePatUseCase,
     private val getByteArrayByUriUseCase: GetByteArrayByUriUseCase,
+    private val getSearchPlaceUseCase: GetSearchPlaceUseCase,
 ) : ViewModel() {
-    private val totalBody = CopyOnWriteArrayList<Bitmap>()
+//    private var searchedPlaces = listOf<PlacePrediction>()
+
+    private var searchJob: Job = Job().apply {
+        complete()
+    }
+
+    private val _searchPlaceResult = MutableStateFlow<List<PlaceDetailInfo>>(emptyList())
+    val searchPlaceResult = _searchPlaceResult.asStateFlow()
+
+
+    private val totalBody = mutableListOf<Bitmap>()
 
     private val _bodyBitmap = MutableStateFlow<List<Bitmap?>>(emptyList())
     val bodyBitmap = _bodyBitmap.asStateFlow()
@@ -65,6 +80,9 @@ class PostViewModel @Inject constructor(
         ByteArray(0), ByteArray(0)
     )
 
+    init{
+        onSearch("롯데월드")
+    }
     fun onTakePhoto(image: ImageProxy, bitmapType: String) {
         val rotatedBitmap = getRotatedBitmap(image)
         val scaledBitmap = getScaledBitmap(rotatedBitmap)
@@ -98,7 +116,6 @@ class PostViewModel @Inject constructor(
 
     fun getBitmapByUri(uri: Uri?, bitmapType: String) {
         viewModelScope.launch {
-            Logger.t("bodyimage").i("갤러리에 사진 생성")
             val bytes = getByteArrayByUriUseCase(uri.toString())
             val newBitmap = byteArrayToBitmap(bytes)
             when (bitmapType) {
@@ -177,6 +194,24 @@ class PostViewModel @Inject constructor(
 //            }
         }
     }
+    fun onSearch(query: String) {
+        searchJob.cancel()
+        searchPlace(query)
+    }
 
+    private fun searchPlace(query: String) {
+        searchJob = viewModelScope.launch {
+            val result = getSearchPlaceUseCase(
+                PlaceSearchRequestInfo(
+                    query
+                )
+            )
+            if (result.isSuccess) {
+                Logger.t("patdetail").i("${result.getOrThrow()}")
+            } else {
+                //TODO 에러 처리
+            }
+        }
+    }
 
 }
