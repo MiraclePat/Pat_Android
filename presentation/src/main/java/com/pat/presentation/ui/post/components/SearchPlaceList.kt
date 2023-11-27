@@ -1,13 +1,17 @@
 package com.pat.presentation.ui.post.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -60,6 +64,7 @@ fun SearchPlace(
     Box(
         modifier = modifier
             .fillMaxWidth()
+            .height(66.dp)
             .border(
                 BorderStroke(1.dp, borderColor),
                 shape = RoundedCornerShape(4.dp)
@@ -69,8 +74,11 @@ fun SearchPlace(
         ) {
 
         Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .fillMaxHeight(),
             verticalArrangement = Arrangement.Center,
-        ){
+        ) {
             Text(
                 text = title.toString(), modifier = modifier.padding(3.dp), style = Typography.bodySmall,
                 fontSize = 14.sp, color = Gray800
