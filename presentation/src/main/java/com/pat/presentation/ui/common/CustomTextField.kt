@@ -1,5 +1,6 @@
 package com.pat.presentation.ui.common
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -46,19 +47,17 @@ fun CustomTextField(
     style: TextStyle = Typography.labelMedium,
     maxLength: Int,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    state: MutableState<String> = rememberSaveable {
-        mutableStateOf("")
-    }
+    state: MutableState<String>
 ) {
     var isFocused by remember { mutableStateOf(false) }
-    val borderColor = if (isFocused) Gray200 else SystemBlue
+    val borderColor = if (!isFocused) Gray200 else SystemBlue
 
     BasicTextField(modifier = modifier
         .fillMaxWidth()
         .height(height)
         .clip(RoundedCornerShape(4.dp))
         .onFocusChanged {
-            isFocused = !isFocused
+            isFocused = it.hasFocus
         }
         .border(1.dp, borderColor, RoundedCornerShape(4.dp)),
         value = state.value,
@@ -82,12 +81,13 @@ fun CustomTextField(
                         .weight(1f)
                         .clip(RoundedCornerShape(4.dp)),
                 ) {
-                    if (isFocused || state.value.isEmpty()) Text(
+                    if (!isFocused && state.value == "") Text(
                         placeholderText,
                         style = style,
                         color = Gray400
-                    )
-                    innerTextField()
+                    ) else {
+                        innerTextField()
+                    }
                 }
             }
         }

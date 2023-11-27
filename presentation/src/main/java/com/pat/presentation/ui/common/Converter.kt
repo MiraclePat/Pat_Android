@@ -31,3 +31,11 @@ val convertTimeFormat: (String) -> (String) = { inputTimeString ->
     val result = if (am == "오전") hour.toString() else (hour + 12).toString()
     result.padStart(2, '0')+":00:00"
 }
+
+val convertTimeViewFormat: (String) -> (String) = { inputTimeString ->
+    val tempList = inputTimeString.split(":")
+    val hour = tempList.first().trimStart('0')
+    // TODO 예외처리
+    val am = if ((hour.toIntOrNull() ?: 0) > 12) "오전" else "오후"
+    am + " ${hour}시"
+}
