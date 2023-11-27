@@ -103,7 +103,10 @@ fun ParticipatingScreenView(
             }
 
             "개설한 팟" -> {
-
+                participatingViewModel.getOpenPats()
+                uiState.content?.forEach { participatingContent ->
+                    ParticipatePat(content = participatingContent)
+                }
             }
         }
     }

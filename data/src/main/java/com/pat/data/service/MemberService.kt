@@ -24,4 +24,11 @@ interface MemberService {
         @Query("sort") sort: String?,
         @Query("state") state: String?,
     ): ListResponse<ParticipatingContentDTO>
+
+    @GET("/api/test/members/pats/open")
+    suspend fun getOpenPats(
+        @Query("lastId") lastId: Long?,
+        @Query("size") size: Int?,
+        @Query("sort") sort: String?,
+    ): ListResponse<ParticipatingContentDTO>
 }

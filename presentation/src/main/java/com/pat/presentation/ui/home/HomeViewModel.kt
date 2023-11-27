@@ -2,7 +2,6 @@ package com.pat.presentation.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.HomePatContent
 import com.pat.domain.model.pat.HomePatRequestInfo
 import com.pat.domain.usecase.pat.GetHomePatsUseCase
