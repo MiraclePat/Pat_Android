@@ -28,6 +28,8 @@ import com.pat.presentation.ui.pat.PatDetailView
 import com.pat.presentation.ui.pat.PatUpdateView
 import com.pat.presentation.ui.post.PostScreenView
 import com.pat.presentation.ui.proof.ParticipatingScreenView
+import com.pat.presentation.ui.proof.ProofScreen
+import com.pat.presentation.ui.proof.ProofScreenView
 import com.pat.presentation.ui.setting.SettingScreenView
 import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.PrimaryMain
@@ -69,7 +71,7 @@ fun NavigationGraph(navController: NavHostController) {
                 onNavigateToPost = { navController.navigate(POST) })
         }
         composable(BottomNavItem.Certification.screenRoute) {
-            ParticipatingScreenView()
+            ParticipatingScreenView(navController = navController)
         }
         composable(BottomNavItem.Map.screenRoute) {
             MapScreenView()
@@ -99,6 +101,16 @@ fun NavigationGraph(navController: NavHostController) {
                 }
             )){
             PatUpdateView(navController = navController)
+        }
+        composable(
+            route = "participatingDetail/{patId}",
+            arguments = listOf(
+                navArgument("patId"){
+                    type = NavType.LongType
+                    defaultValue = -1
+                }
+            )){
+            ProofScreenView()
         }
     }
 }

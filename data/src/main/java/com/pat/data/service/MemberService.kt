@@ -2,6 +2,7 @@ package com.pat.data.service
 
 import com.pat.data.model.ListResponse
 import com.pat.data.model.member.ParticipatingContentDTO
+import com.pat.data.model.member.ParticipatingDetailContentDTO
 import com.pat.data.model.pat.HomePatContentDTO
 import com.pat.data.model.pat.MapPatContentDTO
 import com.pat.data.model.pat.PatDetailContentDTO
@@ -31,4 +32,9 @@ interface MemberService {
         @Query("size") size: Int?,
         @Query("sort") sort: String?,
     ): ListResponse<ParticipatingContentDTO>
+
+    @GET("/api/test/members/pats/{pat-id}")
+    suspend fun getParticipatingDetail(
+        @Path("pat-id") patId: Long,
+    ): ParticipatingDetailContentDTO
 }

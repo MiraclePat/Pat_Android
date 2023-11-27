@@ -5,6 +5,7 @@ import com.pat.data.source.MemberDataSource
 import com.pat.data.util.exception
 import com.pat.domain.model.member.OpenPatRequestInfo
 import com.pat.domain.model.member.ParticipatingContent
+import com.pat.domain.model.member.ParticipatingDetailContent
 import com.pat.domain.model.member.ParticipatingRequestInfo
 import com.pat.domain.repository.MemberRepository
 import com.pat.domain.repository.ProofRepository
@@ -19,7 +20,12 @@ class MemberRepositoryImpl @Inject constructor(
 ) : MemberRepository {
     override suspend fun getParticipatingPats(participatingRequestInfo: ParticipatingRequestInfo): Result<List<ParticipatingContent>> {
         val result = runCatching {
-            memberDataSource.getParticipating(participatingRequestInfo.lastId, participatingRequestInfo.size, participatingRequestInfo.sort, participatingRequestInfo.state)
+            memberDataSource.getParticipating(
+                participatingRequestInfo.lastId,
+                participatingRequestInfo.size,
+                participatingRequestInfo.sort,
+                participatingRequestInfo.state
+            )
         }
         return if (result.isSuccess) {
             Result.success(result.getOrThrow().content)
@@ -30,11 +36,28 @@ class MemberRepositoryImpl @Inject constructor(
 
     override suspend fun getOpenPats(openPatRequestInfo: OpenPatRequestInfo): Result<List<ParticipatingContent>> {
         val result = runCatching {
-            memberDataSource.getOpenPats(openPatRequestInfo.lastId, openPatRequestInfo.size, openPatRequestInfo.sort)
+            memberDataSource.getOpenPats(
+                openPatRequestInfo.lastId,
+                openPatRequestInfo.size,
+                openPatRequestInfo.sort
+            )
         }
         return if (result.isSuccess) {
             Result.success(result.getOrThrow().content)
         } else {
+            Result.failure(result.exception())
+        }
+    }
+
+    override suspend fun getParticipatingDetailPats(patId: Long): Result<ParticipatingDetailContent> {
+        val result = runCatching {
+            memberDataSource.getParticipatingDetail(patId)
+        }
+        return if (result.isSuccess) {
+            Logger.t("MainTest").i("${result.getOrThrow()}")
+            Result.success(result.getOrThrow())
+        } else {
+            Logger.t("MainTest").i("${result.exception().message}")
             Result.failure(result.exception())
         }
     }

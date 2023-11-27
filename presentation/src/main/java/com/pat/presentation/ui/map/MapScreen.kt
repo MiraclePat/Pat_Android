@@ -9,6 +9,6 @@ fun MapScreenView() {
     val scrollState = rememberScrollState()
 
 
-    ProofScreenView()
+//    ProofScreenView()
 }
 

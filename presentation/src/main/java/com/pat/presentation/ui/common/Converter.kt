@@ -32,6 +32,16 @@ val convertTimeFormat: (String) -> (String) = { inputTimeString ->
     result.padStart(2, '0')+":00:00"
 }
 
+val convertDateViewFormat: (String) -> (String) = { inputTimeString ->
+    val tempList = inputTimeString.split("-")
+    if (tempList.size != 3) {
+        // TODO 예외 처리
+    }
+    val month = tempList[1]
+    val day = tempList[2]
+    "${month}월 ${day}일"
+}
+
 val convertTimeViewFormat: (String) -> (String) = { inputTimeString ->
     val tempList = inputTimeString.split(":")
     val hour = tempList.first().trimStart('0')
@@ -39,3 +49,4 @@ val convertTimeViewFormat: (String) -> (String) = { inputTimeString ->
     val am = if ((hour.toIntOrNull() ?: 0) > 12) "오전" else "오후"
     am + " ${hour}시"
 }
+

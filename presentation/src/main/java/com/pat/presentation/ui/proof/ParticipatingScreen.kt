@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.orhanobut.logger.Logger
 import com.pat.domain.model.member.ParticipatingContent
 import com.pat.presentation.R
@@ -50,7 +51,8 @@ import com.skydoves.landscapist.glide.GlideImage
 @Composable
 fun ParticipatingScreenView(
     modifier: Modifier = Modifier,
-    participatingViewModel: PattingViewModel = hiltViewModel()
+    participatingViewModel: PattingViewModel = hiltViewModel(),
+    navController: NavController,
 ) {
     val patStatusList = listOf("참여중인 팟", "참여예정 팟", "완료한 팟", "개설한 팟")
     val patState = remember { mutableStateOf(patStatusList.first()) }
@@ -84,30 +86,35 @@ fun ParticipatingScreenView(
         when (patState.value) {
             "참여중인 팟" -> {
                 uiState.content?.forEach { participatingContent ->
-                    ParticipatePat(content = participatingContent)
+                    ParticipatePat(content = participatingContent,
+                        onClick = { navController.navigate("participatingDetail/${participatingContent.patId}") }
+                    )
                 }
             }
 
             "참여예정 팟" -> {
                 participatingViewModel.getInProgress()
                 uiState.content?.forEach { participatingContent ->
-                    ParticipatePat(content = participatingContent)
-                }
-            }
+                    ParticipatePat(content = participatingContent,
+                        onClick = { navController.navigate("participatingDetail/${participatingContent.patId}") }
+                    )
+                }            }
 
             "완료한 팟" -> {
                 participatingViewModel.getCompleted()
                 uiState.content?.forEach { participatingContent ->
-                    ParticipatePat(content = participatingContent)
-                }
-            }
+                    ParticipatePat(content = participatingContent,
+                        onClick = { navController.navigate("participatingDetail/${participatingContent.patId}") }
+                    )
+                }            }
 
             "개설한 팟" -> {
                 participatingViewModel.getOpenPats()
                 uiState.content?.forEach { participatingContent ->
-                    ParticipatePat(content = participatingContent)
-                }
-            }
+                    ParticipatePat(content = participatingContent,
+                        onClick = { navController.navigate("participatingDetail/${participatingContent.patId}") }
+                    )
+                }            }
         }
     }
 }
@@ -129,7 +136,8 @@ fun PatStatus(modifier: Modifier = Modifier, patState: MutableState<String>, tex
 @Composable
 fun ParticipatePat(
     modifier: Modifier = Modifier,
-    content: ParticipatingContent
+    content: ParticipatingContent,
+    onClick: () -> Unit
 ) {
     var spreadState by remember { mutableStateOf(false) }
     val spreadHeight = if (!spreadState) 58.dp else 186.dp
@@ -176,7 +184,9 @@ fun ParticipatePat(
         }
         if (spreadState) {
             Spacer(modifier.padding(top = 16.dp))
-            Row() {
+            Row(modifier.clickable {
+                onClick()
+            }) {
                 GlideImage(
                     modifier = modifier
                         .size(110.dp)

@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.orhanobut.logger.Logger
-import com.pat.domain.model.proof.ProofContent
+import com.pat.domain.model.member.ParticipatingDetailContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
 import com.pat.presentation.ui.common.DayButtonList
@@ -52,6 +52,8 @@ import com.pat.presentation.ui.common.FinalButton
 import com.pat.presentation.ui.common.IconWithTextView
 import com.pat.presentation.ui.common.SelectImage
 import com.pat.presentation.ui.common.SimpleTextView
+import com.pat.presentation.ui.common.convertDateViewFormat
+import com.pat.presentation.ui.common.convertTimeViewFormat
 import com.pat.presentation.ui.common.setUnderLine
 import com.pat.presentation.ui.pat.DateText
 import com.pat.presentation.ui.theme.FailCircleColor
@@ -73,14 +75,15 @@ import com.pat.presentation.ui.theme.RemainColor
 import com.pat.presentation.ui.theme.SuccessCircleColor
 import com.pat.presentation.ui.theme.SuccessTextColor
 import com.pat.presentation.ui.theme.Typography
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProofScreenView(
     modifier: Modifier = Modifier,
-    pattingViewModel: ProofViewModel = hiltViewModel()
+    proofViewModel: ProofViewModel = hiltViewModel()
 ) {
-    val uiState by pattingViewModel.uiState.collectAsState()
+    val uiState by proofViewModel.uiState.collectAsState()
     LaunchedEffect(uiState.content) {
         Logger.t("MainTest").i("${uiState.content}")
     }
@@ -112,7 +115,9 @@ fun ProofScreenView(
                 .padding(innerPadding)
                 .verticalScroll(scrollState),
         ) {
-            ProofScreen(content = uiState.content)
+            if (uiState.content != null){
+                ProofScreen(content = uiState.content!!)
+            }
         }
     }
 }
@@ -120,10 +125,14 @@ fun ProofScreenView(
 @Composable
 fun ProofScreen(
     modifier: Modifier = Modifier,
-    content: List<ProofContent>?
+    content: ParticipatingDetailContent
 ) {
     var spreadState by remember { mutableStateOf(false) }
     var myProofState by remember { mutableStateOf(true) }
+    val viewStartTime = convertTimeViewFormat(content.startTime)
+    val viewEndTime = convertTimeViewFormat(content.endTime)
+    val viewStartDate = convertDateViewFormat(content.startDate)
+    val viewEndDate = convertDateViewFormat(content.endDate)
 
 
     Column(
@@ -135,14 +144,14 @@ fun ProofScreen(
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            CategoryBox(
-                category = "환경",
-                isSelected = true
-            )
+//            CategoryBox(
+//                category = content.category,
+//                isSelected = true
+//            )
             Spacer(modifier = modifier.padding(horizontal = 8.dp))
             Text(
                 style = Typography.displayLarge,
-                text = "강아지 산책",
+                text = content.patName,
                 fontSize = 20.sp,
                 color = Gray900,
                 modifier = modifier.padding(3.dp)
@@ -177,7 +186,7 @@ fun ProofScreen(
         ) {
             Row() {
                 SimpleTextView(
-                    text = "서울시 관악구 신사동",
+                    text = content.location,
                     vectorResource = R.drawable.ic_map,
                     spacePadding = 6.dp,
                     style = Typography.labelSmall.copy(
@@ -185,9 +194,9 @@ fun ProofScreen(
                         color = Gray800
                     )
                 )
-                Spacer(modifier = modifier.padding(horizontal = 8.dp))
+                Spacer(modifier = modifier.padding(horizontal = 8.dp).weight(1f))
                 SimpleTextView(
-                    text = "11월 13일 - 11월 27일",
+                    text = "$viewStartDate - $viewEndDate",
                     vectorResource = R.drawable.ic_calendar,
                     spacePadding = 6.dp,
                     style = Typography.labelSmall.copy(
@@ -199,7 +208,7 @@ fun ProofScreen(
             Spacer(modifier = modifier.padding(bottom = 12.dp))
             Row() {
                 SimpleTextView(
-                    text = "오전 11시 - 오후 11시",
+                    text = "$viewStartTime - $viewEndTime",
                     vectorResource = R.drawable.ic_alram,
                     spacePadding = 6.dp,
                     style = Typography.labelSmall.copy(
@@ -209,7 +218,7 @@ fun ProofScreen(
                 )
                 Spacer(modifier = modifier.padding(horizontal = 8.dp))
                 SimpleTextView(
-                    text = "월,수,금 인증",
+                    text = "${content.days} 인증",
                     vectorResource = R.drawable.na_circle_check,
                     spacePadding = 6.dp,
                     style = Typography.labelSmall.copy(
@@ -226,7 +235,7 @@ fun ProofScreen(
             Text("팟 상세정보 펼치기", style = Typography.titleLarge, color = Gray800)
             Spacer(modifier.weight(1f))
             Icon(
-                modifier = modifier.size(42.dp),
+                modifier = modifier.size(24.dp),
                 imageVector = ImageVector.vectorResource(
                     id = if (!spreadState) R.drawable.ic_caret_down else R.drawable.ic_caret_up_sm
                 ),
@@ -247,7 +256,7 @@ fun ProofScreen(
                 Text("팟 소개", style = Typography.titleLarge, color = Gray800)
                 Spacer(modifier.padding(bottom = 14.dp))
                 IconWithTextView(
-                    "반려동물과 함께 하루 2번 산책을 함께해요!",
+                    "팟 디테일이 빠졌어요!",
                     iconResource = R.drawable.ic_chat_dot
                 )
                 Spacer(modifier.padding(bottom = 28.dp))
@@ -255,7 +264,7 @@ fun ProofScreen(
                 Text("위치 정보", style = Typography.titleLarge, color = Gray800)
                 Spacer(modifier.padding(bottom = 14.dp))
                 IconWithTextView(
-                    "서울특별시 강남구 테헤란로 123",
+                    content.location,
                     iconResource = R.drawable.ic_map
                 )
                 Spacer(modifier.padding(bottom = 28.dp))
@@ -263,11 +272,13 @@ fun ProofScreen(
                 Text("시작일 - 종료일", style = Typography.titleLarge, color = Gray800)
                 Spacer(modifier.padding(bottom = 14.dp))
                 DateText(
+                    startDate = viewStartDate,
+                    endDate = viewEndDate,
                     iconResource = R.drawable.ic_calendar
                 )
                 Spacer(modifier.padding(bottom = 28.dp))
 
-                Text("인증 빈도", style = Typography.titleLarge, color = Gray800)
+                Text("인증 빈도 / 인증 빈도 더미테이더 연결 필요합니다", style = Typography.titleLarge, color = Gray800)
                 Spacer(modifier.padding(bottom = 14.dp))
                 DayButtonList()
                 Spacer(modifier.padding(bottom = 28.dp))
@@ -275,18 +286,24 @@ fun ProofScreen(
                 Text("인증 가능시간", style = Typography.titleLarge, color = Gray800)
                 Spacer(modifier.padding(bottom = 14.dp))
                 IconWithTextView(
-                    "오전 11시부터 오후 11시까지",
+                    "${viewStartTime}부터 ${viewEndTime}까지",
                     iconResource = R.drawable.ic_alram
                 )
-                Spacer(modifier.padding(bottom = 28.dp))
+                Spacer(modifier.padding(bottom = 24.dp))
+                Box(
+                    modifier
+                        .fillMaxWidth()
+                        .height(10.dp)
+                        .background(Gray50)
+                )
             }
         }
 
-        Spacer(modifier.padding(bottom = 34.dp))
+        Spacer(modifier.padding(bottom = 24.dp))
         Text("인증 방법", style = Typography.titleLarge, color = Gray800)
         Spacer(modifier.padding(bottom = 14.dp))
         IconWithTextView(
-            "목줄을 찬 반려동물이 바깥 풍경과 함꼐 나오도록 사진을 찍어주세요.",
+            content.proofDetail,
             iconResource = R.drawable.ic_chat_check
         )
         Spacer(modifier.padding(bottom = 14.dp))
@@ -339,9 +356,9 @@ fun ProofScreen(
         }
         Spacer(modifier = modifier.padding(bottom = 24.dp))
         if (myProofState) {
-            ProofStatus(success = 24, fail = 8)
+            ProofStatus(success = content.myProof, fail = content.myFailProof, all = content.maxProof)
         } else {
-            ProofStatus(success = 24, fail = 8, isAll = "전체 ")
+            ProofStatus(success = content.allProof, fail = content.allFailProof, all = content.allMaxProof)
         }
         FinalButton(text = "인증하기")
     }
@@ -352,6 +369,7 @@ fun ProofStatus(
     modifier: Modifier = Modifier,
     success: Int,
     fail: Int,
+    all: Int,
     isAll: String = "",
     imgUriList: List<String> = listOf()
 ) {
@@ -359,16 +377,16 @@ fun ProofStatus(
     Row() {
         Text("${isAll}인증 성공 횟수", style = Typography.titleLarge, color = Gray600, fontSize = 14.sp)
         Spacer(modifier = modifier.weight(1f))
-        Text("3회 성공", style = Typography.titleLarge, color = PrimaryMain, fontSize = 18.sp)
+        Text("${success}회 성공", style = Typography.titleLarge, color = PrimaryMain, fontSize = 18.sp)
         Spacer(modifier = modifier.padding(end = 5.dp))
-        Text("/ 총 20회", style = Typography.labelSmall, color = Gray600, fontSize = 14.sp)
+        Text("/ 총 ${all}회", style = Typography.labelSmall, color = Gray600, fontSize = 14.sp)
     }
     Row(modifier = modifier.padding(top = 12.dp)) {
         Text("${isAll}인증 실패 횟수", style = Typography.titleLarge, color = Gray600, fontSize = 14.sp)
         Spacer(modifier = modifier.weight(1f))
-        Text("0회 실패", style = Typography.titleLarge, color = Gray600, fontSize = 18.sp)
+        Text("${fail}회 실패", style = Typography.titleLarge, color = Gray600, fontSize = 18.sp)
         Spacer(modifier = modifier.padding(end = 5.dp))
-        Text("/ 총 20회", style = Typography.labelSmall, color = Gray600, fontSize = 14.sp)
+        Text("/ 총 ${all}회", style = Typography.labelSmall, color = Gray600, fontSize = 14.sp)
     }
     Spacer(modifier = modifier.padding(bottom = 28.dp))
     Text(title, style = Typography.titleLarge, color = Gray800)
@@ -384,30 +402,30 @@ fun ProofStatus(
             text = "성공률",
             textColor = SuccessTextColor,
             circleColor = SuccessCircleColor,
-            percentage = success
+            percentage = (success / all.toFloat() * 100).roundToInt()
         )
         Spacer(modifier = modifier.padding(end = 12.dp))
         RatioText(
             text = "실패율",
             textColor = FailTextColor,
             circleColor = FailCircleColor,
-            percentage = fail
+            percentage = (fail / all.toFloat() * 100).roundToInt()
         )
         Spacer(modifier = modifier.padding(end = 12.dp))
         RatioText(
             text = "남은 달성률",
             textColor = Gray700,
             circleColor = RemainColor,
-            percentage = 100 - success - fail
+            percentage = ((all - success - fail) / all.toFloat() * 100).roundToInt()
         )
     }
-    PercentBar(success = success, fail = fail)
+    PercentBar(success = success, fail = fail, all = all)
     Spacer(modifier = modifier.padding(bottom = 36.dp))
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun PercentBar(modifier: Modifier = Modifier, success: Int, fail: Int) {
+fun PercentBar(modifier: Modifier = Modifier, success: Int, fail: Int, all: Int) {
     FlowRow(
         modifier
             .fillMaxWidth()
@@ -417,20 +435,20 @@ fun PercentBar(modifier: Modifier = Modifier, success: Int, fail: Int) {
     ) {
         Box(
             modifier
-                .fillMaxWidth(success / 100f)
+                .fillMaxWidth(success / all.toFloat())
                 .fillMaxHeight()
                 .clip(RoundedCornerShape(topStart = 100.dp, bottomStart = 100.dp))
                 .background(SuccessCircleColor)
         )
         Box(
             modifier
-                .fillMaxWidth(fail / 100f)
+                .fillMaxWidth(fail / all.toFloat())
                 .fillMaxHeight()
                 .background(FailCircleColor)
         )
         Box(
             modifier
-                .fillMaxWidth((100 - success - fail) / 100f)
+                .fillMaxWidth((all - success - fail) / all.toFloat())
                 .fillMaxHeight()
                 .clip(RoundedCornerShape(topEnd = 100.dp, bottomEnd = 100.dp))
                 .background(Gray200)
