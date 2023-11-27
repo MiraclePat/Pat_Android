@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pat.domain.model.proof.ProofPatInfo
 import com.pat.domain.usecase.image.GetByteArrayByUriUseCase
-import com.pat.domain.usecase.pat.ProofPatUseCase
+import com.pat.domain.usecase.proof.ProofPatUseCase
 import com.pat.presentation.util.image.byteArrayToBitmap
 import com.pat.presentation.util.image.getCompressedBytes
 import com.pat.presentation.util.image.getRotatedBitmap

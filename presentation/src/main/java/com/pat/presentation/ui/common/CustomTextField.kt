@@ -44,7 +44,8 @@ fun CustomTextField(
     placeholderText: String,
     style: TextStyle = Typography.labelMedium,
     maxLength: Int,
-    inputEnter: () -> Unit,
+    maxLines: Int = Int.MAX_VALUE,
+    inputEnter: () -> Unit = {},
     onScreen : MutableState<Boolean> = rememberSaveable {
         mutableStateOf(false)
     },
@@ -81,6 +82,7 @@ fun CustomTextField(
                 inputEnter()
             }
         ),
+        maxLines = maxLines,
         decorationBox = { innerTextField ->
             Row(
                 modifier

@@ -118,7 +118,7 @@ fun PatDetailView(
 fun PostDetailScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    content: PatDetailContent?,
+    content: PatDetailContent,
     patDetailViewModel: PatDetailViewModel,
 ) {
     var isOpenBtnClicked by remember { mutableStateOf(false) }

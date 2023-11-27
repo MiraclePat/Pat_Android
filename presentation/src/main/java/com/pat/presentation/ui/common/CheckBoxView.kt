@@ -24,7 +24,6 @@ import com.pat.presentation.R
 import com.pat.presentation.ui.theme.Gray300
 import com.pat.presentation.ui.theme.Gray800
 import com.pat.presentation.ui.theme.PrimaryMain
-import com.weit.domain.repository.image.GalleryRepository
 
 @Composable
 fun CheckBoxView(

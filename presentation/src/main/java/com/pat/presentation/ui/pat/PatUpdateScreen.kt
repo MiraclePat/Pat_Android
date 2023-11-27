@@ -229,7 +229,7 @@ fun PatUpdateScreen(
 
             Text(text = "팟 상세정보", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
-            SelectImageList()
+//            SelectImageList()
             Spacer(modifier = modifier.size(36.dp))
 
             Text(text = "위치정보", style = Typography.titleLarge)
@@ -239,7 +239,7 @@ fun PatUpdateScreen(
                     .fillMaxWidth()
                     .height(36.dp)
             ) {
-                SelectLocationButtonList(modifier.weight(1f), locationState = locationSelect)
+//                SelectLocationButtonList(modifier.weight(1f), locationState = locationSelect)
             }
             Spacer(modifier = modifier.size(36.dp))
 
@@ -344,9 +344,9 @@ fun PatUpdateScreen(
             Text(text = "인증사진 예시", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
             Row() {
-                ExampleImageView(text = "올바른 예시", backColor = GreenBack, textColor = GreenText)
-                Spacer(modifier = modifier.size(10.dp))
-                ExampleImageView(text = "잘못된 예시", backColor = RedBack, textColor = RedText)
+//                ExampleImageView(text = "올바른 예시", backColor = GreenBack, textColor = GreenText)
+//                Spacer(modifier = modifier.size(10.dp))
+//                ExampleImageView(text = "잘못된 예시", backColor = RedBack, textColor = RedText)
             }
             Spacer(modifier = modifier.size(36.dp))
 

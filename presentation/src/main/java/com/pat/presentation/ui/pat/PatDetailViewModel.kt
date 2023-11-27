@@ -81,13 +81,13 @@ class PatDetailViewModel @Inject constructor(
 
     fun updatePat(patId: Long, pat: CreatePatInfoDetail) {
         viewModelScope.launch {
-            val result =
-                updatePatUseCase(patId, CreatePatInfo("", "", listOf(), listOf(), pat))
-            if (result.isSuccess) {
-                result.getOrThrow()
-            } else {
-                //TODO 에러 처리
-            }
+//            val result =
+//                updatePatUseCase(patId, CreatePatInfo("", "", listOf(), listOf(), pat))
+//            if (result.isSuccess) {
+//                result.getOrThrow()
+//            } else {
+//                //TODO 에러 처리
+//            }
         }
     }
 }

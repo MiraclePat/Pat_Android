@@ -24,8 +24,10 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -42,6 +44,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.orhanobut.logger.Logger
 import com.pat.domain.model.member.ParticipatingDetailContent
 import com.pat.presentation.R
@@ -50,12 +53,15 @@ import com.pat.presentation.ui.common.DayButtonList
 import com.pat.presentation.ui.common.ExampleImageView
 import com.pat.presentation.ui.common.FinalButton
 import com.pat.presentation.ui.common.IconWithTextView
+import com.pat.presentation.ui.common.SelectButton
 import com.pat.presentation.ui.common.SelectImage
 import com.pat.presentation.ui.common.SimpleTextView
 import com.pat.presentation.ui.common.convertDateViewFormat
 import com.pat.presentation.ui.common.convertTimeViewFormat
 import com.pat.presentation.ui.common.setUnderLine
 import com.pat.presentation.ui.pat.DateText
+import com.pat.presentation.ui.pat.PattingViewModel
+import com.pat.presentation.ui.pat.ProofImageView
 import com.pat.presentation.ui.theme.FailCircleColor
 import com.pat.presentation.ui.theme.FailTextColor
 import com.pat.presentation.ui.theme.Gray200
@@ -75,12 +81,15 @@ import com.pat.presentation.ui.theme.RemainColor
 import com.pat.presentation.ui.theme.SuccessCircleColor
 import com.pat.presentation.ui.theme.SuccessTextColor
 import com.pat.presentation.ui.theme.Typography
+import com.pat.presentation.ui.theme.White
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProofScreenView(
     modifier: Modifier = Modifier,
+    navController : NavController,
+    viewModel: PattingViewModel,
     proofViewModel: ProofViewModel = hiltViewModel()
 ) {
     val uiState by proofViewModel.uiState.collectAsState()
@@ -115,17 +124,20 @@ fun ProofScreenView(
                 .padding(innerPadding)
                 .verticalScroll(scrollState),
         ) {
-            if (uiState.content != null){
-                ProofScreen(content = uiState.content!!)
+            if (uiState.content != null) {
+                ProofScreen(content = uiState.content!!, viewModel = viewModel, navController = navController)
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProofScreen(
     modifier: Modifier = Modifier,
-    content: ParticipatingDetailContent
+    viewModel: PattingViewModel,
+    content: ParticipatingDetailContent,
+    navController: NavController,
 ) {
     var spreadState by remember { mutableStateOf(false) }
     var myProofState by remember { mutableStateOf(true) }
@@ -133,6 +145,11 @@ fun ProofScreen(
     val viewEndTime = convertTimeViewFormat(content.endTime)
     val viewStartDate = convertDateViewFormat(content.startDate)
     val viewEndDate = convertDateViewFormat(content.endDate)
+    val sheetState = rememberModalBottomSheetState()
+    var showBottomSheet by remember { mutableStateOf(false) }
+    val proofBitmap by viewModel.proofBitmap.collectAsState() //인증사진
+    val bottomSheetState by viewModel.bottomSheetState.collectAsState()
+
 
 
     Column(
@@ -194,7 +211,11 @@ fun ProofScreen(
                         color = Gray800
                     )
                 )
-                Spacer(modifier = modifier.padding(horizontal = 8.dp).weight(1f))
+                Spacer(
+                    modifier = modifier
+                        .padding(horizontal = 8.dp)
+                        .weight(1f)
+                )
                 SimpleTextView(
                     text = "$viewStartDate - $viewEndDate",
                     vectorResource = R.drawable.ic_calendar,
@@ -308,19 +329,19 @@ fun ProofScreen(
         )
         Spacer(modifier.padding(bottom = 14.dp))
         Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-            ExampleImageView(
-                text = "올바른 예시",
-                backColor = GreenBack,
-                textColor = GreenText,
-                hasSource = "여기에 사진 uri 추가"
-            )
-            Spacer(modifier = modifier.size(10.dp))
-            ExampleImageView(
-                text = "잘못된 예시",
-                backColor = RedBack,
-                textColor = RedText,
-                hasSource = "여기에 uri 추가"
-            )
+//            ExampleImageView(
+//                text = "올바른 예시",
+//                backColor = GreenBack,
+//                textColor = GreenText,
+//                hasSource = "여기에 사진 uri 추가"
+//            )
+//            Spacer(modifier = modifier.size(10.dp))
+//            ExampleImageView(
+//                text = "잘못된 예시",
+//                backColor = RedBack,
+//                textColor = RedText,
+//                hasSource = "여기에 uri 추가"
+//            )
         }
         Spacer(modifier = modifier.padding(top = 28.dp))
         Box(
@@ -356,11 +377,60 @@ fun ProofScreen(
         }
         Spacer(modifier = modifier.padding(bottom = 24.dp))
         if (myProofState) {
-            ProofStatus(success = content.myProof, fail = content.myFailProof, all = content.maxProof)
+            ProofStatus(
+                success = content.myProof,
+                fail = content.myFailProof,
+                all = content.maxProof
+            )
         } else {
-            ProofStatus(success = content.allProof, fail = content.allFailProof, all = content.allMaxProof)
+            ProofStatus(
+                success = content.allProof,
+                fail = content.allFailProof,
+                all = content.allMaxProof
+            )
         }
-        FinalButton(text = "인증하기")
+        FinalButton(text = "인증하기", onClick = {showBottomSheet= true})
+        if (showBottomSheet || bottomSheetState) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    showBottomSheet = false
+                    viewModel.clearBitmap()
+                },
+                sheetState = sheetState,
+                modifier = modifier.height(320.dp)
+            ) {
+                Column(
+                    modifier = modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    Text(
+                        text = "인증할 사진을 첨부해주세요!",
+                        style = Typography.labelMedium,
+                        color = Gray800,
+                    )
+
+                    Spacer(modifier.padding(bottom = 16.dp))
+
+                    ProofImageView(navController = navController, bitmap = proofBitmap, viewModel = viewModel, realTime = true)
+
+                    Spacer(modifier.padding(bottom = 32.dp))
+
+
+                    SelectButton(
+                        text = "인증하기",
+                        onClick = { viewModel.proofPat() },
+                        backColor = if(proofBitmap == null) Gray300 else PrimaryMain,
+                        textColor = if(proofBitmap == null) White else White,
+                        cornerSize = 100.dp,
+                        stokeColor = if(proofBitmap == null) Gray300 else PrimaryMain,
+                        stokeWidth = 1.dp
+                    )
+
+                    Spacer(modifier.padding(bottom = 16.dp))
+
+                }
+            }
+        }
     }
 }
 
@@ -393,9 +463,9 @@ fun ProofStatus(
 
     // TODO 연동 시 lazyRow로 수정
     Row(modifier.padding(top = 12.dp)) {
-        SelectImage()
+//        SelectImage()
         Spacer(modifier = modifier.padding(end = 10.dp))
-        SelectImage()
+//        SelectImage()
     }
     Row(modifier.padding(top = 24.dp)) {
         RatioText(

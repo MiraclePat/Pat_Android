@@ -6,6 +6,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -59,6 +62,8 @@ import com.pat.presentation.ui.common.convertDateFormat
 import com.pat.presentation.ui.common.convertTimeFormat
 import com.pat.presentation.ui.post.components.PostRepImageView
 import com.pat.presentation.ui.post.components.SearchResultList
+import com.pat.presentation.ui.post.components.SelectDayButtonList
+import com.pat.presentation.ui.theme.Gray100
 import com.pat.presentation.ui.theme.Gray200
 import com.pat.presentation.ui.theme.Gray300
 import com.pat.presentation.ui.theme.Gray400
@@ -167,43 +172,12 @@ fun PostScreenBody(
 
     val searchPlaceResult by viewModel.searchPlaceResult.collectAsState() //팟 상세이미지들
 
-    Column() {
-        Box(
-            modifier
-                .background(Gray100)
-                .fillMaxWidth()
-                .height(160.dp)
-                .clickable {
-                    // TODO click Event
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            Row(
-                modifier = modifier
-                    .width(141.dp)
-                    .height(36.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .border(1.dp, color = PrimaryMain, RoundedCornerShape(4.dp))
-                    .background(White),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "썸네일 추가하기",
-                    style = Typography.labelMedium,
-                    color = PrimaryMain,
-                )
-                Spacer(modifier = modifier.size(4.dp))
-                Icon(
-                    modifier = modifier.size(16.dp),
-                    painter = painterResource(id = R.drawable.ic_add),
-                    contentDescription = "썸네일 추가"
-                )
-            }
-        }
-
     Column {
-        PostRepImageView(navController = navController, bitmap = repBitmap, viewModel = viewModel)
+        PostRepImageView(
+            navController = navController,
+            bitmap = repBitmap,
+            viewModel = viewModel
+        )
 
         Spacer(modifier = modifier.size(20.dp))
         Column(modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
@@ -219,9 +193,8 @@ fun PostScreenBody(
             CustomTextField(
                 placeholderText = "최대 15자",
                 state = title,
-                maxLength = 15,
-                inputEnter = {})
-            CustomTextField(placeholderText = "최대 15자", maxLength = 15, state = title)
+                maxLength = 15
+            )
             Spacer(modifier = modifier.size(36.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -267,7 +240,6 @@ fun PostScreenBody(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 state = maxPerson,
                 maxLength = 5,
-                inputEnter = {}
             )
             Spacer(modifier = modifier.size(36.dp))
 
@@ -348,7 +320,7 @@ fun PostScreenBody(
             CustomTextField(
                 placeholderText = "최대 500자",
                 state = patDetail,
-                maxLength = 500
+                maxLength = 500,
             )
             Spacer(modifier = modifier.size(36.dp))
 
@@ -356,7 +328,7 @@ fun PostScreenBody(
                 Text(text = "인증 빈도", style = Typography.titleLarge)
                 Spacer(modifier = modifier.size(6.dp))
                 Text(
-                    text = "최대 5장 가능, 사진1부터 차례대로 표시돼요.",
+                    text = "다중선택 가능해요",
                     style = Typography.labelMedium,
                     color = Gray400,
                     fontSize = 12.sp
@@ -370,7 +342,11 @@ fun PostScreenBody(
 
             Text(text = "인증방법 설명", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
-            CustomTextField(placeholderText = "최대 30자", maxLength = 30, state = proofDetail)
+            CustomTextField(
+                placeholderText = "최대 30자",
+                maxLength = 30,
+                state = proofDetail
+            )
             Spacer(modifier = modifier.size(36.dp))
 
             Text(text = "인증사진 예시", style = Typography.titleLarge)
@@ -445,7 +421,6 @@ fun PostScreenBody(
     }
 }
 
-
 @Composable
 fun SelectDayButtonList(state: SnapshotStateList<String>) {
     val days = listOf<String>("월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일")
@@ -495,7 +470,7 @@ fun SelectLocationButtonList(
     searchValue: MutableState<String>,
     onSearchScreen: MutableState<Boolean>,
     searchPlaceResult: List<PlaceDetailInfo>
-    ) {
+) {
 
     val locationButtonText = listOf<String>("주소 검색", "위치정보 없음")
 
@@ -526,7 +501,12 @@ fun SelectLocationButtonList(
 
     when (locationState.value) {
         "주소 검색" -> {
-            CustomTextField(placeholderText = "서초동 스타벅스", maxLength = 30, state=searchValue,onScreen = onSearchScreen, viewModel = postViewModel,
+            CustomTextField(placeholderText = "서초동 스타벅스",
+                maxLength = 30,
+                state = searchValue,
+                onScreen = onSearchScreen,
+                viewModel = postViewModel,
+                maxLines = 1,
                 inputEnter = {
                     //TODO NOT WORKING
                     postViewModel.onSearch(searchValue.value)
@@ -539,10 +519,15 @@ fun SelectLocationButtonList(
                 color = PrimaryMain
             )
 
-            if(onSearchScreen.value){
-                SearchResultList(places = searchPlaceResult, placeText = searchValue, postViewModel = postViewModel)
+            if (onSearchScreen.value) {
+                SearchResultList(
+                    places = searchPlaceResult,
+                    placeText = searchValue,
+                    postViewModel = postViewModel
+                )
             }
         }
+
         "위치정보 없음" -> Box(contentAlignment = Alignment.Center) {
             Text("위치정보 없음 선택 시 지도에 나타나지 않아요.", style = Typography.bodySmall)
         }

@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -34,6 +35,7 @@ import com.pat.presentation.ui.post.PostScreenView
 import com.pat.presentation.ui.proof.ParticipatingScreenView
 import com.pat.presentation.ui.proof.ProofScreen
 import com.pat.presentation.ui.post.PostViewModel
+import com.pat.presentation.ui.proof.ProofScreenView
 import com.pat.presentation.ui.setting.SettingScreenView
 import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.PrimaryMain
@@ -81,7 +83,6 @@ fun NavigationGraph(navController: NavHostController) {
             ParticipatingScreenView(navController = navController)
         }
         composable(BottomNavItem.Map.screenRoute) {
-            MapScreenView(navController = navController,viewModel=pattingViewModel)
         }
         composable(BottomNavItem.Setting.screenRoute) {
             SettingScreenView()
@@ -104,10 +105,14 @@ fun NavigationGraph(navController: NavHostController) {
             PatDetailView(navController = navController)
         }
 
-        composable("camera/{bitmapType}") {backStackEntry ->
+        composable("camera/{bitmapType}") { backStackEntry ->
             val bitmapType = backStackEntry.arguments?.getString("bitmapType")
             if (bitmapType != null) {
-                SettingCamera(navController = navController, viewModel = postViewModel, bitmapType = bitmapType)
+                SettingCamera(
+                    navController = navController,
+                    viewModel = postViewModel,
+                    bitmapType = bitmapType
+                )
             }
         }
 
@@ -118,22 +123,22 @@ fun NavigationGraph(navController: NavHostController) {
         composable(
             route = "patUpdate/{patId}",
             arguments = listOf(
-                navArgument("patId"){
+                navArgument("patId") {
                     type = NavType.LongType
                     defaultValue = -1
                 }
-            )){
+            )) {
             PatUpdateView(navController = navController)
         }
         composable(
             route = "participatingDetail/{patId}",
             arguments = listOf(
-                navArgument("patId"){
+                navArgument("patId") {
                     type = NavType.LongType
                     defaultValue = -1
                 }
-            )){
-            ProofScreenView()
+            )) {
+            ProofScreenView(navController = navController, viewModel = pattingViewModel)
         }
     }
 }
