@@ -22,14 +22,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.pat.presentation.R
+import com.pat.presentation.ui.common.SelectImage
+import com.pat.presentation.ui.common.SettingCamera
 import com.pat.presentation.ui.home.HomeScreenView
 import com.pat.presentation.ui.map.MapScreenView
 import com.pat.presentation.ui.pat.PatDetailView
+import com.pat.presentation.ui.pat.PattingViewModel
+import com.pat.presentation.ui.pat.SettingPattingCamera
 import com.pat.presentation.ui.pat.PatUpdateView
 import com.pat.presentation.ui.post.PostScreenView
 import com.pat.presentation.ui.proof.ParticipatingScreenView
 import com.pat.presentation.ui.proof.ProofScreen
-import com.pat.presentation.ui.proof.ProofScreenView
+import com.pat.presentation.ui.post.PostViewModel
 import com.pat.presentation.ui.setting.SettingScreenView
 import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.PrimaryMain
@@ -64,6 +68,9 @@ sealed class BottomNavItem(
 
 @Composable
 fun NavigationGraph(navController: NavHostController) {
+    val postViewModel: PostViewModel = hiltViewModel()
+    val pattingViewModel: PattingViewModel = hiltViewModel()
+
     NavHost(navController = navController, startDestination = BottomNavItem.Home.screenRoute) {
         composable(BottomNavItem.Home.screenRoute) {
             HomeScreenView(
@@ -74,24 +81,40 @@ fun NavigationGraph(navController: NavHostController) {
             ParticipatingScreenView(navController = navController)
         }
         composable(BottomNavItem.Map.screenRoute) {
-            MapScreenView()
+            MapScreenView(navController = navController,viewModel=pattingViewModel)
         }
         composable(BottomNavItem.Setting.screenRoute) {
             SettingScreenView()
         }
         composable(POST) {
-            PostScreenView(onNavigateToHome = { navController.popBackStack() })
+            PostScreenView(
+                navController = navController,
+                onNavigateToHome = { navController.popBackStack() },
+                viewModel = postViewModel
+            )
         }
         composable(
             route = "patDetail/{patId}",
             arguments = listOf(
-                navArgument("patId"){
+                navArgument("patId") {
                     type = NavType.LongType
                     defaultValue = -1
                 }
-            )){
+            )) {
             PatDetailView(navController = navController)
         }
+
+        composable("camera/{bitmapType}") {backStackEntry ->
+            val bitmapType = backStackEntry.arguments?.getString("bitmapType")
+            if (bitmapType != null) {
+                SettingCamera(navController = navController, viewModel = postViewModel, bitmapType = bitmapType)
+            }
+        }
+
+        composable("pattingCamera") {
+            SettingPattingCamera(navController = navController, viewModel = pattingViewModel)
+        }
+
         composable(
             route = "patUpdate/{patId}",
             arguments = listOf(

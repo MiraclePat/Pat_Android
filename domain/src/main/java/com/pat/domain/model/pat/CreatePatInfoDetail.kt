@@ -4,8 +4,8 @@ data class CreatePatInfoDetail(
     val patName: String,
     val patDetail: String,
     val maxPerson: Int,
-    val latitude: Double,
-    val longitude: Double,
+    val latitude: Int,
+    val longitude: Int,
     val location: String,
     val category:String,
     val startTime:String,
@@ -13,6 +13,6 @@ data class CreatePatInfoDetail(
     val startDate:String,
     val endDate:String,
     val proofDetail:String,
-    val days:String,
+    val days:List<String>,
     val realtime:Boolean,
 )

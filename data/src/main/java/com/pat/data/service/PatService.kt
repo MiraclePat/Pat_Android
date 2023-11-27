@@ -25,7 +25,7 @@ interface PatService {
         @Query("category") category: String?,
         @Query("showFull") showFull: Boolean?,
         @Query("state") state: String?,
-    ): ListResponse<HomePatContentDTO>
+): ListResponse<HomePatContentDTO>
 
     @GET("/api/test/pats/map")
     suspend fun getMapPats(
@@ -47,9 +47,9 @@ interface PatService {
     @Multipart
     @POST("/api/test/pats")
     suspend fun createPat(
-        @Part repImg: MultipartBody.Part,
-        @Part correctImg: MultipartBody.Part,
-        @Part incorrectImg: List<MultipartBody.Part>,
+        @Part repImg : MultipartBody.Part,
+        @Part correctImg : MultipartBody.Part,
+        @Part incorrectImg: MultipartBody.Part,
         @Part bodyImg: List<MultipartBody.Part>,
         @Part pat: MultipartBody.Part,
     )
@@ -60,7 +60,7 @@ interface PatService {
         @Path("pat-id") patId: Long,
         @Part repImg: MultipartBody.Part,
         @Part correctImg: MultipartBody.Part,
-        @Part incorrectImg: List<MultipartBody.Part>,
+        @Part incorrectImg: MultipartBody.Part,
         @Part bodyImg: List<MultipartBody.Part>,
         @Part pat: MultipartBody.Part,
     ): Response<Unit>
