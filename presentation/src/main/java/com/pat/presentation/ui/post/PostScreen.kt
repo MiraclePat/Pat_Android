@@ -59,6 +59,7 @@ import com.pat.presentation.ui.common.WheelTimePickerView
 import com.pat.presentation.ui.common.convertDateFormat
 import com.pat.presentation.ui.common.convertTimeFormat
 import com.pat.presentation.ui.post.components.PostRepImageView
+import com.pat.presentation.ui.post.components.SearchResultList
 import com.pat.presentation.ui.theme.Gray200
 import com.pat.presentation.ui.theme.Gray300
 import com.pat.presentation.ui.theme.Gray500
@@ -529,61 +530,4 @@ fun SelectLocationButtonList(
 }
 
 
-@Composable
-fun SearchResultList(
-    places: List<PlaceDetailInfo>,
-    placeText: MutableState<String>,
-    postViewModel: PostViewModel,
-    modifier: Modifier = Modifier,
-) {
-    places.forEach{ place ->
-        SearchPlace(
-            title = place.title,
-            address = place.address,
-            onClick = {
-                placeText.value = place.title.toString()
-                postViewModel.selectPlace(place)
-            },
-            isSelected = placeText.value == place.title,
-        )
-        Spacer(modifier.padding(bottom = 10.dp))
 
-    }
-
-}
-
-@Composable
-fun SearchPlace(
-    title: String?,
-    address: String?,
-    onClick: () -> Unit,
-    isSelected: Boolean = false,
-    modifier: Modifier = Modifier,
-) {
-    val borderColor = if (isSelected) PrimaryMain else Gray200
-
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .border(
-                BorderStroke(1.dp, borderColor),
-                shape = RoundedCornerShape(4.dp)
-            )
-            .clickable { onClick() },
-        ) {
-
-            Column(){
-                Text(
-                    text = title.toString(), modifier = modifier.padding(3.dp), style = Typography.displaySmall,
-                    fontSize = 14.sp, color = Gray800
-                )
-                Text(
-                    text = address.toString(), modifier = modifier.padding(3.dp), style = Typography.displaySmall,
-                    fontSize = 12.sp, color = Gray800
-                )
-            }
-
-
-    }
-
-}

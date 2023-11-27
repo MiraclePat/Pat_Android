@@ -31,8 +31,7 @@ annotation class NaverNetworkObject
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-    private const val CLIENT_ID = "3raAwrsgI8xSjUyExoR6"
-    private const val CLIENT_SECRET = "hcUHGm9yKF"
+
     @NormalNetworkObject
     @Singleton
     @Provides
@@ -74,8 +73,8 @@ object NetworkModule {
             val headerInterceptor = Interceptor {
                 val request = it.request()
                     .newBuilder()
-                    .addHeader("X-Naver-Client-Id", CLIENT_ID)
-                    .addHeader("X-Naver-Client-Secret", CLIENT_SECRET)
+                    .addHeader("X-Naver-Client-Id", BuildConfig.CLIENT_ID)
+                    .addHeader("X-Naver-Client-Secret", BuildConfig.CLIENT_SECRET)
                     .build()
                 return@Interceptor it.proceed(request)
             }
