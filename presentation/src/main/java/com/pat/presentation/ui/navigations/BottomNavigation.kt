@@ -30,6 +30,7 @@ import com.pat.presentation.ui.map.MapScreenView
 import com.pat.presentation.ui.pat.PatDetailView
 import com.pat.presentation.ui.pat.PattingViewModel
 import com.pat.presentation.ui.pat.SettingPattingCamera
+import com.pat.presentation.ui.pat.PatUpdateView
 import com.pat.presentation.ui.post.PostScreenView
 import com.pat.presentation.ui.post.PostViewModel
 import com.pat.presentation.ui.proof.CertificationScreenView
@@ -103,14 +104,27 @@ fun NavigationGraph(navController: NavHostController) {
             )) {
             PatDetailView(navController = navController)
         }
+        
         composable("camera/{bitmapType}") {backStackEntry ->
             val bitmapType = backStackEntry.arguments?.getString("bitmapType")
             if (bitmapType != null) {
                 SettingCamera(navController = navController, viewModel = postViewModel, bitmapType = bitmapType)
             }
         }
+        
         composable("pattingCamera") {
             SettingPattingCamera(navController = navController, viewModel = pattingViewModel)
+        }
+              
+        composable(
+            route = "patUpdate/{patId}",
+            arguments = listOf(
+                navArgument("patId"){
+                    type = NavType.LongType
+                    defaultValue = -1
+                }
+            )){
+            PatUpdateView(navController = navController)
         }
     }
 }

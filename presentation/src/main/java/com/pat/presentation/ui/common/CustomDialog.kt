@@ -40,7 +40,10 @@ import com.pat.presentation.ui.theme.White
 fun CustomDialog(
     modifier: Modifier = Modifier,
     okRequest: () -> Unit,
-    state: MutableState<Boolean>
+    state: MutableState<Boolean>,
+    message: String,
+    okMessage: String,
+    cancelMessage: String
 ) {
     Dialog(onDismissRequest = { state.value = false }) {
         Box(
@@ -67,7 +70,7 @@ fun CustomDialog(
                 }
                 Spacer(modifier.padding(vertical = 8.dp))
                 Text(
-                    text = "공고글 작성을 취소하시겠어요?",
+                    text = message,
                     style = Typography.titleLarge,
                     color = Gray900,
                     fontSize = 18.sp
@@ -86,7 +89,7 @@ fun CustomDialog(
                             },
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(text = "계속 작성", style = Typography.labelMedium, color = White)
+                        Text(text = cancelMessage, style = Typography.labelMedium, color = White)
                     }
                     Spacer(modifier.padding(horizontal = 12.dp))
                     Box(
@@ -102,7 +105,7 @@ fun CustomDialog(
                             },
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(text = "작성 취소", style = Typography.labelMedium, color = Gray600)
+                        Text(text = okMessage , style = Typography.labelMedium, color = Gray600)
                     }
                 }
             }

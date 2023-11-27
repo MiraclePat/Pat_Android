@@ -2,6 +2,7 @@ package com.pat.presentation.ui.post
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -84,8 +85,16 @@ fun PostScreenView(
 
     val scrollState = rememberScrollState()
     val declarationDialogState = remember { mutableStateOf(false) }
+    BackHandler {
+        declarationDialogState.value = true
+    }
     if (declarationDialogState.value) {
-        CustomDialog(okRequest = onNavigateToHome, state = declarationDialogState)
+        CustomDialog(
+            okRequest = onNavigateToHome, state = declarationDialogState,
+            message = "공고글 작성을 취소하시겠어요?",
+            cancelMessage = "계속 작성",
+            okMessage = "작성 취소"
+        )
     }
     Scaffold(
         topBar = {
@@ -100,7 +109,6 @@ fun PostScreenView(
                 navigationIcon = {
                     IconButton(onClick = {
                         declarationDialogState.value = !declarationDialogState.value
-                        Log.e("custom", "${declarationDialogState.value}")
                     }) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_back_arrow),
@@ -128,7 +136,6 @@ fun PostScreenView(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostScreenBody(
     navController: NavController,
@@ -399,7 +406,6 @@ fun SelectDayButtonList(state: SnapshotStateList<String>) {
                 } else {
                     state.add(day)
                 }
-//                state.value = day
             },
             isSelected = state.contains(day),
             shape = RoundedCornerShape(22.dp),

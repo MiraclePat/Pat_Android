@@ -49,12 +49,13 @@ import com.orhanobut.logger.Logger
 import com.pat.domain.model.proof.ProofContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
+import com.pat.presentation.ui.common.DayButtonList
+import com.pat.presentation.ui.common.ExampleImageView
 import com.pat.presentation.ui.common.FinalButton
 import com.pat.presentation.ui.common.IconWithTextView
 import com.pat.presentation.ui.common.SelectButton
 import com.pat.presentation.ui.common.SimpleTextView
 import com.pat.presentation.ui.common.setUnderLine
-import com.pat.presentation.ui.pat.CategoryButtonList
 import com.pat.presentation.ui.pat.DateText
 import com.pat.presentation.ui.pat.PattingViewModel
 import com.pat.presentation.ui.pat.ProofImageView
@@ -279,7 +280,7 @@ fun PattingScreen(
 
                 Text("인증 빈도", style = Typography.titleLarge, color = Gray800)
                 Spacer(modifier.padding(bottom = 14.dp))
-                CategoryButtonList()
+                DayButtonList()
                 Spacer(modifier.padding(bottom = 28.dp))
 
                 Text("인증 가능시간", style = Typography.titleLarge, color = Gray800)
