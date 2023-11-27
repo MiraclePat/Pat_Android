@@ -1,12 +1,14 @@
 package com.pat.presentation.ui.common
 
 import android.util.Log
+import androidx.annotation.Dimension.Companion.DP
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -42,7 +44,6 @@ import com.pat.presentation.ui.theme.White
 @Composable
 fun CustomTextField(
     modifier: Modifier = Modifier,
-    height: Dp = 46.dp,
     placeholderText: String,
     style: TextStyle = Typography.labelMedium,
     maxLength: Int,
@@ -54,7 +55,7 @@ fun CustomTextField(
 
     BasicTextField(modifier = modifier
         .fillMaxWidth()
-        .height(height)
+        .heightIn(1.dp, Dp.Infinity)
         .clip(RoundedCornerShape(4.dp))
         .onFocusChanged {
             isFocused = it.hasFocus

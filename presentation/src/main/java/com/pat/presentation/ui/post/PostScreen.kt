@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -159,7 +157,7 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
                     .width(141.dp)
                     .height(36.dp)
                     .clip(RoundedCornerShape(4.dp))
-                    .border(1.dp, color = PrimaryMain)
+                    .border(1.dp, color = PrimaryMain, RoundedCornerShape(4.dp))
                     .background(White),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
@@ -189,7 +187,7 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
 
             Text(text = "팟 제목", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
-            CustomTextField(placeholderText = "최대 15자", state = title, maxLength = 15)
+            CustomTextField(placeholderText = "최대 15자", maxLength = 15, state = title)
             Spacer(modifier = modifier.size(36.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -221,7 +219,6 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
             Spacer(modifier = modifier.size(14.dp))
             CustomTextField(
                 placeholderText = "숫자만 입력해주세요. (최대 10,000명 가능)",
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 state = maxPerson,
                 maxLength = 5
             )
@@ -304,8 +301,7 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
             CustomTextField(
                 placeholderText = "최대 500자",
                 state = patDetail,
-                maxLength = 500,
-                height = 197.dp
+                maxLength = 500
             )
             Spacer(modifier = modifier.size(36.dp))
 
@@ -327,7 +323,7 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
 
             Text(text = "인증방법 설명", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
-            CustomTextField(placeholderText = "최대 30자", state = proofDetail, maxLength = 30)
+            CustomTextField(placeholderText = "최대 30자", maxLength = 30, state = proofDetail)
             Spacer(modifier = modifier.size(36.dp))
 
             Text(text = "인증사진 예시", style = Typography.titleLarge)
@@ -451,7 +447,7 @@ fun SelectLocationButtonList(
 
     when (locationState.value) {
         "주소 검색" -> {
-            CustomTextField(placeholderText = "서초동 스타벅스", maxLength = 30, state = locationState)
+            CustomTextField(placeholderText = "서초동 스타벅스", state = locationState, maxLength = 30)
             Spacer(modifier.padding(bottom = 24.dp))
             Text(
                 text = "아래 검색결과 중에서 선택해주세요!",
