@@ -87,7 +87,7 @@ fun PostRepImageView(
                     .width(141.dp)
                     .height(36.dp)
                     .clip(RoundedCornerShape(4.dp))
-                    .border(1.dp, color = PrimaryMain)
+                    .border(1.dp, color = PrimaryMain, RoundedCornerShape(4.dp))
                     .background(White)
                     .clickable {
                         showBottomSheet = true
@@ -96,7 +96,7 @@ fun PostRepImageView(
                 horizontalArrangement = Arrangement.Center,
             ) {
                 Text(
-                    text = "썸네일 고르기",
+                    text = "썸네일 추가하기",
                     style = Typography.labelMedium,
                     color = PrimaryMain,
                 )
@@ -104,7 +104,7 @@ fun PostRepImageView(
                 Icon(
                     modifier = modifier.size(16.dp),
                     painter = painterResource(id = R.drawable.ic_add),
-                    contentDescription = "썸네일 고르기"
+                    contentDescription = "썸네일 추가하기"
                 )
             }
 

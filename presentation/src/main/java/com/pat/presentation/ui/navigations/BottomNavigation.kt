@@ -32,8 +32,9 @@ import com.pat.presentation.ui.pat.PattingViewModel
 import com.pat.presentation.ui.pat.SettingPattingCamera
 import com.pat.presentation.ui.pat.PatUpdateView
 import com.pat.presentation.ui.post.PostScreenView
+import com.pat.presentation.ui.proof.ParticipatingScreenView
+import com.pat.presentation.ui.proof.ProofScreen
 import com.pat.presentation.ui.post.PostViewModel
-import com.pat.presentation.ui.proof.CertificationScreenView
 import com.pat.presentation.ui.proof.ProofScreenView
 import com.pat.presentation.ui.setting.SettingScreenView
 import com.pat.presentation.ui.theme.Gray400
@@ -79,10 +80,9 @@ fun NavigationGraph(navController: NavHostController) {
                 onNavigateToPost = { navController.navigate(POST) })
         }
         composable(BottomNavItem.Certification.screenRoute) {
-            CertificationScreenView(navController = navController)
+            ParticipatingScreenView(navController = navController)
         }
         composable(BottomNavItem.Map.screenRoute) {
-            MapScreenView(navController = navController,viewModel=pattingViewModel)
         }
         composable(BottomNavItem.Setting.screenRoute) {
             SettingScreenView()
@@ -104,27 +104,41 @@ fun NavigationGraph(navController: NavHostController) {
             )) {
             PatDetailView(navController = navController)
         }
-        
-        composable("camera/{bitmapType}") {backStackEntry ->
+
+        composable("camera/{bitmapType}") { backStackEntry ->
             val bitmapType = backStackEntry.arguments?.getString("bitmapType")
             if (bitmapType != null) {
-                SettingCamera(navController = navController, viewModel = postViewModel, bitmapType = bitmapType)
+                SettingCamera(
+                    navController = navController,
+                    viewModel = postViewModel,
+                    bitmapType = bitmapType
+                )
             }
         }
-        
+
         composable("pattingCamera") {
             SettingPattingCamera(navController = navController, viewModel = pattingViewModel)
         }
-              
+
         composable(
             route = "patUpdate/{patId}",
             arguments = listOf(
-                navArgument("patId"){
+                navArgument("patId") {
                     type = NavType.LongType
                     defaultValue = -1
                 }
-            )){
+            )) {
             PatUpdateView(navController = navController)
+        }
+        composable(
+            route = "participatingDetail/{patId}",
+            arguments = listOf(
+                navArgument("patId") {
+                    type = NavType.LongType
+                    defaultValue = -1
+                }
+            )) {
+            ProofScreenView(navController = navController, viewModel = pattingViewModel)
         }
     }
 }

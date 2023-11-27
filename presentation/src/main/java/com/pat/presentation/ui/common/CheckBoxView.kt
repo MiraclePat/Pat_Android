@@ -9,6 +9,8 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
@@ -26,8 +28,9 @@ import com.pat.presentation.ui.theme.PrimaryMain
 @Composable
 fun CheckBoxView(
     modifier: Modifier = Modifier,
-    checked: MutableState<Boolean>,
-    text: String
+    checked: MutableState<Boolean> = remember { mutableStateOf(true) },
+    text: String,
+    isRealtime: Boolean = false
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Checkbox(
@@ -39,12 +42,16 @@ fun CheckBoxView(
                 uncheckedColor = Gray300
             ),
             onCheckedChange = {
-                checked.value = it
+                if (isRealtime) checked.value = true
+                else checked.value = it
             })
         Spacer(modifier = modifier.padding(6.dp))
         ClickableText(
             text = AnnotatedString(text),
-            onClick = { checked.value = !checked.value },
+            onClick = {
+                if (isRealtime) checked.value = true
+                else checked.value = !checked.value
+            },
             style = TextStyle(
                 fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                 fontWeight = FontWeight.Normal,

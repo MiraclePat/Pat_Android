@@ -1,6 +1,5 @@
 package com.pat.presentation.ui.pat
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,12 +37,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.pat.domain.model.pat.CreatePatInfoDetail
 import com.pat.domain.model.pat.PatDetailContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBoxList
@@ -228,12 +224,12 @@ fun PatUpdateScreen(
 
             Text(text = "팟 제목", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
-            CustomTextField(placeholderText = "최대 15자", state = title, maxLength = 15)
+            CustomTextField(placeholderText = "최대 15자", maxLength = 15, state = title)
             Spacer(modifier = modifier.size(36.dp))
 
             Text(text = "팟 상세정보", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
-            SelectImageList()
+//            SelectImageList()
             Spacer(modifier = modifier.size(36.dp))
 
             Text(text = "위치정보", style = Typography.titleLarge)
@@ -243,7 +239,7 @@ fun PatUpdateScreen(
                     .fillMaxWidth()
                     .height(36.dp)
             ) {
-                SelectLocationButtonList(modifier.weight(1f), locationState = locationSelect)
+//                SelectLocationButtonList(modifier.weight(1f), locationState = locationSelect)
             }
             Spacer(modifier = modifier.size(36.dp))
 
@@ -251,7 +247,6 @@ fun PatUpdateScreen(
             Spacer(modifier = modifier.size(14.dp))
             CustomTextField(
                 placeholderText = "숫자만 입력해주세요. (최대 10,000명 가능)",
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 state = maxPerson,
                 maxLength = 5
             )
@@ -331,7 +326,7 @@ fun PatUpdateScreen(
 
             Text(text = "팟 소개", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
-            CustomTextField(placeholderText = "최대 500자", state = patDetail, maxLength = 500)
+            CustomTextField(placeholderText = "최대 500자", maxLength = 500, state = patDetail)
             Spacer(modifier = modifier.size(36.dp))
 
             Text(text = "인증 빈도", style = Typography.titleLarge)
@@ -343,15 +338,15 @@ fun PatUpdateScreen(
 
             Text(text = "인증방법 설명", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
-            CustomTextField(placeholderText = "최대 30자", state = proofDetail, maxLength = 30)
+            CustomTextField(placeholderText = "최대 30자", maxLength = 30, state = proofDetail)
             Spacer(modifier = modifier.size(36.dp))
 
             Text(text = "인증사진 예시", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
             Row() {
-                ExampleImageView(text = "올바른 예시", backColor = GreenBack, textColor = GreenText)
-                Spacer(modifier = modifier.size(10.dp))
-                ExampleImageView(text = "잘못된 예시", backColor = RedBack, textColor = RedText)
+//                ExampleImageView(text = "올바른 예시", backColor = GreenBack, textColor = GreenText)
+//                Spacer(modifier = modifier.size(10.dp))
+//                ExampleImageView(text = "잘못된 예시", backColor = RedBack, textColor = RedText)
             }
             Spacer(modifier = modifier.size(36.dp))
 

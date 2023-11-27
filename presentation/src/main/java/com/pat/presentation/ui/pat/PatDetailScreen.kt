@@ -116,10 +116,10 @@ fun PatDetailView(
 
 @Composable
 fun PostDetailScreen(
+    modifier: Modifier = Modifier,
     navController: NavController,
-    content: PatDetailContent?,
+    content: PatDetailContent,
     patDetailViewModel: PatDetailViewModel,
-    modifier: Modifier = Modifier
 ) {
     var isOpenBtnClicked by remember { mutableStateOf(false) }
     Logger.t("patdetail").i("${content}")

@@ -1,4 +1,4 @@
-package com.pat.domain.usecase.pat
+package com.pat.domain.usecase.proof
 
 import com.pat.domain.model.proof.ProofPatInfo
 import com.pat.domain.repository.ProofRepository

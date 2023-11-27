@@ -6,6 +6,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -61,8 +62,11 @@ import com.pat.presentation.ui.common.convertDateFormat
 import com.pat.presentation.ui.common.convertTimeFormat
 import com.pat.presentation.ui.post.components.PostRepImageView
 import com.pat.presentation.ui.post.components.SearchResultList
+import com.pat.presentation.ui.post.components.SelectDayButtonList
+import com.pat.presentation.ui.theme.Gray100
 import com.pat.presentation.ui.theme.Gray200
 import com.pat.presentation.ui.theme.Gray300
+import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.Gray500
 import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.Gray800
@@ -144,7 +148,7 @@ fun PostScreenBody(
     viewModel: PostViewModel,
 ) {
     val isRealTime = remember { mutableStateOf(false) }         // 사진 선택
-    val isGallery = remember { mutableStateOf(false) }          // 갤러리 선택
+    val isGallery = remember { mutableStateOf(true) }          // 갤러리 선택
 
     val title = rememberSaveable { mutableStateOf("") }         // 팟 제목
     val maxPerson = rememberSaveable { mutableStateOf("") }     // 최대 인원
@@ -168,9 +172,12 @@ fun PostScreenBody(
 
     val searchPlaceResult by viewModel.searchPlaceResult.collectAsState() //팟 상세이미지들
 
-
     Column {
-        PostRepImageView(navController = navController, bitmap = repBitmap, viewModel = viewModel)
+        PostRepImageView(
+            navController = navController,
+            bitmap = repBitmap,
+            viewModel = viewModel
+        )
 
         Spacer(modifier = modifier.size(20.dp))
         Column(modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
@@ -186,11 +193,20 @@ fun PostScreenBody(
             CustomTextField(
                 placeholderText = "최대 15자",
                 state = title,
-                maxLength = 15,
-                inputEnter = {})
+                maxLength = 15
+            )
             Spacer(modifier = modifier.size(36.dp))
 
-            Text(text = "팟 상세정보", style = Typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "팟 상세정보", style = Typography.titleLarge)
+                Spacer(modifier = modifier.size(6.dp))
+                Text(
+                    text = "최대 5장 가능, 사진1부터 차례대로 표시돼요.",
+                    style = Typography.labelMedium,
+                    color = Gray400,
+                    fontSize = 12.sp
+                )
+            }
             Spacer(modifier = modifier.size(14.dp))
             SelectImageList(
                 navController = navController,
@@ -224,7 +240,6 @@ fun PostScreenBody(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 state = maxPerson,
                 maxLength = 5,
-                inputEnter = {}
             )
             Spacer(modifier = modifier.size(36.dp))
 
@@ -306,12 +321,19 @@ fun PostScreenBody(
                 placeholderText = "최대 500자",
                 state = patDetail,
                 maxLength = 500,
-                height = 197.dp,
-                inputEnter = {}
             )
             Spacer(modifier = modifier.size(36.dp))
 
-            Text(text = "인증 빈도", style = Typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "인증 빈도", style = Typography.titleLarge)
+                Spacer(modifier = modifier.size(6.dp))
+                Text(
+                    text = "다중선택 가능해요",
+                    style = Typography.labelMedium,
+                    color = Gray400,
+                    fontSize = 12.sp
+                )
+            }
             Spacer(modifier = modifier.size(14.dp))
             Row() {
                 SelectDayButtonList(state = dayList)
@@ -322,9 +344,9 @@ fun PostScreenBody(
             Spacer(modifier = modifier.size(14.dp))
             CustomTextField(
                 placeholderText = "최대 30자",
-                state = proofDetail,
                 maxLength = 30,
-                inputEnter = {})
+                state = proofDetail
+            )
             Spacer(modifier = modifier.size(36.dp))
 
             Text(text = "인증사진 예시", style = Typography.titleLarge)
@@ -352,13 +374,22 @@ fun PostScreenBody(
             }
             Spacer(modifier = modifier.size(36.dp))
 
-            Text(text = "인증 수단", style = Typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "인증 수단", style = Typography.titleLarge)
+                Spacer(modifier = modifier.size(6.dp))
+                Text(
+                    text = "최대 5장 가능, 사진1부터 차례대로 표시돼요.",
+                    style = Typography.labelMedium,
+                    color = Gray400,
+                    fontSize = 12.sp
+                )
+            }
             Spacer(modifier = modifier.size(14.dp))
 
             Row {
-                CheckBoxView(checked = isRealTime, text = "사진으로 인증")
+                CheckBoxView(checked = isRealTime, text = "실시간 촬영", isRealtime = true)
                 Spacer(modifier = modifier.size(12.dp))
-                CheckBoxView(checked = isGallery, text = "실시간 촬영과 사진 가능")
+                CheckBoxView(text = "갤러리에서 사진 가져오기")
             }
             Spacer(modifier = modifier.size(55.dp))
 
@@ -389,7 +420,6 @@ fun PostScreenBody(
         }
     }
 }
-
 
 @Composable
 fun SelectDayButtonList(state: SnapshotStateList<String>) {
@@ -440,9 +470,9 @@ fun SelectLocationButtonList(
     searchValue: MutableState<String>,
     onSearchScreen: MutableState<Boolean>,
     searchPlaceResult: List<PlaceDetailInfo>
-    ) {
+) {
 
-    val locationButtonText = listOf<String>("주소 검색", "임의대로 입력", "위치정보 없음")
+    val locationButtonText = listOf<String>("주소 검색", "위치정보 없음")
 
     @Composable
     fun locationButtonView(modifier: Modifier, location: String) {
@@ -471,7 +501,12 @@ fun SelectLocationButtonList(
 
     when (locationState.value) {
         "주소 검색" -> {
-            CustomTextField(placeholderText = "서초동 스타벅스", maxLength = 30, state=searchValue,onScreen = onSearchScreen, viewModel = postViewModel,
+            CustomTextField(placeholderText = "서초동 스타벅스",
+                maxLength = 30,
+                state = searchValue,
+                onScreen = onSearchScreen,
+                viewModel = postViewModel,
+                maxLines = 1,
                 inputEnter = {
                     //TODO NOT WORKING
                     postViewModel.onSearch(searchValue.value)
@@ -484,20 +519,13 @@ fun SelectLocationButtonList(
                 color = PrimaryMain
             )
 
-            if(onSearchScreen.value){
-                SearchResultList(places = searchPlaceResult, placeText = searchValue, postViewModel = postViewModel)
+            if (onSearchScreen.value) {
+                SearchResultList(
+                    places = searchPlaceResult,
+                    placeText = searchValue,
+                    postViewModel = postViewModel
+                )
             }
-        }
-
-        "임의대로 입력" -> {
-            // maxLength 임시
-            Text(
-                text = "대략적인 위치정보를 입력해주세요.",
-                style = Typography.labelSmall,
-                color = PrimaryMain
-            )
-            Spacer(modifier.padding(bottom = 6.dp))
-            CustomTextField(placeholderText = "벚꽃나무 앞", maxLength = 30, inputEnter = {})
         }
 
         "위치정보 없음" -> Box(contentAlignment = Alignment.Center) {
@@ -534,6 +562,3 @@ fun SelectLocationButtonList(
         }
     }
 }
-
-
-
