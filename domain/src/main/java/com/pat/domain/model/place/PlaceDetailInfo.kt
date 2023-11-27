@@ -8,6 +8,6 @@ interface PlaceDetailInfo {
     var telephone: String?
     var address: String?
     var roadAddress: String?
-    var mapx: String?
-    var mapy: String?
+    var mapx: Int?
+    var mapy: Int?
 }

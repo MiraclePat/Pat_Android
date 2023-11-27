@@ -13,6 +13,6 @@ data class PlaceDetailDTO(
     @field:Json(name = "telephone") override var telephone: String?,
     @field:Json(name = "address") override var address: String?,
     @field:Json(name = "roadAddress") override var roadAddress: String?,
-    @field:Json(name = "mapx") override var mapx: String?,
-    @field:Json(name = "mapy") override var mapy: String?
+    @field:Json(name = "mapx") override var mapx: Int?,
+    @field:Json(name = "mapy") override var mapy: Int?
 ) : PlaceDetailInfo

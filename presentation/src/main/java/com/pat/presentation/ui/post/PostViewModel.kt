@@ -1,14 +1,13 @@
 package com.pat.presentation.ui.post
 
 import android.graphics.Bitmap
-import android.graphics.Matrix
 import android.net.Uri
 import androidx.camera.core.ImageProxy
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.orhanobut.logger.Logger
-import com.pat.domain.model.pat.CreatePatDetail
 import com.pat.domain.model.pat.CreatePatInfo
+import com.pat.domain.model.pat.CreatePatInfoDetail
 import com.pat.domain.model.pat.HomePatContent
 import com.pat.domain.model.place.PlaceDetailInfo
 import com.pat.domain.model.place.PlaceSearchRequestInfo
@@ -16,7 +15,6 @@ import com.pat.domain.usecase.image.GetByteArrayByUriUseCase
 import com.pat.domain.usecase.pat.CreatePatUseCase
 import com.pat.domain.usecase.place.GetSearchPlaceUseCase
 import com.pat.presentation.model.PatBitmap
-import com.pat.presentation.ui.MainActivity_GeneratedInjector
 import com.pat.presentation.util.image.byteArrayToBitmap
 import com.pat.presentation.util.image.getCompressedBytes
 import com.pat.presentation.util.image.getRotatedBitmap
@@ -24,10 +22,8 @@ import com.pat.presentation.util.image.getScaledBitmap
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.util.concurrent.CopyOnWriteArrayList
 import javax.inject.Inject
 
 
@@ -75,14 +71,13 @@ class PostViewModel @Inject constructor(
     private val _bitmapList = MutableStateFlow<PostBytes?>(null)
     val bitmapList = _bitmapList.asStateFlow()
 
+    private var selectPlace : PlaceDetailInfo? = null
+
     private val storedBytes: PostBytes = PostBytes(
         ByteArray(0), mutableListOf(),
         ByteArray(0), ByteArray(0)
     )
 
-    init{
-        onSearch("롯데월드")
-    }
     fun onTakePhoto(image: ImageProxy, bitmapType: String) {
         val rotatedBitmap = getRotatedBitmap(image)
         val scaledBitmap = getScaledBitmap(rotatedBitmap)
@@ -157,17 +152,17 @@ class PostViewModel @Inject constructor(
         startDate: String,
         endDate: String,
         proofDetail: String,
-        days: String,
+        days: List<String>,
         realtime: Boolean,
     ) {
         viewModelScope.launch {
-            val detail = CreatePatDetail(
+            val detail = CreatePatInfoDetail(
                 patName,
                 patDetail,
                 maxPerson,
-                latitude,
-                longitude,
-                location,
+                selectPlace?.mapx?:0,
+                selectPlace?.mapy?:0,
+                selectPlace?.title.toString(),
                 category,
                 startTime,
                 endTime,
@@ -196,6 +191,7 @@ class PostViewModel @Inject constructor(
     }
     fun onSearch(query: String) {
         searchJob.cancel()
+        _searchPlaceResult.value = emptyList()
         searchPlace(query)
     }
 
@@ -203,16 +199,27 @@ class PostViewModel @Inject constructor(
         searchJob = viewModelScope.launch {
             val result = getSearchPlaceUseCase(
                 PlaceSearchRequestInfo(
-                    query
+                    query,MAX_PLACE_SIZE
                 )
             )
             if (result.isSuccess) {
-                _searchPlaceResult.emit(result.getOrThrow())
-                Logger.t("patdetail").i("${result.getOrThrow()}")
+                val places = result.getOrThrow()
+                places.forEach { place ->
+                    place.title = place.title.toString().replace("<b>", "").replace("</b>", "")
+                }
+                _searchPlaceResult.emit(places)
             } else {
                 //TODO 에러 처리
             }
         }
+    }
+
+    fun selectPlace(place: PlaceDetailInfo){
+        selectPlace = place
+    }
+
+    companion object{
+        const val MAX_PLACE_SIZE = 5
     }
 
 }
