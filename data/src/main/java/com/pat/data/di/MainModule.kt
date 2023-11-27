@@ -2,13 +2,17 @@ package com.pat.data.di
 
 import android.content.Context
 import com.pat.data.repository.image.ImageRepositoryImpl
+import com.pat.data.repository.member.MemberRepositoryImpl
 import com.pat.data.repository.pat.PatRepositoryImpl
 import com.pat.data.repository.proof.ProofRepositoryImpl
+import com.pat.data.service.MemberService
 import com.pat.data.service.PatService
 import com.pat.data.service.ProofService
 import com.pat.data.source.ImageDataSource
+import com.pat.data.source.MemberDataSource
 import com.pat.data.source.PatDataSource
 import com.pat.data.source.ProofDataSource
+import com.pat.domain.repository.MemberRepository
 import com.pat.domain.repository.PatRepository
 import com.pat.domain.repository.ProofRepository
 import com.squareup.moshi.Moshi
@@ -20,6 +24,7 @@ import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import retrofit2.Retrofit
+import retrofit2.create
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)
@@ -27,12 +32,13 @@ class MainModule {
 
     @ActivityRetainedScoped
     @Provides
-    fun providePatRepository(dataSource: PatDataSource,
-                             imageRepositoryImpl: ImageRepositoryImpl,
-                             imageDataSource: ImageDataSource,
-                             moshi: Moshi,
+    fun providePatRepository(
+        dataSource: PatDataSource,
+        imageRepositoryImpl: ImageRepositoryImpl,
+        imageDataSource: ImageDataSource,
+        moshi: Moshi,
     ): PatRepository =
-        PatRepositoryImpl(dataSource, imageRepositoryImpl, imageDataSource,moshi)
+        PatRepositoryImpl(dataSource, imageRepositoryImpl, imageDataSource, moshi)
 
     @ActivityRetainedScoped
     @Provides
@@ -57,12 +63,13 @@ class MainModule {
 
     @ActivityRetainedScoped
     @Provides
-    fun provideProofRepository(dataSource: ProofDataSource,
-                             imageRepositoryImpl: ImageRepositoryImpl,
-                             imageDataSource: ImageDataSource,
-                             moshi: Moshi,
+    fun provideProofRepository(
+        dataSource: ProofDataSource,
+        imageRepositoryImpl: ImageRepositoryImpl,
+        imageDataSource: ImageDataSource,
+        moshi: Moshi,
     ): ProofRepository =
-        ProofRepositoryImpl(dataSource, imageRepositoryImpl, imageDataSource,moshi)
+        ProofRepositoryImpl(dataSource, imageRepositoryImpl, imageDataSource, moshi)
 
     @ActivityRetainedScoped
     @Provides
@@ -73,4 +80,19 @@ class MainModule {
     @Provides
     fun provideProofService(@NormalNetworkObject retrofit: Retrofit): ProofService =
         retrofit.create(ProofService::class.java)
+
+    @ActivityRetainedScoped
+    @Provides
+    fun provideMemberRepository(dataSource: MemberDataSource): MemberRepository =
+        MemberRepositoryImpl(dataSource)
+
+    @ActivityRetainedScoped
+    @Provides
+    fun provideMemberDataSource(service: MemberService): MemberDataSource =
+        MemberDataSource(service)
+
+    @ActivityRetainedScoped
+    @Provides
+    fun provideMemberService(@NormalNetworkObject retrofit: Retrofit): MemberService =
+        retrofit.create(MemberService::class.java)
 }

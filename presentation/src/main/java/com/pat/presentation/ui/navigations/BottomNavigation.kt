@@ -27,7 +27,7 @@ import com.pat.presentation.ui.map.MapScreenView
 import com.pat.presentation.ui.pat.PatDetailView
 import com.pat.presentation.ui.pat.PatUpdateView
 import com.pat.presentation.ui.post.PostScreenView
-import com.pat.presentation.ui.proof.ProofScreenView
+import com.pat.presentation.ui.proof.ParticipatingScreenView
 import com.pat.presentation.ui.setting.SettingScreenView
 import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.PrimaryMain
@@ -69,7 +69,7 @@ fun NavigationGraph(navController: NavHostController) {
                 onNavigateToPost = { navController.navigate(POST) })
         }
         composable(BottomNavItem.Certification.screenRoute) {
-            ProofScreenView()
+            ParticipatingScreenView()
         }
         composable(BottomNavItem.Map.screenRoute) {
             MapScreenView()
