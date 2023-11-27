@@ -108,7 +108,7 @@ fun PatDetailView(
                 .verticalScroll(scrollState),
         ) {
             if (uiState.content != null) {
-                PostDetailScreen(content = uiState.content!!, patDetailViewModel = patDetailViewModel)
+                PostDetailScreen(navController = navController,content = uiState.content!!, patDetailViewModel = patDetailViewModel)
             }
         }
     }
@@ -116,9 +116,10 @@ fun PatDetailView(
 
 @Composable
 fun PostDetailScreen(
-    modifier: Modifier = Modifier,
-    content: PatDetailContent,
+    navController: NavController,
+    content: PatDetailContent?,
     patDetailViewModel: PatDetailViewModel,
+    modifier: Modifier = Modifier
 ) {
     var isOpenBtnClicked by remember { mutableStateOf(false) }
     Logger.t("patdetail").i("${content}")
@@ -220,26 +221,28 @@ fun PostDetailScreen(
         )
         Spacer(modifier.size(20.dp))
 
-        Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .height(10.dp)
-                .background(Gray50)
-        )
-
-        Spacer(modifier.size(20.dp))
-        Text("인증 방법", fontSize = 16.sp, modifier = modifier.padding(3.dp))
-        IconWithTextView(
-            "목줄을 찬 반려동물이 바깥 풍경과 함꼐 나오도록 사진을 찍어주세요.",
-            iconResource = R.drawable.ic_chat_check
-        )
-        Spacer(modifier.size(20.dp))
-        Row() {
-            ExampleImageView(text = "올바른 예시", backColor = GreenBack, textColor = GreenText)
-            Spacer(modifier = modifier.size(10.dp))
-            ExampleImageView(text = "잘못된 예시", backColor = RedBack, textColor = RedText)
-        }
-
+            Text("인증 방법", fontSize = 16.sp, modifier = modifier.padding(3.dp))
+            IconWithTextView(
+                "목줄을 찬 반려동물이 바깥 풍경과 함꼐 나오도록 사진을 찍어주세요.",
+                iconResource = R.drawable.ic_chat_check
+            )
+            Spacer(modifier.size(20.dp))
+//            Row() {
+//                ExampleImageView(
+//                    navController = navController,
+//                    text = "올바른 예시",
+//                    backColor = GreenBack,
+//                    textColor = GreenText,
+//                    bitmap =
+//                )
+//                Spacer(modifier = modifier.size(10.dp))
+//                ExampleImageView(
+//                    navController = navController,
+//                    text = "잘못된 예시",
+//                    backColor = RedBack,
+//                    textColor = RedText
+//                )
+//            }
         Spacer(modifier.size(20.dp))
         Text("인증 수단", fontSize = 16.sp, modifier = modifier.padding(3.dp))
         if (content.realtime) {
@@ -248,10 +251,7 @@ fun PostDetailScreen(
             FinalButton(text = "팟 참여하기",
                 backColor = PrimaryMain,
                 textColor = White,
-                onClick = {
-                    patDetailViewModel.participatePat()
-                    navigation()
-                }
+                onClick = { patDetailViewModel.participatePat() }
             )
         }
         Spacer(modifier.height(7.dp))

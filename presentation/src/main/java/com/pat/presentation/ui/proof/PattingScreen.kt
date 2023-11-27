@@ -24,8 +24,10 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -42,6 +44,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.orhanobut.logger.Logger
 import com.pat.domain.model.proof.ProofContent
 import com.pat.presentation.R
@@ -50,10 +53,12 @@ import com.pat.presentation.ui.common.DayButtonList
 import com.pat.presentation.ui.common.ExampleImageView
 import com.pat.presentation.ui.common.FinalButton
 import com.pat.presentation.ui.common.IconWithTextView
-import com.pat.presentation.ui.common.SelectImage
+import com.pat.presentation.ui.common.SelectButton
 import com.pat.presentation.ui.common.SimpleTextView
 import com.pat.presentation.ui.common.setUnderLine
 import com.pat.presentation.ui.pat.DateText
+import com.pat.presentation.ui.pat.PattingViewModel
+import com.pat.presentation.ui.pat.ProofImageView
 import com.pat.presentation.ui.theme.FailCircleColor
 import com.pat.presentation.ui.theme.FailTextColor
 import com.pat.presentation.ui.theme.Gray200
@@ -64,20 +69,19 @@ import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.Gray700
 import com.pat.presentation.ui.theme.Gray800
 import com.pat.presentation.ui.theme.Gray900
-import com.pat.presentation.ui.theme.GreenBack
-import com.pat.presentation.ui.theme.GreenText
 import com.pat.presentation.ui.theme.PrimaryMain
-import com.pat.presentation.ui.theme.RedBack
-import com.pat.presentation.ui.theme.RedText
 import com.pat.presentation.ui.theme.RemainColor
 import com.pat.presentation.ui.theme.SuccessCircleColor
 import com.pat.presentation.ui.theme.SuccessTextColor
 import com.pat.presentation.ui.theme.Typography
+import com.pat.presentation.ui.theme.White
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PattingScreenView(
     modifier: Modifier = Modifier,
+    navController : NavController,
+    viewModel: PattingViewModel,
     pattingViewModel: ProofViewModel = hiltViewModel()
 ) {
     val uiState by pattingViewModel.uiState.collectAsState()
@@ -112,19 +116,26 @@ fun PattingScreenView(
                 .padding(innerPadding)
                 .verticalScroll(scrollState),
         ) {
-            PattingScreen(content = uiState.content)
+            PattingScreen(navController,viewModel,uiState.content)
         }
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun PattingScreen(
+    navController: NavController,
+    viewModel: PattingViewModel,
+    content: List<ProofContent>?,
     modifier: Modifier = Modifier,
-    content: List<ProofContent>?
 ) {
     var spreadState by remember { mutableStateOf(false) }
     var myProofState by remember { mutableStateOf(true) }
-
+    val sheetState = rememberModalBottomSheetState()
+    var showBottomSheet by remember { mutableStateOf(false) }
+//    Logger.t("MainTest").i("${showBottomSheet}")
+    val proofBitmap by viewModel.proofBitmap.collectAsState() //인증사진
+    val bottomSheetState by viewModel.bottomSheetState.collectAsState()
 
     Column(
         modifier = modifier
@@ -291,19 +302,19 @@ fun PattingScreen(
         )
         Spacer(modifier.padding(bottom = 14.dp))
         Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-            ExampleImageView(
-                text = "올바른 예시",
-                backColor = GreenBack,
-                textColor = GreenText,
-                hasSource = "여기에 사진 uri 추가"
-            )
-            Spacer(modifier = modifier.size(10.dp))
-            ExampleImageView(
-                text = "잘못된 예시",
-                backColor = RedBack,
-                textColor = RedText,
-                hasSource = "여기에 uri 추가"
-            )
+//            ExampleImageView(
+//                text = "올바른 예시",
+//                backColor = GreenBack,
+//                textColor = GreenText,
+//                hasSource = "여기에 사진 uri 추가"
+//            )
+//            Spacer(modifier = modifier.size(10.dp))
+//            ExampleImageView(
+//                text = "잘못된 예시",
+//                backColor = RedBack,
+//                textColor = RedText,
+//                hasSource = "여기에 uri 추가"
+//            )
         }
         Spacer(modifier = modifier.padding(top = 28.dp))
         Box(
@@ -343,7 +354,51 @@ fun PattingScreen(
         } else {
             ProofStatus(success = 24, fail = 8, isAll = "전체 ")
         }
-        FinalButton(text = "인증하기")
+        FinalButton(text = "인증하기", onClick = {showBottomSheet= true})
+        if (showBottomSheet || bottomSheetState) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    showBottomSheet = false
+                    viewModel.clearBitmap()
+                },
+                sheetState = sheetState,
+                modifier = modifier.height(320.dp)
+            ) {
+                Column(
+                    modifier = modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    Text(
+                        text = "인증할 사진을 첨부해주세요!",
+                        style = Typography.labelMedium,
+                        color = Gray800,
+                    )
+
+                    Spacer(modifier.padding(bottom = 16.dp))
+
+                    ProofImageView(navController = navController, bitmap = proofBitmap, viewModel = viewModel, realTime = true)
+
+                    Spacer(modifier.padding(bottom = 32.dp))
+
+
+                    SelectButton(
+                        text = "인증하기",
+                        onClick = { viewModel.proofPat() },
+                        backColor = if(proofBitmap == null) Gray300 else PrimaryMain,
+                        textColor = if(proofBitmap == null) White else White,
+                        cornerSize = 100.dp,
+                        stokeColor = if(proofBitmap == null) Gray300 else PrimaryMain,
+                        stokeWidth = 1.dp
+                    )
+
+                    Spacer(modifier.padding(bottom = 16.dp))
+
+                }
+            }
+        }
+
+
+
     }
 }
 
@@ -375,9 +430,9 @@ fun ProofStatus(
 
     // TODO 연동 시 lazyRow로 수정
     Row(modifier.padding(top = 12.dp)) {
-        SelectImage()
+//        SelectImage(navController=navController)
         Spacer(modifier = modifier.padding(end = 10.dp))
-        SelectImage()
+//        SelectImage(navController=navController)
     }
     Row(modifier.padding(top = 24.dp)) {
         RatioText(
