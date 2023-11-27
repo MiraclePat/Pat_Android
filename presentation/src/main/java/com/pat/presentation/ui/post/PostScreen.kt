@@ -58,6 +58,7 @@ import com.pat.presentation.ui.common.convertDateFormat
 import com.pat.presentation.ui.common.convertTimeFormat
 import com.pat.presentation.ui.theme.Gray100
 import com.pat.presentation.ui.theme.Gray300
+import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.Gray500
 import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.GreenBack
@@ -127,7 +128,7 @@ fun PostScreenView(
 @Composable
 fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) {
     val isRealTime = remember { mutableStateOf(false) }         // 사진 선택
-    val isGallery = remember { mutableStateOf(false) }          // 갤러리 선택
+    val isGallery = remember { mutableStateOf(true) }          // 갤러리 선택
 
     val title = rememberSaveable { mutableStateOf("") }         // 팟 제목
     val maxPerson = rememberSaveable { mutableStateOf("") }     // 최대 인원
@@ -191,7 +192,16 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
             CustomTextField(placeholderText = "최대 15자", state = title, maxLength = 15)
             Spacer(modifier = modifier.size(36.dp))
 
-            Text(text = "팟 상세정보", style = Typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "팟 상세정보", style = Typography.titleLarge)
+                Spacer(modifier = modifier.size(6.dp))
+                Text(
+                    text = "최대 5장 가능, 사진1부터 차례대로 표시돼요.",
+                    style = Typography.labelMedium,
+                    color = Gray400,
+                    fontSize = 12.sp
+                )
+            }
             Spacer(modifier = modifier.size(14.dp))
             SelectImageList()
             Spacer(modifier = modifier.size(36.dp))
@@ -299,7 +309,16 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
             )
             Spacer(modifier = modifier.size(36.dp))
 
-            Text(text = "인증 빈도", style = Typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "인증 빈도", style = Typography.titleLarge)
+                Spacer(modifier = modifier.size(6.dp))
+                Text(
+                    text = "최대 5장 가능, 사진1부터 차례대로 표시돼요.",
+                    style = Typography.labelMedium,
+                    color = Gray400,
+                    fontSize = 12.sp
+                )
+            }
             Spacer(modifier = modifier.size(14.dp))
             Row() {
                 SelectDayButtonList(state = dayList)
@@ -320,13 +339,22 @@ fun PostScreenBody(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) 
             }
             Spacer(modifier = modifier.size(36.dp))
 
-            Text(text = "인증 수단", style = Typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "인증 수단", style = Typography.titleLarge)
+                Spacer(modifier = modifier.size(6.dp))
+                Text(
+                    text = "최대 5장 가능, 사진1부터 차례대로 표시돼요.",
+                    style = Typography.labelMedium,
+                    color = Gray400,
+                    fontSize = 12.sp
+                )
+            }
             Spacer(modifier = modifier.size(14.dp))
 
             Row {
-                CheckBoxView(checked = isRealTime, text = "실시간 촬영")
+                CheckBoxView(checked = isRealTime, text = "실시간 촬영", isRealtime = true)
                 Spacer(modifier = modifier.size(12.dp))
-                CheckBoxView(checked = isGallery, text = "갤러리에서 사진 가져오기")
+                CheckBoxView(text = "갤러리에서 사진 가져오기")
             }
             Spacer(modifier = modifier.size(55.dp))
 
@@ -394,7 +422,7 @@ fun SelectLocationButtonList(
     locationState: MutableState<String>,
     onClick: () -> Unit = {}
 ) {
-    val locationButtonText = listOf<String>("주소 검색", "임의대로 입력", "위치정보 없음")
+    val locationButtonText = listOf<String>("주소 검색", "위치정보 없음")
 
     @Composable
     fun locationButtonView(modifier: Modifier, location: String) {
@@ -423,7 +451,7 @@ fun SelectLocationButtonList(
 
     when (locationState.value) {
         "주소 검색" -> {
-            CustomTextField(placeholderText = "서초동 스타벅스", maxLength = 30)
+            CustomTextField(placeholderText = "서초동 스타벅스", maxLength = 30, state = locationState)
             Spacer(modifier.padding(bottom = 24.dp))
             Text(
                 text = "아래 검색결과 중에서 선택해주세요!",
@@ -432,18 +460,6 @@ fun SelectLocationButtonList(
                 color = PrimaryMain
             )
         }
-
-        "임의대로 입력" -> {
-            // maxLength 임시
-            Text(
-                text = "대략적인 위치정보를 입력해주세요.",
-                style = Typography.labelSmall,
-                color = PrimaryMain
-            )
-            Spacer(modifier.padding(bottom = 6.dp))
-            CustomTextField(placeholderText = "벚꽃나무 앞", maxLength = 30)
-        }
-
         "위치정보 없음" -> Box(contentAlignment = Alignment.Center) {
             Text("위치정보 없음 선택 시 지도에 나타나지 않아요.", style = Typography.bodySmall)
         }

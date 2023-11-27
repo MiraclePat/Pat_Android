@@ -250,7 +250,6 @@ fun PostDetailScreen(
                 textColor = White,
                 onClick = {
                     patDetailViewModel.participatePat()
-                    navigation()
                 }
             )
         }

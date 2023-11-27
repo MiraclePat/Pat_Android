@@ -37,6 +37,7 @@ import com.pat.presentation.ui.common.BarIcon
 import com.pat.presentation.ui.home.components.HomeCategory
 import com.pat.presentation.ui.home.components.HomeMyPat
 import com.pat.presentation.ui.home.components.HomePats
+import com.pat.presentation.ui.home.components.HomeSearchView
 import com.pat.presentation.ui.home.components.HomeTopBar
 import com.pat.presentation.ui.home.components.Pats
 import com.pat.presentation.ui.home.components.SearchTextField
@@ -111,97 +112,5 @@ fun HomeScreenView(
             content = uiState.content,
             searchResult = searchResult
         )
-    }
-}
-
-@Composable
-fun HomeSearchView(
-    modifier: Modifier = Modifier,
-    searchValue: MutableState<String>,
-    inputEnter: () -> Unit,
-    onSearchScreen: MutableState<Boolean>,
-    navController: NavController,
-    content: List<HomePatContent>?,
-    searchResult: MutableState<Boolean>
-) {
-    val scrollState = rememberScrollState()
-    val backPressedState by remember { mutableStateOf(true) }
-
-    BackHandler(enabled = backPressedState) {
-        onSearchScreen.value = false
-        searchValue.value = ""
-    }
-
-    Scaffold(
-        topBar = {
-            SearchTopBar(
-                searchValue = searchValue,
-                inputEnter = inputEnter,
-                onSearchScreen = onSearchScreen
-            )
-        },
-    ) { innerPadding ->
-
-        if (!searchResult.value) {
-            Column(
-                modifier = modifier
-                    .padding(innerPadding)
-                    .fillMaxWidth()
-                    .fillMaxHeight(),
-                verticalArrangement = Arrangement.Bottom,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Box(modifier.weight(1f), contentAlignment = Alignment.Center) {
-                    Column {
-                        Text("검색 결과가 없습니다.", style = Typography.labelMedium, color = Gray800)
-                        Spacer(modifier = modifier.padding(bottom = 13.dp))
-                        Text("다른 검색어를 입력하시거나", style = Typography.labelSmall, color = Gray600)
-                        Spacer(modifier = modifier.padding(bottom = 4.dp))
-                        Text("철자와 띄어쓰기를 확인해보세요.", style = Typography.labelSmall, color = Gray600)
-                    }
-                }
-                Spacer(modifier = modifier.padding(bottom = 24.dp)) // 임의 값
-                Pats(navController, content = content, text = "유저닉네임 님! 이 팟은 어떠세요?")
-                Spacer(modifier = modifier.padding(bottom = 47.dp))
-            }
-        } else {
-            Column(
-                modifier = modifier
-                    .padding(innerPadding),
-                verticalArrangement = Arrangement.Bottom,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Row(
-                    modifier = modifier.padding(start = 20.dp, end = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("'검색어' 결과입니다.", style = Typography.titleLarge)
-                    Spacer(modifier = modifier.weight(1f)) // 임의 값
-                    Text("총 8개 검색결과.", style = Typography.labelSmall, color = Gray800)
-                }
-                LazyVerticalGrid(
-                    modifier = modifier.padding(top = 20.dp, start = 30.dp, end = 30.dp),
-                    columns = GridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    if (!content.isNullOrEmpty()) {
-                        items(content) { pat ->
-                            HomePats(
-                                modifier = modifier.weight(1f),
-                                title = pat.patName,
-                                category = pat.category,
-                                nowPerson = pat.nowPerson,
-                                maxPerson = pat.maxPerson,
-                                startDate = pat.startDate,
-                                imgUri = pat.repImg,
-                                onClick = { navController.navigate("patDetail/${pat.patId}") }
-                            )
-
-                        }
-                    }
-                }
-            }
-        }
     }
 }
