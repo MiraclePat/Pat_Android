@@ -16,7 +16,7 @@ interface ProofService {
     @POST("/api/test/members/pats/{pat-id}/proofs")
     suspend fun proofPat(
         @Path("pat-id") patId: Long,
-        @Part repImg : MultipartBody.Part,
+        @Part proofImg : MultipartBody.Part,
     )
 
     @GET("/api/test/members/pats/{pat-id}/proofs")

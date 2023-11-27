@@ -14,7 +14,6 @@ import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,7 +38,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,18 +54,15 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.orhanobut.logger.Logger
 import com.pat.presentation.R
 import com.pat.presentation.ui.CameraPreview
 import com.pat.presentation.ui.common.SelectButton
-import com.pat.presentation.ui.post.PostViewModel
-import com.pat.presentation.ui.theme.Gray100
+import com.pat.presentation.ui.theme.Gray300
 import com.pat.presentation.ui.theme.Gray500
 import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.Gray800
 import com.pat.presentation.ui.theme.PrimaryMain
 import com.pat.presentation.ui.theme.Typography
-import com.pat.presentation.ui.theme.White
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -105,7 +100,7 @@ fun ProofImageView(
             .height(140.dp)
             .width(130.dp)
             .clip(roundedCornerShape)
-            .background(Gray100)
+            .background(Gray300)
             .clickable {
                 showBottomSheet = true
             },

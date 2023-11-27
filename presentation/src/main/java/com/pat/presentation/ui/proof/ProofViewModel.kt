@@ -54,14 +54,14 @@ class ProofViewModel @Inject constructor(
         }
     }
 
-    fun proof(proofImg: String) {
-        viewModelScope.launch {
-            val result = proofPatUseCase(1L, ProofPatInfo(proofImg))
-            if (result.isSuccess) {
-                //TODO Request to Sever?
-            } else {
-                //TODO 에러 처리
-            }
-        }
-    }
+//    fun proof(proofImg: String) {
+//        viewModelScope.launch {
+//            val result = proofPatUseCase(1L, ProofPatInfo(proofImg))
+//            if (result.isSuccess) {
+//                //TODO Request to Sever?
+//            } else {
+//                //TODO 에러 처리
+//            }
+//        }
+//    }
 }

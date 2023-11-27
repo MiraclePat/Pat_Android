@@ -6,8 +6,8 @@ import com.pat.data.source.ImageDataSource
 import com.pat.data.source.PatDataSource
 import com.pat.data.util.exception
 import com.pat.domain.model.exception.UnKnownException
-import com.pat.domain.model.pat.CreatePatDetail
 import com.pat.domain.model.pat.CreatePatInfo
+import com.pat.domain.model.pat.CreatePatInfoDetail
 import com.pat.domain.model.pat.HomePatContent
 import com.pat.domain.model.pat.HomePatRequestInfo
 import com.pat.domain.model.pat.MapPatContent
@@ -74,7 +74,7 @@ class PatRepositoryImpl @Inject constructor(
             val correctImg = getMutipartImage(createPatInfo.correctImg,"correctImg")
             val incorrectImg = getMutipartImage(createPatInfo.incorrectImg,"incorrectImg")
             val bodyImg = createPatInfo.bodyImg.map{
-                getMultipartImage(it,"bodyImg")
+                getMutipartImage(it,"bodyImg")
             }
 
             val adapter= moshi.adapter(CreatePatInfoDetail::class.java)

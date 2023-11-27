@@ -5,5 +5,5 @@ data class CreatePatInfo(
     val correctImg: ByteArray,
     val incorrectImg:ByteArray,
     val bodyImg:List<ByteArray>,
-    val pat: CreatePatDetail
+    val pat: CreatePatInfoDetail
 )

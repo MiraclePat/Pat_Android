@@ -144,7 +144,7 @@ fun SelectImage(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            "아래 인증방법 중 하나를 선택해주세요.",
+                            "아래 방법 중 하나를 선택해주세요.",
                             style = Typography.titleLarge,
                             color = Gray800
                         )

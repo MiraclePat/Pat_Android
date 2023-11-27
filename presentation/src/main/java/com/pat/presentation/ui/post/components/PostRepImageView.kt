@@ -42,6 +42,7 @@ import com.pat.presentation.R
 import com.pat.presentation.ui.common.SelectButton
 import com.pat.presentation.ui.post.PostViewModel
 import com.pat.presentation.ui.theme.Gray100
+import com.pat.presentation.ui.theme.Gray800
 import com.pat.presentation.ui.theme.PrimaryMain
 import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.ui.theme.White
@@ -116,7 +117,15 @@ fun PostRepImageView(
             ) {
                 Column(
                     modifier = modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally){
+                    horizontalAlignment = Alignment.CenterHorizontally) {
+
+                    Text(
+                        "아래 방법 중 하나를 선택해주세요.",
+                        style = Typography.titleLarge,
+                        color = Gray800
+                    )
+                    Spacer(modifier = modifier.padding(16.dp))
+
                     SelectButton(
                         text = "사진촬영",
                         onClick = {
@@ -128,24 +137,24 @@ fun PostRepImageView(
                         stokeColor = PrimaryMain,
                         stokeWidth = 1.dp
                     )
+
+                    Spacer(modifier = modifier.padding(10.dp))
+
+                    SelectButton(
+                        stokeColor = PrimaryMain, stokeWidth = 1.dp,
+                        text = "갤러리에서 가져오기",
+                        onClick = {
+                            singlePhotoPickerLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                            showBottomSheet = false
+                        },
+                        cornerSize = 100.dp,
+                        backColor = Color.White,
+                        textColor = PrimaryMain
+                    )
                 }
-
-                Spacer(modifier = modifier.padding(10.dp))
-
-                SelectButton(
-                    stokeColor = PrimaryMain, stokeWidth = 1.dp,
-                    text = "갤러리에서 가져오기",
-                    onClick = {
-                        singlePhotoPickerLauncher.launch(
-                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                        )
-                        showBottomSheet = false
-                    },
-                    cornerSize = 100.dp,
-                    backColor = Color.White,
-                    textColor = PrimaryMain
-                )
-                Spacer(modifier = modifier.padding(10.dp))
+                Spacer(modifier = modifier.padding(16.dp))
 
             }
         }

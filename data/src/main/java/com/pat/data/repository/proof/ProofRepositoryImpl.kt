@@ -23,8 +23,7 @@ class ProofRepositoryImpl @Inject constructor(
 ) : ProofRepository {
     override suspend fun proofPat(patId:Long, proofPatInfo: ProofPatInfo): Result<Unit> {
         val result = runCatching {
-            val proofImg = getMultipartImage(proofPatInfo.proofImg, "repImg")
-
+            val proofImg = getMultipartImage(proofPatInfo.proofImg, "proofImg")
             proofDataSource.proofPat(patId, proofImg)
         }
         return if (result.isSuccess) {
@@ -64,13 +63,12 @@ class ProofRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun getMultipartImage(uri: String, partName: String): MultipartBody.Part {
-        val bytes = imageRepositoryImpl.getImageBytes(uri)
+    private fun getMultipartImage(bytes: ByteArray, partName:String): MultipartBody.Part {
         val requestFile = bytes.toRequestBody("image/jpeg".toMediaType(), 0, bytes.size)
-        val fileName = imageDataSource.getImageName(uri)
+        val fileName = imageDataSource.getImageName()
         return MultipartBody.Part.createFormData(
             partName,
-            "$fileName.jpeg",
+            "${fileName}.jpeg",   //TODO 수정
             requestFile,
         )
     }
