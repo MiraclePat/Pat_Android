@@ -57,7 +57,6 @@ class ProofViewModel @Inject constructor(
 
     private var proofImageBytes: ByteArray = ByteArray(0)
 
-
     private val _uiState = MutableStateFlow(ParticipatingUiState())
     val uiState: StateFlow<ParticipatingUiState> = _uiState.asStateFlow()
 
@@ -73,15 +72,7 @@ class ProofViewModel @Inject constructor(
             } else {
                 Logger.t("MainTest").i("${uiState}")
             }
-
-            // 내 인증 사진들
-            val myProofs = getMyProofUseCase(patId, ProofRequestInfo())
-            if (myProofs.isSuccess) {
-                val content = myProofs.getOrThrow()
-                _proofs.emit(ProofUiState(content = content))
-            } else {
-                // TODO 예외처리
-            }
+            getMyProof()
         }
     }
 
@@ -109,26 +100,38 @@ class ProofViewModel @Inject constructor(
         _bottomSheetState.value = false
     }
 
-    fun proofPat() {
+    fun proofPat(proofImg: ByteArray) {
         viewModelScope.launch {
-            val result = proofPatUseCase(1L, ProofPatInfo(proofImageBytes))
+            val result = proofPatUseCase(patId, ProofPatInfo(proofImg))
             if (result.isSuccess) {
-                //TODO Request to Sever?
+                val content = result.getOrThrow()
             } else {
-                //TODO 에러 처리
+                Logger.t("MainTest").i("${proofs}")
+            }
+        }
+    }
+
+    fun getMyProof() {
+        viewModelScope.launch {
+            val result = getMyProofUseCase(patId, ProofRequestInfo())
+            if (result.isSuccess) {
+                val content = result.getOrThrow()
+                _proofs.emit(ProofUiState(content = content))
+            } else {
+                Logger.t("MainTest").i("${proofs}")
             }
         }
     }
 
 
-    fun getSomeoneProof(proofImg: String) {
+    fun getSomeoneProof() {
         viewModelScope.launch {
-            val result = getSomeoneProofUseCase(2L, ProofRequestInfo())
+            val result = getSomeoneProofUseCase(patId, ProofRequestInfo())
             if (result.isSuccess) {
                 val content = result.getOrThrow()
-//                _uiState.emit(ProofUiState(content = content))
+                _proofs.emit(ProofUiState(content = content))
             } else {
-                //TODO 에러 처리
+                Logger.t("MainTest").i("${proofs}")
             }
         }
     }
