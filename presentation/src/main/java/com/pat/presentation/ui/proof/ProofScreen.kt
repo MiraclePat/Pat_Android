@@ -175,7 +175,7 @@ fun ProofScreen(
             )
             Spacer(modifier.weight(1f))
             Row(modifier.clickable {
-                navController.navigate("")
+                navController.navigate("patDetail/${content.patId}")
             }) {
                 Text(
                     style = Typography.displaySmall,

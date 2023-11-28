@@ -144,4 +144,7 @@ dependencies {
 
     implementation("androidx.camera:camera-view:1.4.0-alpha02")
     implementation("androidx.camera:camera-extensions:1.4.0-alpha02")
+
+    // naver map
+    implementation 'io.github.fornewid:naver-map-compose:1.6'
 }
