@@ -57,6 +57,7 @@ import coil.compose.AsyncImage
 import com.pat.presentation.R
 import com.pat.presentation.ui.CameraPreview
 import com.pat.presentation.ui.common.SelectButton
+import com.pat.presentation.ui.proof.ProofViewModel
 import com.pat.presentation.ui.theme.Gray300
 import com.pat.presentation.ui.theme.Gray500
 import com.pat.presentation.ui.theme.Gray600
@@ -73,7 +74,7 @@ fun ProofImageView(
     hasSource: String = "",
     realTime: Boolean = true,
     bitmap: Bitmap?,
-    viewModel: PattingViewModel,
+    viewModel: ProofViewModel,
 ) {
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -219,7 +220,7 @@ fun ProofImageView(
 @Composable
 fun SettingPattingCamera(
     navController: NavController,
-    viewModel: PattingViewModel,
+    viewModel: ProofViewModel,
 ) {
     val context: Context = LocalContext.current
     val controller = remember {

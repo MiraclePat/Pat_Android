@@ -23,19 +23,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.pat.presentation.R
-import com.pat.presentation.ui.common.SelectImage
 import com.pat.presentation.ui.common.SettingCamera
 import com.pat.presentation.ui.home.HomeScreenView
-import com.pat.presentation.ui.map.MapScreenView
 import com.pat.presentation.ui.pat.PatDetailView
-import com.pat.presentation.ui.pat.PattingViewModel
 import com.pat.presentation.ui.pat.SettingPattingCamera
 import com.pat.presentation.ui.pat.PatUpdateView
 import com.pat.presentation.ui.post.PostScreenView
 import com.pat.presentation.ui.proof.ParticipatingScreenView
-import com.pat.presentation.ui.proof.ProofScreen
 import com.pat.presentation.ui.post.PostViewModel
 import com.pat.presentation.ui.proof.ProofScreenView
+import com.pat.presentation.ui.proof.ProofViewModel
 import com.pat.presentation.ui.setting.SettingScreenView
 import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.PrimaryMain
@@ -71,7 +68,7 @@ sealed class BottomNavItem(
 @Composable
 fun NavigationGraph(navController: NavHostController) {
     val postViewModel: PostViewModel = hiltViewModel()
-    val pattingViewModel: PattingViewModel = hiltViewModel()
+    val proofViewModel: ProofViewModel = hiltViewModel()
 
     NavHost(navController = navController, startDestination = BottomNavItem.Home.screenRoute) {
         composable(BottomNavItem.Home.screenRoute) {
@@ -117,7 +114,7 @@ fun NavigationGraph(navController: NavHostController) {
         }
 
         composable("pattingCamera") {
-            SettingPattingCamera(navController = navController, viewModel = pattingViewModel)
+            SettingPattingCamera(navController = navController, viewModel = proofViewModel)
         }
 
         composable(
@@ -138,7 +135,7 @@ fun NavigationGraph(navController: NavHostController) {
                     defaultValue = -1
                 }
             )) {
-            ProofScreenView(navController = navController, viewModel = pattingViewModel)
+            ProofScreenView(navController = navController, proofViewModel = proofViewModel)
         }
     }
 }
