@@ -51,7 +51,7 @@ import com.skydoves.landscapist.glide.GlideImage
 @Composable
 fun ParticipatingScreenView(
     modifier: Modifier = Modifier,
-    participatingViewModel: PattingViewModel = hiltViewModel(),
+    participatingViewModel: ParticipatingViewModel = hiltViewModel(),
     navController: NavController,
 ) {
     val patStatusList = listOf("참여중인 팟", "참여예정 팟", "완료한 팟", "개설한 팟")

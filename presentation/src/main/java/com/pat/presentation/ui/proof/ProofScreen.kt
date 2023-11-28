@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -43,24 +44,19 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.orhanobut.logger.Logger
 import com.pat.domain.model.member.ParticipatingDetailContent
+import com.pat.domain.model.proof.ProofContent
 import com.pat.presentation.R
-import com.pat.presentation.ui.common.CategoryBox
 import com.pat.presentation.ui.common.DayButtonList
-import com.pat.presentation.ui.common.ExampleImageView
 import com.pat.presentation.ui.common.FinalButton
 import com.pat.presentation.ui.common.IconWithTextView
 import com.pat.presentation.ui.common.SelectButton
-import com.pat.presentation.ui.common.SelectImage
 import com.pat.presentation.ui.common.SimpleTextView
 import com.pat.presentation.ui.common.convertDateViewFormat
 import com.pat.presentation.ui.common.convertTimeViewFormat
 import com.pat.presentation.ui.common.setUnderLine
 import com.pat.presentation.ui.pat.DateText
-import com.pat.presentation.ui.pat.PattingViewModel
 import com.pat.presentation.ui.pat.ProofImageView
 import com.pat.presentation.ui.theme.FailCircleColor
 import com.pat.presentation.ui.theme.FailTextColor
@@ -72,11 +68,7 @@ import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.Gray700
 import com.pat.presentation.ui.theme.Gray800
 import com.pat.presentation.ui.theme.Gray900
-import com.pat.presentation.ui.theme.GreenBack
-import com.pat.presentation.ui.theme.GreenText
 import com.pat.presentation.ui.theme.PrimaryMain
-import com.pat.presentation.ui.theme.RedBack
-import com.pat.presentation.ui.theme.RedText
 import com.pat.presentation.ui.theme.RemainColor
 import com.pat.presentation.ui.theme.SuccessCircleColor
 import com.pat.presentation.ui.theme.SuccessTextColor
@@ -88,13 +80,16 @@ import kotlin.math.roundToInt
 @Composable
 fun ProofScreenView(
     modifier: Modifier = Modifier,
-    navController : NavController,
-    viewModel: PattingViewModel,
-    proofViewModel: ProofViewModel = hiltViewModel()
+    navController: NavController,
+    proofViewModel: ProofViewModel
 ) {
     val uiState by proofViewModel.uiState.collectAsState()
+    val proofState by proofViewModel.proofs.collectAsState()
     LaunchedEffect(uiState.content) {
-        Logger.t("MainTest").i("${uiState.content}")
+//        Logger.t("MainTest").i("${uiState.content}")
+//        proofState.content?.forEach {
+//            Logger.t("MainTest").i("${it.proofImg}")
+//        }
     }
     val scrollState = rememberScrollState()
     Scaffold(
@@ -125,7 +120,12 @@ fun ProofScreenView(
                 .verticalScroll(scrollState),
         ) {
             if (uiState.content != null) {
-                ProofScreen(content = uiState.content!!, viewModel = viewModel, navController = navController)
+                ProofScreen(
+                    content = uiState.content!!,
+                    viewModel = proofViewModel,
+                    navController = navController,
+                    proofContents = proofState.content
+                )
             }
         }
     }
@@ -135,9 +135,10 @@ fun ProofScreenView(
 @Composable
 fun ProofScreen(
     modifier: Modifier = Modifier,
-    viewModel: PattingViewModel,
+    viewModel: ProofViewModel,
     content: ParticipatingDetailContent,
     navController: NavController,
+    proofContents: List<ProofContent>?
 ) {
     var spreadState by remember { mutableStateOf(false) }
     var myProofState by remember { mutableStateOf(true) }
@@ -380,16 +381,18 @@ fun ProofScreen(
             ProofStatus(
                 success = content.myProof,
                 fail = content.myFailProof,
-                all = content.maxProof
+                all = content.maxProof,
+                imgUriList = proofContents
             )
         } else {
             ProofStatus(
                 success = content.allProof,
                 fail = content.allFailProof,
-                all = content.allMaxProof
+                all = content.allMaxProof,
+                imgUriList = proofContents
             )
         }
-        FinalButton(text = "인증하기", onClick = {showBottomSheet= true})
+        FinalButton(text = "인증하기", onClick = { showBottomSheet = true })
         if (showBottomSheet || bottomSheetState) {
             ModalBottomSheet(
                 onDismissRequest = {
@@ -402,7 +405,7 @@ fun ProofScreen(
                 Column(
                     modifier = modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
-                ){
+                ) {
                     Text(
                         text = "인증할 사진을 첨부해주세요!",
                         style = Typography.labelMedium,
@@ -411,18 +414,25 @@ fun ProofScreen(
 
                     Spacer(modifier.padding(bottom = 16.dp))
 
-                    ProofImageView(navController = navController, bitmap = proofBitmap, viewModel = viewModel, realTime = true)
+                    ProofImageView(
+                        navController = navController,
+                        bitmap = proofBitmap,
+                        viewModel = viewModel,
+                        realTime = true
+                    )
 
                     Spacer(modifier.padding(bottom = 32.dp))
 
 
                     SelectButton(
                         text = "인증하기",
-                        onClick = { viewModel.proofPat() },
-                        backColor = if(proofBitmap == null) Gray300 else PrimaryMain,
-                        textColor = if(proofBitmap == null) White else White,
+                        onClick = {
+                            viewModel.proofPat()
+                        },
+                        backColor = if (proofBitmap == null) Gray300 else PrimaryMain,
+                        textColor = if (proofBitmap == null) White else White,
                         cornerSize = 100.dp,
-                        stokeColor = if(proofBitmap == null) Gray300 else PrimaryMain,
+                        stokeColor = if (proofBitmap == null) Gray300 else PrimaryMain,
                         stokeWidth = 1.dp
                     )
 
@@ -441,7 +451,7 @@ fun ProofStatus(
     fail: Int,
     all: Int,
     isAll: String = "",
-    imgUriList: List<String> = listOf()
+    imgUriList: List<ProofContent>?
 ) {
     val title = if (isAll == "") "나의 인증사진" else "참여자들의 인증사진"
     Row() {
@@ -462,10 +472,7 @@ fun ProofStatus(
     Text(title, style = Typography.titleLarge, color = Gray800)
 
     // TODO 연동 시 lazyRow로 수정
-    Row(modifier.padding(top = 12.dp)) {
-//        SelectImage()
-        Spacer(modifier = modifier.padding(end = 10.dp))
-//        SelectImage()
+    LazyRow(modifier.padding(top = 12.dp)) {
     }
     Row(modifier.padding(top = 24.dp)) {
         RatioText(

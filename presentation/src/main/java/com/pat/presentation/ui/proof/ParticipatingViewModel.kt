@@ -21,7 +21,7 @@ data class PattingUiState(
 
 
 @HiltViewModel
-class PattingViewModel @Inject constructor(
+class ParticipatingViewModel @Inject constructor(
     private val getParticipatingUseCase: GetParticipatingUseCase,
     private val getOpenPatUseCase: GetOpenPatUseCase,
 ) : ViewModel() {
