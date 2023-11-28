@@ -12,6 +12,9 @@
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <application android:theme="@style/Theme.AppCompat.Light">
+        <meta-data
+            android:name="com.naver.maps.map.CLIENT_ID"
+            android:value="yq842snxuz" />
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"

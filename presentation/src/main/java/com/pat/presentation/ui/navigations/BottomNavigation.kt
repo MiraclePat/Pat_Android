@@ -25,6 +25,7 @@ import androidx.navigation.navArgument
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.SettingCamera
 import com.pat.presentation.ui.home.HomeScreenView
+import com.pat.presentation.ui.map.MapScreenView
 import com.pat.presentation.ui.pat.PatDetailView
 import com.pat.presentation.ui.pat.SettingPattingCamera
 import com.pat.presentation.ui.pat.PatUpdateView
@@ -80,6 +81,7 @@ fun NavigationGraph(navController: NavHostController) {
             ParticipatingScreenView(navController = navController)
         }
         composable(BottomNavItem.Map.screenRoute) {
+            MapScreenView()
         }
         composable(BottomNavItem.Setting.screenRoute) {
             SettingScreenView()
