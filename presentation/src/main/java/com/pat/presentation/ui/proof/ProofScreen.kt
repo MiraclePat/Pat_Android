@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -74,6 +75,7 @@ import com.pat.presentation.ui.theme.SuccessCircleColor
 import com.pat.presentation.ui.theme.SuccessTextColor
 import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.ui.theme.White
+import com.skydoves.landscapist.glide.GlideImage
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,10 +88,7 @@ fun ProofScreenView(
     val uiState by proofViewModel.uiState.collectAsState()
     val proofState by proofViewModel.proofs.collectAsState()
     LaunchedEffect(uiState.content) {
-//        Logger.t("MainTest").i("${uiState.content}")
-//        proofState.content?.forEach {
-//            Logger.t("MainTest").i("${it.proofImg}")
-//        }
+        proofViewModel.getMyProof()
     }
     val scrollState = rememberScrollState()
     Scaffold(
@@ -176,7 +175,7 @@ fun ProofScreen(
             )
             Spacer(modifier.weight(1f))
             Row(modifier.clickable {
-                // TODO 모집 공고로 이동 처리
+                navController.navigate("patDetail/${content.patId}")
             }) {
                 Text(
                     style = Typography.displaySmall,
@@ -355,6 +354,7 @@ fun ProofScreen(
 
             Box(modifier.clickable {
                 myProofState = true
+                viewModel.getMyProof()
             }) {
                 Text(
                     modifier = if (myProofState) setUnderLine else modifier,
@@ -367,6 +367,7 @@ fun ProofScreen(
             Spacer(modifier = modifier.padding(end = 14.dp))
             Box(modifier.clickable {
                 myProofState = false
+                viewModel.getSomeoneProof()
             }) {
                 Text(
                     modifier = if (!myProofState) setUnderLine else modifier,
@@ -427,7 +428,8 @@ fun ProofScreen(
                     SelectButton(
                         text = "인증하기",
                         onClick = {
-                            viewModel.proofPat()
+//                            val proofImageByte = viewModel.
+//                            viewModel.proofPat()
                         },
                         backColor = if (proofBitmap == null) Gray300 else PrimaryMain,
                         textColor = if (proofBitmap == null) White else White,
@@ -472,7 +474,21 @@ fun ProofStatus(
     Text(title, style = Typography.titleLarge, color = Gray800)
 
     // TODO 연동 시 lazyRow로 수정
-    LazyRow(modifier.padding(top = 12.dp)) {
+    if (imgUriList.isNullOrEmpty()) {
+        Box(modifier.padding(top = 12.dp).size(140.dp)) {
+            Text("인증 내역이 없어요!", style = Typography.titleLarge, color = Gray800)
+        }
+    } else {
+        LazyRow(modifier.padding(top = 12.dp)) {
+            items(imgUriList) {img ->
+                GlideImage(
+                    modifier = modifier
+                        .size(130.dp, 140.dp)
+                        .clip(RoundedCornerShape(12.dp)),
+                    imageModel = { img.proofImg })
+                Spacer(modifier = modifier.padding(end = 10.dp))
+            }
+        }
     }
     Row(modifier.padding(top = 24.dp)) {
         RatioText(
