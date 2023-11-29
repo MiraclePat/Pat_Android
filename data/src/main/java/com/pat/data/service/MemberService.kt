@@ -22,7 +22,6 @@ interface MemberService {
     suspend fun getParticipatingPats(
         @Query("lastId") lastId: Long?,
         @Query("size") size: Int?,
-        @Query("sort") sort: String?,
         @Query("state") state: String?,
     ): ListResponse<ParticipatingContentDTO>
 
@@ -30,7 +29,7 @@ interface MemberService {
     suspend fun getOpenPats(
         @Query("lastId") lastId: Long?,
         @Query("size") size: Int?,
-        @Query("sort") sort: String?,
+        @Query("state") sort: String?,
     ): ListResponse<ParticipatingContentDTO>
 
     @GET("/api/v1/members/pats/{pat-id}")
