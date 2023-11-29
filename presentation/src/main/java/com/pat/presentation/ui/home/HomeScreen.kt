@@ -52,15 +52,16 @@ fun HomeScreenView(
     onNavigateToPost: () -> Unit,
     navController: NavController,
 ) {
-    val uiState by homeViewModel.uiState.collectAsState()
+    val hotUiState by homeViewModel.hotUiState.collectAsState()
+    val recentUiState by homeViewModel.recentUiState.collectAsState()
     val scrollState = rememberScrollState()
     val searchValue = remember { mutableStateOf("") }
     val categoryState = remember { mutableStateOf("전체") }
     val onSearchScreen = remember { mutableStateOf(false) }
     val searchResult = remember { mutableStateOf(true) } // 임시
 
-    LaunchedEffect(uiState.content) {
-        Logger.t("MainTest").i("${uiState.content}")
+    LaunchedEffect(hotUiState.content) {
+        Logger.t("MainTest").i("${hotUiState.content}")
     }
 
     if (!onSearchScreen.value) {
@@ -84,32 +85,27 @@ fun HomeScreenView(
                 modifier = Modifier
                     .padding(innerPadding)
                     .verticalScroll(scrollState),
-                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 HomeMyPat()
                 HomeCategory(state = categoryState)
                 Pats(
                     navController,
-                    content = uiState.content,
-                    text = stringResource(id = R.string.home_hot_pat_title)
+                    content = hotUiState.content,
+                    text = stringResource(id = R.string.home_hot_pat_title),
                 )
                 Spacer(Modifier.size(20.dp))
                 Pats(
                     navController,
-                    content = uiState.content,
-                    text = stringResource(id = R.string.home_recent_pat_title)
+                    content = recentUiState.content,
+                    text = stringResource(id = R.string.home_recent_pat_title),
                 )
             }
         }
     } else {
         HomeSearchView(
             searchValue = searchValue,
-            inputEnter = {
-                //TODO search 수행 결과
-            },
             onSearchScreen = onSearchScreen,
             navController = navController,
-            content = uiState.content,
             searchResult = searchResult
         )
     }

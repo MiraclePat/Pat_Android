@@ -29,7 +29,7 @@ val convertTimeFormat: (String) -> (String) = { inputTimeString ->
     // 만약 입력이 빈 값이면 hour 은 0으로 처리 됩니다. 예외 처리 필요!
     val hour = tempList.last().replace("시", "").toIntOrNull() ?: 0
     val result = if (am == "오전") hour.toString() else (hour + 12).toString()
-    result.padStart(2, '0')+":00:00"
+    result.padStart(2, '0')+":00"
 }
 
 val convertDateViewFormat: (String) -> (String) = { inputTimeString ->

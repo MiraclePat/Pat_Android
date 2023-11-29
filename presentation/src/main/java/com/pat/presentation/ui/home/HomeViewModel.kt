@@ -2,6 +2,7 @@ package com.pat.presentation.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.HomePatContent
 import com.pat.domain.model.pat.HomePatRequestInfo
 import com.pat.domain.usecase.pat.GetHomePatsUseCase
@@ -21,29 +22,63 @@ data class HomeUiState(
 class HomeViewModel @Inject constructor(
     private val getHomePatsUseCase: GetHomePatsUseCase,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(HomeUiState())
-    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+    private val _hotUiState = MutableStateFlow(HomeUiState())
+    val hotUiState: StateFlow<HomeUiState> = _hotUiState.asStateFlow()
+    private val _recentUiState = MutableStateFlow(HomeUiState())
+    val recentUiState: StateFlow<HomeUiState> = _recentUiState.asStateFlow()
+    private val _searchUiState = MutableStateFlow(HomeUiState())
+    val searchUiState: StateFlow<HomeUiState> = _searchUiState.asStateFlow()
 
     init {
         viewModelScope.launch {
-            val result = getHomePatsUseCase(HomePatRequestInfo())
-            if (result.isSuccess) {
-                val content = result.getOrThrow()
-                _uiState.emit(HomeUiState(content = content))
+            val hotResult = getHomePatsUseCase(HomePatRequestInfo(category = "전체", sort = "HOT"))
+            if (hotResult.isSuccess) {
+                val content = hotResult.getOrThrow()
+                _hotUiState.emit(HomeUiState(content = content))
             } else {
-                //TODO 에러 처리
+                Logger.t("MainTest").i("홈 pat 에러")
+            }
+
+            val recentResult =
+                getHomePatsUseCase(HomePatRequestInfo(category = "전체", sort = "LATEST"))
+            if (recentResult.isSuccess) {
+                val content = recentResult.getOrThrow()
+                _recentUiState.emit(HomeUiState(content = content))
+            } else {
+                Logger.t("MainTest").i("홈 pat 에러")
             }
         }
     }
 
     fun requestByCategory(category: String) {
         viewModelScope.launch {
-            val result = getHomePatsUseCase(HomePatRequestInfo(category = category))
+            val hotResult =
+                getHomePatsUseCase(HomePatRequestInfo(category = category, sort = "HOT"))
+            if (hotResult.isSuccess) {
+                val content = hotResult.getOrThrow()
+                _hotUiState.emit(HomeUiState(content = content))
+            } else {
+                Logger.t("MainTest").i("홈 팟 카테고리 에러")
+            }
+            val recentResult =
+                getHomePatsUseCase(HomePatRequestInfo(category = category, sort = "LATEST"))
+            if (recentResult.isSuccess) {
+                val content = recentResult.getOrThrow()
+                _recentUiState.emit(HomeUiState(content = content))
+            } else {
+                Logger.t("MainTest").i("홈 팟 카테고리 에러")
+            }
+        }
+    }
+
+    fun searchPat(query: String) {
+        viewModelScope.launch {
+            val result = getHomePatsUseCase(HomePatRequestInfo(category = "전체", query = query))
             if (result.isSuccess) {
                 val content = result.getOrThrow()
-                _uiState.emit(HomeUiState(content = content))
+                _searchUiState.emit(HomeUiState(content = content))
             } else {
-                //TODO 에러 처리
+                Logger.t("MainTest").i("홈 search 에러")
             }
         }
     }

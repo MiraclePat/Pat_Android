@@ -17,14 +17,17 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.pat.domain.model.pat.HomePatContent
+import com.pat.presentation.ui.home.HomeViewModel
 import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.Gray800
 import com.pat.presentation.ui.theme.Typography
@@ -34,14 +37,14 @@ import com.pat.presentation.ui.theme.Typography
 fun HomeSearchView(
     modifier: Modifier = Modifier,
     searchValue: MutableState<String>,
-    inputEnter: () -> Unit,
     onSearchScreen: MutableState<Boolean>,
     navController: NavController,
-    content: List<HomePatContent>?,
-    searchResult: MutableState<Boolean>
+    searchResult: MutableState<Boolean>,
+    homeViewModel: HomeViewModel = hiltViewModel()
 ) {
-    val scrollState = rememberScrollState()
+    val uiState by homeViewModel.searchUiState.collectAsState()
     val backPressedState by remember { mutableStateOf(true) }
+    val content = uiState.content
 
     BackHandler(enabled = backPressedState) {
         onSearchScreen.value = false
@@ -52,13 +55,13 @@ fun HomeSearchView(
         topBar = {
             SearchTopBar(
                 searchValue = searchValue,
-                inputEnter = inputEnter,
+                inputEnter = { homeViewModel.searchPat(searchValue.value) },
                 onSearchScreen = onSearchScreen
             )
         },
     ) { innerPadding ->
 
-        if (!searchResult.value) {
+        if (content.isNullOrEmpty()) {
             Column(
                 modifier = modifier
                     .padding(innerPadding)
@@ -77,7 +80,10 @@ fun HomeSearchView(
                     }
                 }
                 Spacer(modifier = modifier.padding(bottom = 24.dp)) // 임의 값
-                Pats(navController, content = content, text = "유저닉네임 님! 이 팟은 어떠세요?")
+                Column(modifier.fillMaxWidth()) {
+                    // 추후 랜덤 기능 생성 되면 구현
+//                    Pats(navController, content = content, text = "유저닉네임 님! 이 팟은 어떠세요?")
+                }
                 Spacer(modifier = modifier.padding(bottom = 47.dp))
             }
         } else {
@@ -93,7 +99,11 @@ fun HomeSearchView(
                 ) {
                     Text("'${searchValue.value}' 결과입니다.", style = Typography.titleLarge)
                     Spacer(modifier = modifier.weight(1f)) // 임의 값
-                    Text("총 8개 검색결과.", style = Typography.labelSmall, color = Gray800)
+                    Text(
+                        "총 ${content?.size ?: 0}개 검색결과.",
+                        style = Typography.labelSmall,
+                        color = Gray800
+                    )
                 }
                 LazyVerticalGrid(
                     modifier = modifier.padding(top = 20.dp, start = 30.dp, end = 30.dp),

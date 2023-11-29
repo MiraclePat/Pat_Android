@@ -32,7 +32,7 @@ fun Pats(
     navController: NavController,
     modifier: Modifier = Modifier,
     content: List<HomePatContent>?,
-    text: String = "디폴트"
+    text: String = "디폴트",
 ) {
     Column(modifier.padding(vertical = 20.dp, horizontal = 16.dp)) {
         Text(
@@ -68,9 +68,6 @@ fun HomePats(
     nowPerson: Int = 8,
     maxPerson: Int = 10,
     category: String = "환경",
-    enabled: Boolean = true,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    onPressed: () -> Unit = {}
 ) {
     Column(
         modifier
