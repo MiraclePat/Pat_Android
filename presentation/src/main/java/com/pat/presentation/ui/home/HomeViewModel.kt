@@ -1,5 +1,6 @@
 package com.pat.presentation.ui.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.orhanobut.logger.Logger
@@ -10,6 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,7 +33,7 @@ class HomeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val hotResult = getHomePatsUseCase(HomePatRequestInfo(category = "전체", sort = "HOT"))
+            val hotResult = getHomePatsUseCase(HomePatRequestInfo(sort = "HOT"))
             if (hotResult.isSuccess) {
                 val content = hotResult.getOrThrow()
                 _hotUiState.emit(HomeUiState(content = content))
@@ -41,7 +43,7 @@ class HomeViewModel @Inject constructor(
             }
 
             val recentResult =
-                getHomePatsUseCase(HomePatRequestInfo(category = "전체", sort = "LATEST"))
+                getHomePatsUseCase(HomePatRequestInfo(sort = "LATEST"))
             if (recentResult.isSuccess) {
                 val content = recentResult.getOrThrow()
                 _recentUiState.emit(HomeUiState(content = content))
@@ -75,7 +77,7 @@ class HomeViewModel @Inject constructor(
 
     fun searchPat(query: String) {
         viewModelScope.launch {
-            val result = getHomePatsUseCase(HomePatRequestInfo(category = "전체", query = query))
+            val result = getHomePatsUseCase(HomePatRequestInfo(query = query))
             if (result.isSuccess) {
                 val content = result.getOrThrow()
                 _searchUiState.emit(HomeUiState(content = content))

@@ -111,20 +111,19 @@ fun HomeSearchView(
                     horizontalArrangement = Arrangement.Center,
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    if (!content.isNullOrEmpty()) {
-                        items(content) { pat ->
-                            HomePats(
-                                modifier = modifier.weight(1f),
-                                title = pat.patName,
-                                category = pat.category,
-                                nowPerson = pat.nowPerson,
-                                maxPerson = pat.maxPerson,
-                                startDate = pat.startDate,
-                                imgUri = pat.repImg,
-                                onClick = { navController.navigate("patDetail/${pat.patId}") }
-                            )
+                    items(content) { pat ->
+                        HomePats(
+                            modifier = modifier.weight(1f),
+                            title = pat.patName,
+                            category = pat.category,
+                            nowPerson = pat.nowPerson,
+                            maxPerson = pat.maxPerson,
+                            startDate = pat.startDate,
+                            imgUri = pat.repImg,
+                            location = pat.location,
+                            onClick = { navController.navigate("patDetail/${pat.patId}") }
+                        )
 
-                        }
                     }
                 }
             }

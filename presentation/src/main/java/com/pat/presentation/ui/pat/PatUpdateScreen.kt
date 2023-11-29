@@ -25,6 +25,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.PatDetailContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBoxList
@@ -170,10 +172,13 @@ fun PatUpdateScreen(
     val endTime =
         remember { mutableStateOf(convertTimeViewFormat(content.endTime)) }               // 종료 시간
     val category = remember { mutableStateOf(content.category) }              // 카테고리
-    val locationSelect = remember { mutableStateOf(content.location) }        // 주소 입력 방식
     val dayList = remember { mutableStateListOf<String>() }                   // 인증 빈도
     content.dayList.forEach {
         dayList.add(it)
+    }
+
+    LaunchedEffect(content) {
+        Logger.t("MainTest").i("수정 ${content}")
     }
 
     Column() {

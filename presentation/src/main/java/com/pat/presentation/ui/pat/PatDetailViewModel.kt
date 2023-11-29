@@ -74,7 +74,7 @@ class PatDetailViewModel @Inject constructor(
             if (result.isSuccess) {
                 result.getOrThrow()
             } else {
-                //TODO 에러 처리
+                Log.e("custom", "fail")
             }
         }
     }

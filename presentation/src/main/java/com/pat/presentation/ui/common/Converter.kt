@@ -13,13 +13,13 @@ val convertMillisToDate: (Long) -> (String) = { millis ->
 
 val convertDateFormat: (String) -> (String) = { inputDateString ->
     val outputFormat = SimpleDateFormat("MM월 dd일", Locale.getDefault())
-    val date = if (inputDateString.isNotEmpty()) {
+    val date = if (inputDateString.isNotEmpty() && inputDateString.length == 10) {
         val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         inputFormat.parse(inputDateString)!!
     } else {
-        Date()
+        inputDateString
     }
-    outputFormat.format(date)
+    if (inputDateString.length != 10) inputDateString else outputFormat.format(date)
 }
 
 val convertTimeFormat: (String) -> (String) = { inputTimeString ->
