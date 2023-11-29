@@ -60,10 +60,6 @@ fun HomeScreenView(
     val onSearchScreen = remember { mutableStateOf(false) }
     val searchResult = remember { mutableStateOf(true) } // 임시
 
-    LaunchedEffect(hotUiState.content) {
-        Logger.t("MainTest").i("${hotUiState.content}")
-    }
-
     if (!onSearchScreen.value) {
         Scaffold(
             topBar = {

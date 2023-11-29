@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.HomePatContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox

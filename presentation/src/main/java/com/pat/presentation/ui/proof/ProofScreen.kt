@@ -301,7 +301,7 @@ fun ProofScreen(
 
                 Text("인증 빈도 / 인증 빈도 더미테이더 연결 필요합니다", style = Typography.titleLarge, color = Gray800)
                 Spacer(modifier.padding(bottom = 14.dp))
-                DayButtonList()
+//                DayButtonList(content.days)
                 Spacer(modifier.padding(bottom = 28.dp))
 
                 Text("인증 가능시간", style = Typography.titleLarge, color = Gray800)

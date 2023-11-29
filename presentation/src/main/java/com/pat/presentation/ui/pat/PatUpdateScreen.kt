@@ -49,22 +49,15 @@ import com.pat.presentation.ui.common.CustomDialog
 import com.pat.presentation.ui.common.CustomPicker
 import com.pat.presentation.ui.common.CustomTextField
 import com.pat.presentation.ui.common.DateTimePickerView
-import com.pat.presentation.ui.common.ExampleImageView
 import com.pat.presentation.ui.common.FinalButton
-import com.pat.presentation.ui.common.SelectImageList
 import com.pat.presentation.ui.common.WheelTimePickerView
 import com.pat.presentation.ui.common.convertDateFormat
 import com.pat.presentation.ui.common.convertTimeFormat
 import com.pat.presentation.ui.common.convertTimeViewFormat
 import com.pat.presentation.ui.navigations.HOME
 import com.pat.presentation.ui.post.SelectDayButtonList
-import com.pat.presentation.ui.post.SelectLocationButtonList
 import com.pat.presentation.ui.theme.Gray100
-import com.pat.presentation.ui.theme.GreenBack
-import com.pat.presentation.ui.theme.GreenText
 import com.pat.presentation.ui.theme.PrimaryMain
-import com.pat.presentation.ui.theme.RedBack
-import com.pat.presentation.ui.theme.RedText
 import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.ui.theme.White
 import com.skydoves.landscapist.glide.GlideImage
@@ -178,7 +171,10 @@ fun PatUpdateScreen(
         remember { mutableStateOf(convertTimeViewFormat(content.endTime)) }               // 종료 시간
     val category = remember { mutableStateOf(content.category) }              // 카테고리
     val locationSelect = remember { mutableStateOf(content.location) }        // 주소 입력 방식
-    val dayList = remember { mutableStateListOf(content.days) }                   // 인증 빈도
+    val dayList = remember { mutableStateListOf<String>() }                   // 인증 빈도
+    content.dayList.forEach {
+        dayList.add(it)
+    }
 
     Column() {
         Box(contentAlignment = Alignment.BottomEnd) {

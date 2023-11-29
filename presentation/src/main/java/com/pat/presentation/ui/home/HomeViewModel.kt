@@ -35,6 +35,7 @@ class HomeViewModel @Inject constructor(
             if (hotResult.isSuccess) {
                 val content = hotResult.getOrThrow()
                 _hotUiState.emit(HomeUiState(content = content))
+                Logger.t("MainTest").i("hot : ${hotUiState.value}")
             } else {
                 Logger.t("MainTest").i("홈 pat 에러")
             }
@@ -44,6 +45,7 @@ class HomeViewModel @Inject constructor(
             if (recentResult.isSuccess) {
                 val content = recentResult.getOrThrow()
                 _recentUiState.emit(HomeUiState(content = content))
+                Logger.t("MainTest").i("hot : ${recentUiState.value}")
             } else {
                 Logger.t("MainTest").i("홈 pat 에러")
             }
