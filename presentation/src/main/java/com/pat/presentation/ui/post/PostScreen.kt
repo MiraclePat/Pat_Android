@@ -145,7 +145,6 @@ fun PostScreenBody(
     viewModel: PostViewModel,
 ) {
     val isRealTime = remember { mutableStateOf(false) }         // 사진 선택
-    val isGallery = remember { mutableStateOf(true) }          // 갤러리 선택
 
     val title = rememberSaveable { mutableStateOf("") }         // 팟 제목
     val maxPerson = rememberSaveable { mutableStateOf("") }     // 최대 인원
@@ -370,19 +369,8 @@ fun PostScreenBody(
                 )
             }
             Spacer(modifier = modifier.size(36.dp))
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "인증 수단", style = Typography.titleLarge)
-                Spacer(modifier = modifier.size(6.dp))
-                Text(
-                    text = "최대 5장 가능, 사진1부터 차례대로 표시돼요.",
-                    style = Typography.labelMedium,
-                    color = Gray400,
-                    fontSize = 12.sp
-                )
-            }
+            Text(text = "인증 수단", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
-
             Row {
                 CheckBoxView(text = "실시간 촬영")
                 Spacer(modifier = modifier.size(12.dp))
@@ -410,7 +398,7 @@ fun PostScreenBody(
                         latitude = 0.0,
                         longitude = 0.0,
                         location = "서울",
-                        realtime = isGallery.value,
+                        realtime = !isRealTime.value,
                     )
                     onNavigateToHome()
                 })

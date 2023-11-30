@@ -8,7 +8,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.BarIcon
@@ -34,7 +32,7 @@ fun HomeScreenView(
     onNavigateToPost: () -> Unit,
     navController: NavController,
 ) {
-    val hotUiState by homeViewModel.hotUiState.collectAsStateWithLifecycle()
+    val hotUiState by homeViewModel.hotUiState.collectAsState()
     val recentUiState by homeViewModel.recentUiState.collectAsState()
     val scrollState = rememberScrollState()
     val searchValue = remember { mutableStateOf("") }

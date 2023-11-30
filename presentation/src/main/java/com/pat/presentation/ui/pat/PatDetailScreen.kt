@@ -3,7 +3,6 @@ package com.pat.presentation.ui.pat
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,7 +24,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,15 +40,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.PatDetailContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
 import com.pat.presentation.ui.common.DayButtonList
-import com.pat.presentation.ui.common.ExampleImageView
 import com.pat.presentation.ui.common.FinalButton
 import com.pat.presentation.ui.common.IconWithTextView
-import com.pat.presentation.ui.common.SelectImage
 import com.pat.presentation.ui.common.SimpleTextView
 import com.pat.presentation.ui.common.convertTimeViewFormat
 import com.pat.presentation.ui.theme.Gray200
@@ -77,10 +72,6 @@ fun PatDetailView(
 ) {
     val uiState by patDetailViewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
-
-    LaunchedEffect(uiState.content) {
-        Logger.t("MainTest").i("디테일 ${uiState.content}")
-    }
 
     Scaffold(
         modifier = modifier
@@ -138,7 +129,6 @@ fun PostDetailScreen(
     patDetailViewModel: PatDetailViewModel,
 ) {
     var isOpenBtnClicked by remember { mutableStateOf(false) }
-    Logger.t("patdetail").i("${content}")
     GlideImage(
         modifier = modifier
             .fillMaxWidth()

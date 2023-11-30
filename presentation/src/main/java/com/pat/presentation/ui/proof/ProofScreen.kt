@@ -3,6 +3,7 @@ package com.pat.presentation.ui.proof
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -41,14 +43,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.orhanobut.logger.Logger
 import com.pat.domain.model.member.ParticipatingDetailContent
 import com.pat.domain.model.proof.ProofContent
 import com.pat.presentation.R
+import com.pat.presentation.ui.common.CategoryBox
 import com.pat.presentation.ui.common.DayButtonList
 import com.pat.presentation.ui.common.FinalButton
 import com.pat.presentation.ui.common.IconWithTextView
@@ -69,7 +75,11 @@ import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.Gray700
 import com.pat.presentation.ui.theme.Gray800
 import com.pat.presentation.ui.theme.Gray900
+import com.pat.presentation.ui.theme.GreenBack
+import com.pat.presentation.ui.theme.GreenText
 import com.pat.presentation.ui.theme.PrimaryMain
+import com.pat.presentation.ui.theme.RedBack
+import com.pat.presentation.ui.theme.RedText
 import com.pat.presentation.ui.theme.RemainColor
 import com.pat.presentation.ui.theme.SuccessCircleColor
 import com.pat.presentation.ui.theme.SuccessTextColor
@@ -83,13 +93,10 @@ import kotlin.math.roundToInt
 fun ProofScreenView(
     modifier: Modifier = Modifier,
     navController: NavController,
-    proofViewModel: ProofViewModel
+    proofViewModel: ProofViewModel = hiltViewModel()
 ) {
     val uiState by proofViewModel.uiState.collectAsState()
     val proofState by proofViewModel.proofs.collectAsState()
-    LaunchedEffect(uiState.content) {
-        proofViewModel.getMyProof()
-    }
     val scrollState = rememberScrollState()
     Scaffold(
         modifier = modifier
@@ -141,10 +148,10 @@ fun ProofScreen(
 ) {
     var spreadState by remember { mutableStateOf(false) }
     var myProofState by remember { mutableStateOf(true) }
-    val viewStartTime = convertTimeViewFormat(content.startTime)
-    val viewEndTime = convertTimeViewFormat(content.endTime)
-    val viewStartDate = convertDateViewFormat(content.startDate)
-    val viewEndDate = convertDateViewFormat(content.endDate)
+    val viewStartTime = content.startTime
+    val viewEndTime = content.endTime
+    val viewStartDate = content.startDate
+    val viewEndDate = content.endDate
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
     val proofBitmap by viewModel.proofBitmap.collectAsState() //인증사진
@@ -161,10 +168,10 @@ fun ProofScreen(
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
-//            CategoryBox(
-//                category = content.category,
-//                isSelected = true
-//            )
+            CategoryBox(
+                category = content.category,
+                isSelected = true
+            )
             Spacer(modifier = modifier.padding(horizontal = 8.dp))
             Text(
                 style = Typography.displayLarge,
@@ -203,7 +210,7 @@ fun ProofScreen(
         ) {
             Row() {
                 SimpleTextView(
-                    text = content.location,
+                    text = content.location.ifEmpty { "어디서나 가능" },
                     vectorResource = R.drawable.ic_map,
                     spacePadding = 6.dp,
                     style = Typography.labelSmall.copy(
@@ -277,7 +284,7 @@ fun ProofScreen(
                 Text("팟 소개", style = Typography.titleLarge, color = Gray800)
                 Spacer(modifier.padding(bottom = 14.dp))
                 IconWithTextView(
-                    "팟 디테일이 빠졌어요!",
+                    content.patDetail,
                     iconResource = R.drawable.ic_chat_dot
                 )
                 Spacer(modifier.padding(bottom = 28.dp))
@@ -299,9 +306,9 @@ fun ProofScreen(
                 )
                 Spacer(modifier.padding(bottom = 28.dp))
 
-                Text("인증 빈도 / 인증 빈도 더미테이더 연결 필요합니다", style = Typography.titleLarge, color = Gray800)
+                Text("인증 빈도", style = Typography.titleLarge, color = Gray800)
                 Spacer(modifier.padding(bottom = 14.dp))
-//                DayButtonList(content.days)
+                DayButtonList(content.dayList)
                 Spacer(modifier.padding(bottom = 28.dp))
 
                 Text("인증 가능시간", style = Typography.titleLarge, color = Gray800)
@@ -329,19 +336,47 @@ fun ProofScreen(
         )
         Spacer(modifier.padding(bottom = 14.dp))
         Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-//            ExampleImageView(
-//                text = "올바른 예시",
-//                backColor = GreenBack,
-//                textColor = GreenText,
-//                hasSource = "여기에 사진 uri 추가"
-//            )
-//            Spacer(modifier = modifier.size(10.dp))
-//            ExampleImageView(
-//                text = "잘못된 예시",
-//                backColor = RedBack,
-//                textColor = RedText,
-//                hasSource = "여기에 uri 추가"
-//            )
+            Column {
+                GlideImage(
+                    modifier = modifier.size(130.dp),
+                    imageModel = { content.correctImg })
+                Box(
+                    modifier
+                        .clip(RoundedCornerShape(bottomEnd = 4.dp, bottomStart = 4.dp))
+                        .background(GreenBack)
+                        .height(26.dp)
+                        .width(130.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "올바른 예시",
+                        style = Typography.labelMedium,
+                        fontSize = 12.sp,
+                        color = GreenText
+                    )
+                }
+            }
+            Spacer(modifier = modifier.size(10.dp))
+            Column {
+                GlideImage(
+                    modifier = modifier.size(130.dp),
+                    imageModel = { content.incorrectImg })
+                Box(
+                    modifier
+                        .clip(RoundedCornerShape(bottomEnd = 4.dp, bottomStart = 4.dp))
+                        .background(RedBack)
+                        .height(26.dp)
+                        .width(130.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "잘못된 예시",
+                        style = Typography.labelMedium,
+                        fontSize = 12.sp,
+                        color = RedText
+                    )
+                }
+            }
         }
         Spacer(modifier = modifier.padding(top = 28.dp))
         Box(
@@ -390,7 +425,8 @@ fun ProofScreen(
                 success = content.allProof,
                 fail = content.allFailProof,
                 all = content.allMaxProof,
-                imgUriList = proofContents
+                imgUriList = proofContents,
+                isAll = "전체"
             )
         }
         FinalButton(text = "인증하기", onClick = { showBottomSheet = true })
@@ -475,12 +511,21 @@ fun ProofStatus(
 
     // TODO 연동 시 lazyRow로 수정
     if (imgUriList.isNullOrEmpty()) {
-        Box(modifier.padding(top = 12.dp).size(140.dp)) {
+        Box(
+            modifier
+                .padding(top = 12.dp)
+                .size(140.dp)
+        ) {
             Text("인증 내역이 없어요!", style = Typography.titleLarge, color = Gray800)
         }
     } else {
-        LazyRow(modifier.padding(top = 12.dp)) {
-            items(imgUriList) {img ->
+        val scrollState = rememberScrollState()
+        Row(
+            modifier
+                .padding(top = 12.dp)
+                .horizontalScroll(scrollState)
+        ) {
+            imgUriList.forEach { img ->
                 GlideImage(
                     modifier = modifier
                         .size(130.dp, 140.dp)
@@ -537,13 +582,24 @@ fun PercentBar(modifier: Modifier = Modifier, success: Int, fail: Int, all: Int)
             modifier
                 .fillMaxWidth(fail / all.toFloat())
                 .fillMaxHeight()
+                .clip(
+                    if (success == 0 && fail != 0) RoundedCornerShape(
+                        topStart = 100.dp,
+                        bottomStart = 100.dp
+                    ) else RectangleShape
+                )
                 .background(FailCircleColor)
         )
         Box(
             modifier
                 .fillMaxWidth((all - success - fail) / all.toFloat())
                 .fillMaxHeight()
-                .clip(RoundedCornerShape(topEnd = 100.dp, bottomEnd = 100.dp))
+                .clip(
+                    if (success == 0 && fail == 0) RoundedCornerShape(100.dp) else RoundedCornerShape(
+                        topEnd = 100.dp,
+                        bottomEnd = 100.dp
+                    )
+                )
                 .background(Gray200)
         )
     }

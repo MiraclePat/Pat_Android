@@ -69,7 +69,7 @@ sealed class BottomNavItem(
 @Composable
 fun NavigationGraph(navController: NavHostController) {
     val postViewModel: PostViewModel = hiltViewModel()
-    val proofViewModel: ProofViewModel = hiltViewModel()
+//    val proofViewModel: ProofViewModel = hiltViewModel()
 
     NavHost(navController = navController, startDestination = BottomNavItem.Home.screenRoute) {
         composable(BottomNavItem.Home.screenRoute) {
@@ -116,7 +116,7 @@ fun NavigationGraph(navController: NavHostController) {
         }
 
         composable("pattingCamera") {
-            SettingPattingCamera(navController = navController, viewModel = proofViewModel)
+//            SettingPattingCamera(navController = navController, viewModel = proofViewModel)
         }
 
         composable(
@@ -137,7 +137,7 @@ fun NavigationGraph(navController: NavHostController) {
                     defaultValue = -1
                 }
             )) {
-            ProofScreenView(navController = navController, proofViewModel = proofViewModel)
+            ProofScreenView(navController = navController)
         }
     }
 }

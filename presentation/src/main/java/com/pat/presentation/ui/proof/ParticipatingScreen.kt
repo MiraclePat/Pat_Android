@@ -97,10 +97,12 @@ fun ParticipatingScreenView(
             "참여중인 팟" -> {
                 participatingViewModel.getProgressing()
                 uiState.content?.forEach { participatingContent ->
-                    Logger.t("MainTest").i("${participatingContent}}")
                     ParticipatePat(
                         content = participatingContent,
-                        onClick = { navController.navigate("participatingDetail/${participatingContent.patId}") },
+                        onClick = {
+                            Logger.t("MainTest").i("before : ${participatingContent.patId}")
+                            navController.navigate("participatingDetail/${participatingContent.patId}")
+                        },
                         buttonText = buttonText(participatingContent.state),
                         color = if (participatingContent.state == "COMPLETED") Gray300 else PrimaryMain,
                         buttonClick = {

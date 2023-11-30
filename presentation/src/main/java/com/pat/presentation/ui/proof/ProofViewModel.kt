@@ -72,8 +72,8 @@ class ProofViewModel @Inject constructor(
             } else {
                 Logger.t("MainTest").i("${uiState}")
             }
-            getMyProof()
         }
+        getMyProof()
     }
 
     fun onTakePhoto(image: ImageProxy) {
@@ -118,7 +118,7 @@ class ProofViewModel @Inject constructor(
                 val content = result.getOrThrow()
                 _proofs.emit(ProofUiState(content = content))
             } else {
-                Logger.t("MainTest").i("${proofs}")
+                Logger.t("MainTest").i("patid: ${patId}")
             }
         }
     }

@@ -11,11 +11,13 @@ interface ParticipatingDetailContent {
     val endDate: String
     val startTime: String
     val endTime: String
-    val days: String //TODO LIST로 바꿔야함
+    val days: String
+    val dayList: List<String>
+    val patDetail: String
     val proofDetail: String
     val bodyImg: List<String>
     val correctImg: String
-    val incorrectImg: List<String>
+    val incorrectImg: String
     val realtime: Boolean
     val maxProof: Int
     val myProof: Int
@@ -23,4 +25,6 @@ interface ParticipatingDetailContent {
     val allMaxProof: Int
     val myFailProof: Int
     val allFailProof: Int
+    val state: String
+    val isCompleted: Boolean
 }
