@@ -71,41 +71,46 @@ fun PostRepImageView(
             .fillMaxWidth()
             .height(160.dp)
             .clickable {
+                showBottomSheet = true
             },
         contentAlignment = Alignment.Center
     ) {
         bitmap?.let {
-            Image(
-                bitmap = it.asImageBitmap(),
-                contentDescription = null,
-                modifier = Modifier.fillMaxWidth(),
-                contentScale = ContentScale.Crop
-            )
+            Box(modifier.clickable {
+                showBottomSheet = true
+            }) {
+                Image(
+                    bitmap = it.asImageBitmap(),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxWidth(),
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
-        Row(
-            modifier = modifier
-                .width(141.dp)
-                .height(36.dp)
-                .clip(RoundedCornerShape(4.dp))
-                .border(1.dp, color = PrimaryMain, RoundedCornerShape(4.dp))
-                .background(White)
-                .clickable {
-                    showBottomSheet = true
-                },
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                text = "썸네일 추가하기",
-                style = Typography.labelMedium,
-                color = PrimaryMain,
-            )
-            Spacer(modifier = modifier.size(4.dp))
-            Icon(
-                modifier = modifier.size(16.dp),
-                painter = painterResource(id = R.drawable.ic_add),
-                contentDescription = "썸네일 추가하기"
-            )
+
+        if (bitmap == null) {
+            Row(
+                modifier = modifier
+                    .width(141.dp)
+                    .height(36.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .border(1.dp, color = PrimaryMain, RoundedCornerShape(4.dp))
+                    .background(White),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Text(
+                    text = "썸네일 추가하기",
+                    style = Typography.labelMedium,
+                    color = PrimaryMain,
+                )
+                Spacer(modifier = modifier.size(4.dp))
+                Icon(
+                    modifier = modifier.size(16.dp),
+                    painter = painterResource(id = R.drawable.ic_add),
+                    contentDescription = "썸네일 추가하기"
+                )
+            }
         }
 
         if (showBottomSheet) {
