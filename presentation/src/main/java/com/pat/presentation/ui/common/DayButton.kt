@@ -63,14 +63,15 @@ fun DayButton(
 }
 
 @Composable
-fun DayButtonList() {
+fun DayButtonList(
+    dayList: List<String>
+) {
     val days = listOf<String>("월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일")
-    val proofDays = listOf("월요일")
     Column {
         Row(
         ) {
             days.take(5).forEach { day ->
-                if (day in proofDays) {
+                if (day in dayList) {
                     DayButton(text = day)
                 } else {
                     DayButton(
@@ -88,7 +89,7 @@ fun DayButtonList() {
         Row(
         ) {
             days.takeLast(2).forEach { day ->
-                if (day in proofDays) {
+                if (day in dayList) {
                     DayButton(text = day)
 
                 } else {

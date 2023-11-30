@@ -177,7 +177,7 @@ class PostViewModel @Inject constructor(
                 days,
                 realtime
             )
-            Logger.t("patdetail").i("${detail}")
+            Logger.t("MainTest").i("${detail}")
             val result = createPatUseCase(
                 CreatePatInfo(
                     storedBytes.repBytes,
@@ -187,7 +187,6 @@ class PostViewModel @Inject constructor(
                     detail
                 )
             )
-
             if (result.isSuccess) {
                 Logger.t("patdetail").i("성공")
             } else {

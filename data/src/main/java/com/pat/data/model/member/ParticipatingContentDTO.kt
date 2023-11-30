@@ -16,4 +16,6 @@ data class ParticipatingContentDTO(
     @field:Json(name = "maxPerson") override val maxPerson: Int,
     @field:Json(name = "location") override val location: String,
     @field:Json(name = "days") override val days: String,
+    @field:Json(name = "state") override val state: String,
+    @field:Json(name = "isCompleted") override val isCompleted: Boolean,
 ) : ParticipatingContent

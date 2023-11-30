@@ -60,7 +60,7 @@ class PatRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun getMutipartImage(bytes: ByteArray, partName: String): MultipartBody.Part{
+    private suspend fun getMultipartImage(bytes: ByteArray, partName: String): MultipartBody.Part{
         val requestFile = bytes.toRequestBody("image/jpeg".toMediaType(), 0, bytes.size)
         val fileName = imageDataSource.getImageName()
         return MultipartBody.Part.createFormData(
@@ -71,11 +71,11 @@ class PatRepositoryImpl @Inject constructor(
     }
     override suspend fun createPat(createPatInfo: CreatePatInfo): Result<Unit> {
         val result = runCatching {
-            val repImg = getMutipartImage(createPatInfo.repImg,"repImg")
-            val correctImg = getMutipartImage(createPatInfo.correctImg,"correctImg")
-            val incorrectImg = getMutipartImage(createPatInfo.incorrectImg,"incorrectImg")
+            val repImg = getMultipartImage(createPatInfo.repImg,"repImg")
+            val correctImg = getMultipartImage(createPatInfo.correctImg,"correctImg")
+            val incorrectImg = getMultipartImage(createPatInfo.incorrectImg,"incorrectImg")
             val bodyImg = createPatInfo.bodyImg.map{
-                getMutipartImage(it,"bodyImg")
+                getMultipartImage(it,"bodyImg")
             }
 
             val adapter= moshi.adapter(CreatePatInfoDetail::class.java)
@@ -117,11 +117,11 @@ class PatRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updatePat(patId: Long, createPatInfo: CreatePatInfo): Result<Unit> {
-            val repImg = getMutipartImage(createPatInfo.repImg,"repImg")
-            val correctImg = getMutipartImage(createPatInfo.correctImg,"correctImg")
-            val incorrectImg = getMutipartImage(createPatInfo.incorrectImg,"incorrectImg")
+            val repImg = getMultipartImage(createPatInfo.repImg,"repImg")
+            val correctImg = getMultipartImage(createPatInfo.correctImg,"correctImg")
+            val incorrectImg = getMultipartImage(createPatInfo.incorrectImg,"incorrectImg")
             val bodyImg = createPatInfo.bodyImg.map{
-                getMutipartImage(it,"bodyImg")
+                getMultipartImage(it,"bodyImg")
             }
 
             val adapter= moshi.adapter(CreatePatInfoDetail::class.java)

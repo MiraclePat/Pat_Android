@@ -13,20 +13,20 @@ import retrofit2.http.Query
 
 interface ProofService {
     @Multipart
-    @POST("/api/test/members/pats/{pat-id}/proofs")
+    @POST("/api/v1/members/pats/{pat-id}/proofs")
     suspend fun proofPat(
         @Path("pat-id") patId: Long,
         @Part proofImg : MultipartBody.Part,
     )
 
-    @GET("/api/test/members/pats/{pat-id}/proofs")
+    @GET("/api/v1/members/pats/{pat-id}/proofs")
     suspend fun getMyProof(
         @Path("pat-id") patId: Long,
         @Query("lastId") lastId: Long?,
         @Query("size") size: Int?,
     ): ListResponse<ProofContentDTO>
 
-    @GET("/api/test/members/pats/{pat-id}/proofs/another")
+    @GET("/api/v1/members/pats/{pat-id}/proofs/another")
     suspend fun getSomeoneProof(
         @Path("pat-id") patId: Long,
         @Query("lastId") lastId: Long?,

@@ -23,7 +23,6 @@ class MemberRepositoryImpl @Inject constructor(
             memberDataSource.getParticipating(
                 participatingRequestInfo.lastId,
                 participatingRequestInfo.size,
-                participatingRequestInfo.sort,
                 participatingRequestInfo.state
             )
         }
