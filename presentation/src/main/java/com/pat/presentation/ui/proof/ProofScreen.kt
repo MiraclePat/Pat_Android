@@ -110,7 +110,7 @@ fun ProofScreenView(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_back_arrow),
                             contentDescription = "Go back"
@@ -628,7 +628,7 @@ fun PercentBar(modifier: Modifier = Modifier, success: Int, fail: Int, all: Int)
         )
         Box(
             modifier
-                .fillMaxWidth((all - success - fail) / all.toFloat())
+                .fillMaxWidth((all - success - fail) / all.toFloat() - 0.01f) // 부동 소수점 ^^
                 .fillMaxHeight()
                 .clip(
                     if (success == 0 && fail == 0) RoundedCornerShape(100.dp) else RoundedCornerShape(

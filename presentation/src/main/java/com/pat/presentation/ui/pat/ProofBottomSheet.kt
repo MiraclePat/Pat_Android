@@ -152,16 +152,19 @@ fun ProofImageView(
                         Spacer(modifier = modifier.padding(16.dp))
 
                         SelectButton(
-                            text = "사진촬영",
+                            stokeColor = PrimaryMain, stokeWidth = 1.dp,
+                            text = "갤러리에서 가져오기",
                             onClick = {
-                                navController.navigate("pattingCamera")
+                                singlePhotoPickerLauncher.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
+                                isGallery = true
                             },
-                            backColor = Color.White,
-                            textColor = PrimaryMain,
                             cornerSize = 100.dp,
-                            stokeColor = PrimaryMain,
-                            stokeWidth = 1.dp
+                            backColor = Color.White,
+                            textColor = PrimaryMain
                         )
+
                     }
 
                 } else {
@@ -169,9 +172,9 @@ fun ProofImageView(
                         modifier = modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("이 팟은 갤러리 인증만 가능해요.", style = Typography.titleLarge, color = Gray800)
+                        Text("이 팟은 사진 촬영인증만 가능해요.", style = Typography.titleLarge, color = Gray800)
                         Text(
-                            "아래 버튼을 눌러 사진을 불러와주세요.",
+                            "아래 버튼을 눌러 사진을 촬영해주세요.",
                             style = Typography.titleMedium,
                             color = Gray600
                         )
@@ -183,22 +186,18 @@ fun ProofImageView(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(modifier = modifier.padding(10.dp))
-
                     SelectButton(
-                        stokeColor = PrimaryMain, stokeWidth = 1.dp,
-                        text = "갤러리에서 가져오기",
+                        text = "사진촬영",
                         onClick = {
-                            singlePhotoPickerLauncher.launch(
-                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                            )
-                            isGallery = true
+                            navController.navigate("pattingCamera")
                         },
-                        cornerSize = 100.dp,
                         backColor = Color.White,
-                        textColor = PrimaryMain
+                        textColor = PrimaryMain,
+                        cornerSize = 100.dp,
+                        stokeColor = PrimaryMain,
+                        stokeWidth = 1.dp
                     )
                     Spacer(modifier = modifier.padding(10.dp))
-
                 }
             }
         }

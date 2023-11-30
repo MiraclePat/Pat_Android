@@ -74,6 +74,7 @@ import com.pat.presentation.ui.theme.Primary50
 import com.pat.presentation.ui.theme.PrimaryMain
 import com.pat.presentation.ui.theme.RedBack
 import com.pat.presentation.ui.theme.RedText
+import com.pat.presentation.ui.theme.StarColor
 import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.ui.theme.White
 
@@ -178,14 +179,22 @@ fun PostScreenBody(
 
         Spacer(modifier = modifier.size(20.dp))
         Column(modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
-            Text(text = "카테고리 선택", style = Typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "카테고리 선택", style = Typography.titleLarge)
+                Spacer(modifier = modifier.size(4.dp))
+                Text(text = "*", style = Typography.titleLarge, color = StarColor)
+            }
             Spacer(modifier = modifier.size(14.dp))
             Row {
                 CategoryBoxList(state = category)
             }
             Spacer(modifier = modifier.size(36.dp))
 
-            Text(text = "팟 제목", style = Typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "팟 제목", style = Typography.titleLarge)
+                Spacer(modifier = modifier.size(4.dp))
+                Text(text = "*", style = Typography.titleLarge, color = StarColor)
+            }
             Spacer(modifier = modifier.size(14.dp))
             CustomTextField(
                 placeholderText = "최대 15자",
@@ -213,7 +222,11 @@ fun PostScreenBody(
             )
             Spacer(modifier = modifier.size(36.dp))
 
-            Text(text = "위치정보", style = Typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "위치정보", style = Typography.titleLarge)
+                Spacer(modifier = modifier.size(4.dp))
+                Text(text = "*", style = Typography.titleLarge, color = StarColor)
+            }
             Spacer(modifier = modifier.size(16.dp))
             Column(
                 modifier
@@ -230,7 +243,11 @@ fun PostScreenBody(
             }
             Spacer(modifier = modifier.size(36.dp))
 
-            Text(text = "팟 인원 설정", style = Typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "팟 인원 설정", style = Typography.titleLarge)
+                Spacer(modifier = modifier.size(4.dp))
+                Text(text = "*", style = Typography.titleLarge, color = StarColor)
+            }
             Spacer(modifier = modifier.size(14.dp))
             CustomTextField(
                 placeholderText = "숫자만 입력해주세요. (최대 10,000명 가능)",
@@ -240,7 +257,11 @@ fun PostScreenBody(
             )
             Spacer(modifier = modifier.size(36.dp))
 
-            Text(text = "시작일-종료일", style = Typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "시작일-종료일", style = Typography.titleLarge)
+                Spacer(modifier = modifier.size(4.dp))
+                Text(text = "*", style = Typography.titleLarge, color = StarColor)
+            }
             Spacer(modifier = modifier.size(14.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 val startPressed = remember { mutableStateOf(false) }
@@ -279,7 +300,11 @@ fun PostScreenBody(
             }
             Spacer(modifier = modifier.size(36.dp))
 
-            Text(text = "인증 가능 시간", style = Typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "인증 가능 시간", style = Typography.titleLarge)
+                Spacer(modifier = modifier.size(4.dp))
+                Text(text = "*", style = Typography.titleLarge, color = StarColor)
+            }
             Spacer(modifier = modifier.size(14.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 val startPressed = remember { mutableStateOf(false) }
@@ -312,7 +337,11 @@ fun PostScreenBody(
             }
             Spacer(modifier = modifier.size(36.dp))
 
-            Text(text = "팟 소개", style = Typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "팟 소개", style = Typography.titleLarge)
+                Spacer(modifier = modifier.size(4.dp))
+                Text(text = "*", style = Typography.titleLarge, color = StarColor)
+            }
             Spacer(modifier = modifier.size(14.dp))
             CustomTextField(
                 placeholderText = "최소 15자, 최대 500자",
@@ -323,6 +352,8 @@ fun PostScreenBody(
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "인증 빈도", style = Typography.titleLarge)
+                Spacer(modifier = modifier.size(4.dp))
+                Text(text = "*", style = Typography.titleLarge, color = StarColor)
                 Spacer(modifier = modifier.size(6.dp))
                 Text(
                     text = "다중선택 가능해요",
@@ -337,7 +368,11 @@ fun PostScreenBody(
             }
             Spacer(modifier = modifier.size(36.dp))
 
-            Text(text = "인증방법 설명", style = Typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "인증방법 설명", style = Typography.titleLarge)
+                Spacer(modifier = modifier.size(4.dp))
+                Text(text = "*", style = Typography.titleLarge, color = StarColor)
+            }
             Spacer(modifier = modifier.size(14.dp))
             CustomTextField(
                 placeholderText = "최소 5자, 최대 30자",
@@ -346,7 +381,11 @@ fun PostScreenBody(
             )
             Spacer(modifier = modifier.size(36.dp))
 
-            Text(text = "인증사진 예시", style = Typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "인증사진 예시", style = Typography.titleLarge)
+                Spacer(modifier = modifier.size(4.dp))
+                Text(text = "*", style = Typography.titleLarge, color = StarColor)
+            }
             Spacer(modifier = modifier.size(14.dp))
             Row() {
                 ExampleImageView(
@@ -370,7 +409,18 @@ fun PostScreenBody(
                 )
             }
             Spacer(modifier = modifier.size(36.dp))
-            Text(text = "인증 수단", style = Typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "인증 수단", style = Typography.titleLarge)
+                Spacer(modifier = modifier.size(4.dp))
+                Text(text = "*", style = Typography.titleLarge, color = StarColor)
+                Spacer(modifier = modifier.size(6.dp))
+                Text(
+                    text = "실시간 촬영은 필수에요.",
+                    style = Typography.labelMedium,
+                    color = Gray400,
+                    fontSize = 12.sp
+                )
+            }
             Spacer(modifier = modifier.size(14.dp))
             Row {
                 CheckBoxView(text = "실시간 촬영")

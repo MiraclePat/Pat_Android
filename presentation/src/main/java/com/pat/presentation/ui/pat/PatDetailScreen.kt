@@ -182,6 +182,7 @@ fun PostDetailScreen(
             Divider()
             Spacer(modifier.size(24.dp))
             Text("팟 상세정보", style = Typography.titleLarge, color = Gray800)
+            Spacer(modifier.size(16.dp))
             GlideImage(
                 modifier = modifier
                     .fillMaxWidth()
