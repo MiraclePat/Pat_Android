@@ -534,16 +534,6 @@ fun ProofStatus(
                 Spacer(modifier = modifier.padding(end = 10.dp))
             }
         }
-//        LazyRow(modifier.padding(top = 12.dp)) {
-//            items(imgUriList) { img ->
-//                GlideImage(
-//                    modifier = modifier
-//                        .size(130.dp, 140.dp)
-//                        .clip(RoundedCornerShape(12.dp)),
-//                    imageModel = { img.proofImg })
-//                Spacer(modifier = modifier.padding(end = 10.dp))
-//            }
-//        }
     }
     Row(modifier.padding(top = 24.dp)) {
         RatioText(
