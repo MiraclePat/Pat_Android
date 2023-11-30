@@ -81,6 +81,7 @@ fun SelectImage(
     bitmap: Bitmap?,
     bitmapType: String,
     viewModel: PostViewModel,
+    selectable: Boolean = true
 ) {
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -109,7 +110,7 @@ fun SelectImage(
             .clip(roundedCornerShape)
             .background(Gray100)
             .clickable {
-                showBottomSheet = true
+                if (selectable) showBottomSheet = true
             },
         contentAlignment = Alignment.Center
     ) {

@@ -50,7 +50,7 @@ class PatDetailViewModel @Inject constructor(
                 val content = result.getOrThrow()
                 _uiState.emit(PatDetailUiState(content = content))
             } else {
-                //TODO 에러 처리
+                Logger.t("MainTest").i("detail viewmodel ${_uiState.value}")
             }
         }
     }
@@ -74,7 +74,7 @@ class PatDetailViewModel @Inject constructor(
             if (result.isSuccess) {
                 result.getOrThrow()
             } else {
-                //TODO 에러 처리
+                Log.e("custom", "fail")
             }
         }
     }

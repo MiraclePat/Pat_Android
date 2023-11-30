@@ -11,4 +11,6 @@ interface ParticipatingContent {
     val maxPerson: Int
     val location: String
     val days: String
+    val state: String
+    val isCompleted: Boolean
 }

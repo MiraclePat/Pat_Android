@@ -16,7 +16,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface PatService {
-    @GET("/api/test/pats/home")
+    @GET("/api/v1/pats/home")
     suspend fun getHomePats(
         @Query("lastId") lastId: Long?,
         @Query("size") size: Int?,
@@ -27,7 +27,7 @@ interface PatService {
         @Query("state") state: String?,
 ): ListResponse<HomePatContentDTO>
 
-    @GET("/api/test/pats/map")
+    @GET("/api/v1/pats/map")
     suspend fun getMapPats(
         @Query("lastId") lastId: Long?,
         @Query("size") size: Int?,
@@ -39,13 +39,13 @@ interface PatService {
         @Query("topLatitude") topLatitude: Double?,
     ): ListResponse<MapPatContentDTO>
 
-    @GET("/api/test/pats/{pat-id}")
+    @GET("/api/v1/pats/{pat-id}")
     suspend fun getPatDetail(
         @Path("pat-id") patId: Long,
     ): PatDetailContentDTO
 
     @Multipart
-    @POST("/api/test/pats")
+    @POST("/api/v1/pats")
     suspend fun createPat(
         @Part repImg : MultipartBody.Part,
         @Part correctImg : MultipartBody.Part,
@@ -55,7 +55,7 @@ interface PatService {
     )
 
     @Multipart
-    @PATCH("/api/test/pats/{pat-id}")
+    @PATCH("/api/v1/pats/{pat-id}")
     suspend fun updatePat(
         @Path("pat-id") patId: Long,
         @Part repImg: MultipartBody.Part,
@@ -65,17 +65,17 @@ interface PatService {
         @Part pat: MultipartBody.Part,
     ): Response<Unit>
 
-    @POST("/api/test/pats/{pat-id}")
+    @POST("/api/v1/pats/{pat-id}")
     suspend fun participatePat(
         @Path("pat-id") patId: Long,
     ): Response<Unit>
 
-    @DELETE("/api/test/pats/{pat-id}")
+    @DELETE("/api/v1/pats/{pat-id}")
     suspend fun deletePat(
         @Path("pat-id") patId: Long,
     ): Response<Unit>
 
-    @DELETE("/api/test/pats/{pat-id}/withdraw")
+    @DELETE("/api/v1/pats/{pat-id}/withdraw")
     suspend fun withdrawPat(
         @Path("pat-id") patId: Long,
     ): Response<Unit>

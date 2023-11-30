@@ -18,10 +18,9 @@ class MemberDataSource @Inject constructor(
     suspend fun getParticipating(
         lastId: Long?,
         size: Int?,
-        sort: String?,
         state: String?,
     ): ListResponse<ParticipatingContentDTO> {
-        return service.getParticipatingPats(lastId, size, sort, state)
+        return service.getParticipatingPats(lastId, size, state)
     }
 
     suspend fun getOpenPats(

@@ -30,7 +30,7 @@ fun CheckBoxView(
     modifier: Modifier = Modifier,
     checked: MutableState<Boolean> = remember { mutableStateOf(true) },
     text: String,
-    isRealtime: Boolean = false
+    isRealTime: Boolean = false
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Checkbox(
@@ -42,14 +42,14 @@ fun CheckBoxView(
                 uncheckedColor = Gray300
             ),
             onCheckedChange = {
-                if (isRealtime) checked.value = true
+                if (!isRealTime) checked.value = true
                 else checked.value = it
             })
         Spacer(modifier = modifier.padding(6.dp))
         ClickableText(
             text = AnnotatedString(text),
             onClick = {
-                if (isRealtime) checked.value = true
+                if (!isRealTime) checked.value = true
                 else checked.value = !checked.value
             },
             style = TextStyle(

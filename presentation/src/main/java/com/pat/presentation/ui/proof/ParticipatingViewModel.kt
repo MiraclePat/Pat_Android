@@ -29,8 +29,12 @@ class ParticipatingViewModel @Inject constructor(
     val uiState: StateFlow<PattingUiState> = _uiState.asStateFlow()
 
     init {
+        getProgressing()
+    }
+
+    fun getProgressing() {
         viewModelScope.launch {
-            val result = getParticipatingUseCase(ParticipatingRequestInfo(state = "SCHEDULED "))
+            val result = getParticipatingUseCase(ParticipatingRequestInfo(state = "SCHEDULED"))
             if (result.isSuccess) {
                 val content = result.getOrThrow()
                 _uiState.emit(PattingUiState(content = content))

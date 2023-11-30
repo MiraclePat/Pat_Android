@@ -1,10 +1,7 @@
 package com.pat.presentation.ui.post
 
-import android.util.Log
-import androidx.compose.foundation.BorderStroke
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -387,9 +384,9 @@ fun PostScreenBody(
             Spacer(modifier = modifier.size(14.dp))
 
             Row {
-                CheckBoxView(checked = isRealTime, text = "실시간 촬영", isRealtime = true)
+                CheckBoxView(text = "실시간 촬영")
                 Spacer(modifier = modifier.size(12.dp))
-                CheckBoxView(text = "갤러리에서 사진 가져오기")
+                CheckBoxView(checked = isRealTime, text = "갤러리에서 사진 가져오기", isRealTime = true)
             }
             Spacer(modifier = modifier.size(55.dp))
 

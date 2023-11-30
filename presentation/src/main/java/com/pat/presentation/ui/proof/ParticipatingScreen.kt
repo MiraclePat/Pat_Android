@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
@@ -41,6 +42,7 @@ import com.pat.presentation.ui.common.CategoryBox
 import com.pat.presentation.ui.common.SimpleTextView
 import com.pat.presentation.ui.common.setUnderLine
 import com.pat.presentation.ui.theme.Gray200
+import com.pat.presentation.ui.theme.Gray300
 import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.Gray800
@@ -83,11 +85,27 @@ fun ParticipatingScreenView(
         }
         Spacer(modifier = modifier.padding(bottom = 28.dp))
 
+        val buttonText: (String) -> (String) = { state ->
+            when (state) {
+                "SCHEDULED" -> "상세보기"
+                "IN_PROGRESS" -> "인증하기"
+                "COMPLETED" -> "인증완료"
+                else -> "예외 발생"
+            }
+        }
         when (patState.value) {
             "참여중인 팟" -> {
+                participatingViewModel.getProgressing()
                 uiState.content?.forEach { participatingContent ->
-                    ParticipatePat(content = participatingContent,
-                        onClick = { navController.navigate("participatingDetail/${participatingContent.patId}") }
+                    Logger.t("MainTest").i("${participatingContent}}")
+                    ParticipatePat(
+                        content = participatingContent,
+                        onClick = { navController.navigate("participatingDetail/${participatingContent.patId}") },
+                        buttonText = buttonText(participatingContent.state),
+                        color = if (participatingContent.state == "COMPLETED") Gray300 else PrimaryMain,
+                        buttonClick = {
+                            // TODO 인증하기 바텀시트
+                        }
                     )
                 }
             }
@@ -95,26 +113,40 @@ fun ParticipatingScreenView(
             "참여예정 팟" -> {
                 participatingViewModel.getInProgress()
                 uiState.content?.forEach { participatingContent ->
-                    ParticipatePat(content = participatingContent,
-                        onClick = { navController.navigate("participatingDetail/${participatingContent.patId}") }
+                    ParticipatePat(
+                        content = participatingContent,
+                        onClick = { navController.navigate("participatingDetail/${participatingContent.patId}") },
+                        buttonText = "상세보기"
                     )
-                }            }
+                }
+            }
 
             "완료한 팟" -> {
                 participatingViewModel.getCompleted()
                 uiState.content?.forEach { participatingContent ->
-                    ParticipatePat(content = participatingContent,
-                        onClick = { navController.navigate("participatingDetail/${participatingContent.patId}") }
+                    ParticipatePat(
+                        content = participatingContent,
+                        onClick = { navController.navigate("participatingDetail/${participatingContent.patId}") },
+                        buttonText = "종료된 팟",
+                        color = Gray300
                     )
-                }            }
+                }
+            }
 
             "개설한 팟" -> {
                 participatingViewModel.getOpenPats()
                 uiState.content?.forEach { participatingContent ->
-                    ParticipatePat(content = participatingContent,
-                        onClick = { navController.navigate("participatingDetail/${participatingContent.patId}") }
+                    ParticipatePat(
+                        content = participatingContent,
+                        onClick = { navController.navigate("participatingDetail/${participatingContent.patId}") },
+                        buttonText = buttonText(participatingContent.state),
+                        color = if (participatingContent.state == "COMPLETED") Gray300 else PrimaryMain,
+                        buttonClick = {
+                            // TODO 인증하기 바텀시트
+                        }
                     )
-                }            }
+                }
+            }
         }
     }
 }
@@ -137,7 +169,10 @@ fun PatStatus(modifier: Modifier = Modifier, patState: MutableState<String>, tex
 fun ParticipatePat(
     modifier: Modifier = Modifier,
     content: ParticipatingContent,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    buttonClick: () -> Unit = onClick,
+    buttonText: String,
+    color: Color = PrimaryMain
 ) {
     var spreadState by remember { mutableStateOf(false) }
     val spreadHeight = if (!spreadState) 58.dp else 186.dp
@@ -195,7 +230,7 @@ fun ParticipatePat(
                 )
                 Column(modifier.padding(start = 16.dp)) {
                     simpleTextView(
-                        text = content.location,
+                        text = content.location.ifEmpty { "어디서나 가능" },
                         vectorResource = R.drawable.ic_map,
                     )
                     simpleTextView(
@@ -210,16 +245,17 @@ fun ParticipatePat(
                         modifier
                             .fillMaxWidth()
                             .height(36.dp)
-                            .border(1.dp, PrimaryMain, RoundedCornerShape(100.dp)),
+                            .border(1.dp, color, RoundedCornerShape(100.dp))
+                            .clickable { buttonClick() },
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Text("인증하기", style = Typography.bodySmall, color = PrimaryMain)
+                        Text(buttonText, style = Typography.bodySmall, color = color)
                         Icon(
                             modifier = modifier.size(16.dp),
                             imageVector = ImageVector.vectorResource(R.drawable.ic_caret_down),
                             contentDescription = null,
-                            tint = PrimaryMain
+                            tint = color
                         )
                     }
                 }

@@ -32,7 +32,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.pat.presentation.ui.home.HomeScreenView
+import com.pat.presentation.ui.home.HomeViewModel
 import com.pat.presentation.ui.theme.Gray500
 import com.pat.presentation.ui.theme.Primary50
 import com.pat.presentation.ui.theme.PrimaryMain
@@ -63,12 +65,18 @@ fun HomeCategory(modifier: Modifier = Modifier, state: MutableState<String>) {
 
 
 @Composable
-fun CategoryButtonList(state: MutableState<String>) {
-    val categories = listOf<String>("전체", "환경", "건강", "식습관", "취미", "생활", "기타")
+fun CategoryButtonList(
+    state: MutableState<String>,
+    homeViewModel: HomeViewModel = hiltViewModel()
+) {
+    val categories = listOf<String>("전체", "환경", "건강", "식습관", "취미", "일상", "기타")
     categories.forEach { category ->
         CategoryButton(
             text = category,
-            onClick = { state.value = category },
+            onClick = {
+                state.value = category
+                homeViewModel.requestByCategory(category)
+            },
             isSelected = state.value == category
         )
         Spacer(Modifier.size(10.dp))

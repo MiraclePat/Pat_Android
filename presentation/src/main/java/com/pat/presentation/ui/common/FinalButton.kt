@@ -39,6 +39,7 @@ fun FinalButton(
             .background(backColor)
             .border(
                 BorderStroke(stokeWidth, stokeColor),
+                shape = RoundedCornerShape(4.dp)
             )
             .clickable { onClick() }, contentAlignment = Alignment.Center
     ) {

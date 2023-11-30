@@ -3,6 +3,7 @@ package com.pat.presentation.ui.pat
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -23,6 +25,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
@@ -46,8 +50,11 @@ import com.pat.presentation.ui.common.DayButtonList
 import com.pat.presentation.ui.common.ExampleImageView
 import com.pat.presentation.ui.common.FinalButton
 import com.pat.presentation.ui.common.IconWithTextView
+import com.pat.presentation.ui.common.SelectImage
 import com.pat.presentation.ui.common.SimpleTextView
+import com.pat.presentation.ui.common.convertTimeViewFormat
 import com.pat.presentation.ui.theme.Gray200
+import com.pat.presentation.ui.theme.Gray300
 import com.pat.presentation.ui.theme.Gray50
 import com.pat.presentation.ui.theme.Gray500
 import com.pat.presentation.ui.theme.Gray700
@@ -70,6 +77,11 @@ fun PatDetailView(
 ) {
     val uiState by patDetailViewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
+
+    LaunchedEffect(uiState.content) {
+        Logger.t("MainTest").i("디테일 ${uiState.content}")
+    }
+
     Scaffold(
         modifier = modifier
             .fillMaxSize(),
@@ -108,7 +120,11 @@ fun PatDetailView(
                 .verticalScroll(scrollState),
         ) {
             if (uiState.content != null) {
-                PostDetailScreen(navController = navController,content = uiState.content!!, patDetailViewModel = patDetailViewModel)
+                PostDetailScreen(
+                    navController = navController,
+                    content = uiState.content!!,
+                    patDetailViewModel = patDetailViewModel
+                )
             }
         }
     }
@@ -128,7 +144,7 @@ fun PostDetailScreen(
             .fillMaxWidth()
             .height(160.dp),
         imageModel = { content.repImg })
-    Column(modifier = modifier.padding(10.dp)) {
+    Column(modifier = modifier.padding(16.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -154,7 +170,11 @@ fun PostDetailScreen(
             maxPerson = content.maxPerson
         )
         Spacer(modifier.size(20.dp))
-        UserInfo()
+        UserInfo(
+            userName = content.nickname,
+            userProfile = content.profileImg,
+            isOpener = content.isWriter
+        )
         Box(
             modifier = modifier
                 .fillMaxWidth()
@@ -188,29 +208,37 @@ fun PostDetailScreen(
             }
         }
         Spacer(modifier.size(20.dp))
-        Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .height(10.dp)
-                .background(Gray50)
-        )
+        Box(modifier = modifier
+            .fillMaxWidth()
+            .height(10.dp)
+            .background(Gray50))
 
         Text(
-            content.patDetail, fontSize = 16.sp, modifier = modifier
+            modifier = modifier
                 .padding(3.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(), text = "팟 소개", fontSize = 16.sp
         )
-        IconWithTextView("강아지와 주 2회 산책해요", iconResource = R.drawable.ic_chat_dot)
+        IconWithTextView(content.patDetail, iconResource = R.drawable.ic_chat_dot)
+        Spacer(modifier.size(20.dp))
 
+        Text(
+            modifier = modifier
+                .padding(3.dp)
+                .fillMaxWidth(), text = "위치 정보", fontSize = 16.sp
+        )
+        IconWithTextView(content.location.ifEmpty { "어디서나 가능" }, iconResource = R.drawable.ic_map)
         Spacer(modifier.size(20.dp))
 
         Text("인증 가능 시간", fontSize = 16.sp, modifier = modifier.padding(3.dp))
-        IconWithTextView("오전 11시부터 오후 11시까지", iconResource = R.drawable.ic_alram)
-
+        IconWithTextView(
+            "${convertTimeViewFormat(content.startTime)}부터 ${convertTimeViewFormat(content.endTime)}까지",
+            iconResource = R.drawable.ic_alram
+        )
         Spacer(modifier.size(20.dp))
-        Text("인증 빈도", fontSize = 16.sp, modifier = modifier.padding(3.dp))
-        DayButtonList()
 
+        Text("인증 빈도", fontSize = 16.sp, modifier = modifier.padding(3.dp))
+        Spacer(modifier.size(14.dp))
+        DayButtonList(content.dayList)
         Spacer(modifier.size(20.dp))
 
         Text("시작일 - 종료일", fontSize = 16.sp, modifier = modifier.padding(3.dp))
@@ -221,60 +249,136 @@ fun PostDetailScreen(
         )
         Spacer(modifier.size(20.dp))
 
-            Text("인증 방법", fontSize = 16.sp, modifier = modifier.padding(3.dp))
-            IconWithTextView(
-                "목줄을 찬 반려동물이 바깥 풍경과 함꼐 나오도록 사진을 찍어주세요.",
-                iconResource = R.drawable.ic_chat_check
-            )
-            Spacer(modifier.size(20.dp))
-//            Row() {
-//                ExampleImageView(
-//                    navController = navController,
-//                    text = "올바른 예시",
-//                    backColor = GreenBack,
-//                    textColor = GreenText,
-//                    bitmap =
-//                )
-//                Spacer(modifier = modifier.size(10.dp))
-//                ExampleImageView(
-//                    navController = navController,
-//                    text = "잘못된 예시",
-//                    backColor = RedBack,
-//                    textColor = RedText
-//                )
-//            }
+        Text("인증 방법", fontSize = 16.sp, modifier = modifier.padding(3.dp))
+        IconWithTextView(
+            content.proofDetail,
+            iconResource = R.drawable.ic_chat_check
+        )
+        Spacer(modifier.size(20.dp))
+        Row() {
+            Column {
+                GlideImage(
+                    modifier = modifier.size(130.dp),
+                    imageModel = { content.correctImg })
+                Box(
+                    modifier
+                        .clip(RoundedCornerShape(bottomEnd = 4.dp, bottomStart = 4.dp))
+                        .background(GreenBack)
+                        .height(26.dp)
+                        .width(130.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "올바른 예시",
+                        style = Typography.labelMedium,
+                        fontSize = 12.sp,
+                        color = GreenText
+                    )
+                }
+            }
+            Spacer(modifier = modifier.size(10.dp))
+            Column {
+                GlideImage(
+                    modifier = modifier.size(130.dp),
+                    imageModel = { content.incorrectImg })
+                Box(
+                    modifier
+                        .clip(RoundedCornerShape(bottomEnd = 4.dp, bottomStart = 4.dp))
+                        .background(RedBack)
+                        .height(26.dp)
+                        .width(130.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "잘못된 예시",
+                        style = Typography.labelMedium,
+                        fontSize = 12.sp,
+                        color = RedText
+                    )
+                }
+            }
+        }
         Spacer(modifier.size(20.dp))
         Text("인증 수단", fontSize = 16.sp, modifier = modifier.padding(3.dp))
         if (content.realtime) {
             IconWithTextView("실시간 촬영", iconResource = R.drawable.ic_camera)
             Spacer(modifier.size(44.dp))
-            FinalButton(text = "팟 참여하기",
-                backColor = PrimaryMain,
-                textColor = White,
-                onClick = { patDetailViewModel.participatePat() }
-            )
-        }
-        Spacer(modifier.height(7.dp))
-        IconWithTextView("갤러리에서 사진 가져오기", iconResource = R.drawable.ic_gallery)
+        } else {
+            IconWithTextView("실시간 촬영", iconResource = R.drawable.ic_camera)
+            Spacer(modifier.height(7.dp))
+            IconWithTextView("갤러리에서 사진 가져오기", iconResource = R.drawable.ic_gallery)
+            Spacer(modifier.size(44.dp))
 
-        Spacer(modifier.size(44.dp))
-        FinalButton(text = "팟 참여하기",
-            backColor = PrimaryMain,
-            textColor = White,
-            onClick = { patDetailViewModel.participatePat() }
-        )
+        }
+        if (content.isJoiner) {
+            when (content.state) {
+                "CANCELABLE" -> {
+                    FinalButton(text = "팟 취소하기 (시작 하루 전까지 취소 가능)",
+                        backColor = PrimaryMain,
+                        textColor = White,
+                        onClick = { }
+                    )
+                }
+
+                "NO_CANCELABLE" -> {
+                    FinalButton(text = "취소가 불가능해요! (시작 하루 전까지 취소 가능)",
+                        backColor = Gray300,
+                        textColor = White,
+                        onClick = { }
+                    )
+                }
+
+                "IN_PROGRESS" -> {
+                    FinalButton(text = "인증이 이미 진행중인 팟이에요!",
+                        backColor = Gray300,
+                        textColor = White,
+                        onClick = { }
+                    )
+                }
+
+                "COMPLETED" -> {
+                    FinalButton(text = "종료된 팟이에요!",
+                        backColor = Gray300,
+                        textColor = White,
+                        onClick = { }
+                    )
+                }
+            }
+        } else { // 참여자가 아니면
+            if (content.state == "COMPLETED ") {
+                FinalButton(text = "종료된 팟이에요!",
+                    backColor = Gray300,
+                    textColor = White,
+                    onClick = { }
+                )
+            } else {
+                FinalButton(text = "팟 참여하기",
+                    backColor = PrimaryMain,
+                    textColor = White,
+                    // 비회원 / 회원 상태에 따라 달라져야 함
+                    onClick = { patDetailViewModel.participatePat() }
+                )
+            }
+        }
     }
 }
+
 
 @Composable
 fun UserInfo(
     modifier: Modifier = Modifier,
-    userName: String = "유저 닉네임"
+    userName: String,
+    userProfile: String,
+    isOpener: Boolean
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-        //유저이미지정보
+        GlideImage(
+            modifier = modifier
+                .size(40.dp)
+                .clip(CircleShape),
+            imageModel = { userProfile })
         Text(
             userName,
             style = Typography.labelLarge,
@@ -282,7 +386,12 @@ fun UserInfo(
             fontSize = 15.sp,
             modifier = modifier.padding(end = 6.dp)
         )
-        Text("개설자", style = Typography.displaySmall, color = Gray500, fontSize = 12.sp)
+        if (isOpener) Text(
+            "개설자",
+            style = Typography.displaySmall,
+            color = Gray500,
+            fontSize = 12.sp
+        )
     }
 
 }
@@ -290,15 +399,19 @@ fun UserInfo(
 @Composable
 fun PatSimpleInfo(
     modifier: Modifier = Modifier,
-    location: String = "서울시 관악구 신사동",
-    startDate: String = "12.5(금)",
-    endDate: String = "12.25(금)",
-    nowPerson: Int = 8,
-    maxPerson: Int = 10,
+    location: String,
+    startDate: String,
+    endDate: String,
+    nowPerson: Int,
+    maxPerson: Int,
     textColor: Color = Color(0xFF009D65),
 ) {
     Column() {
-        SimpleTextView(text = location, vectorResource = R.drawable.ic_map, spacePadding = 6.dp)
+        SimpleTextView(
+            text = location.ifEmpty { "어디서나 가능" },
+            vectorResource = R.drawable.ic_map,
+            spacePadding = 6.dp
+        )
         Spacer(modifier.height(8.dp))
         SimpleTextView(
             text = "$startDate - $endDate",
@@ -316,8 +429,8 @@ fun PatSimpleInfo(
 
 @Composable
 fun DateText(
-    startDate: String? = "11월 13일(월)",
-    endDate: String? = "11월 27일(월)",
+    startDate: String?,
+    endDate: String?,
     iconResource: Int,
     modifier: Modifier = Modifier
 ) {
