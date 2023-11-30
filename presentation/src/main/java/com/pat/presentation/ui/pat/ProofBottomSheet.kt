@@ -52,6 +52,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.pat.presentation.R
@@ -220,7 +221,7 @@ fun ProofImageView(
 @Composable
 fun SettingPattingCamera(
     navController: NavController,
-    viewModel: ProofViewModel,
+    viewModel: ProofViewModel = hiltViewModel(),
 ) {
     val context: Context = LocalContext.current
     val controller = remember {
