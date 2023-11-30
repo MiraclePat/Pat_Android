@@ -42,6 +42,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.orhanobut.logger.Logger
 import com.pat.domain.model.place.PlaceDetailInfo
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBoxList
@@ -314,7 +315,7 @@ fun PostScreenBody(
             Text(text = "팟 소개", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
             CustomTextField(
-                placeholderText = "최대 500자",
+                placeholderText = "최소 15자, 최대 500자",
                 state = patDetail,
                 maxLength = 500,
             )
@@ -339,7 +340,7 @@ fun PostScreenBody(
             Text(text = "인증방법 설명", style = Typography.titleLarge)
             Spacer(modifier = modifier.size(14.dp))
             CustomTextField(
-                placeholderText = "최대 30자",
+                placeholderText = "최소 5자, 최대 30자",
                 maxLength = 30,
                 state = proofDetail
             )
@@ -384,6 +385,7 @@ fun PostScreenBody(
                 onClick = {
                     val outputStartTime = convertTimeFormat(startTime.value)
                     val outputEndTime = convertTimeFormat(endTime.value)
+                    Logger.t("MainTest").i("$outputStartTime, ${outputEndTime}")
                     viewModel.post(
                         patName = title.value,
                         maxPerson = maxPerson.value.toInt(),

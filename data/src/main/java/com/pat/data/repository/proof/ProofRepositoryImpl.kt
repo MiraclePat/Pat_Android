@@ -27,8 +27,10 @@ class ProofRepositoryImpl @Inject constructor(
             proofDataSource.proofPat(patId, proofImg)
         }
         return if (result.isSuccess) {
+            Logger.t("MainTest").i("${result.getOrThrow()}")
             Result.success(result.getOrThrow())
         } else {
+            Logger.t("MainTest").i("${result.exception().message}")
             Result.failure(result.exception())
         }
     }
@@ -41,6 +43,7 @@ class ProofRepositoryImpl @Inject constructor(
             proofDataSource.getMyProof(patId, proofRequestInfo.lastId, proofRequestInfo.size)
         }
         return if (result.isSuccess) {
+            Logger.t("MainTest").i("${result.getOrThrow()}")
             Result.success(result.getOrThrow().content)
         } else {
             Logger.t("MainTest").i("${result.exception().message}")

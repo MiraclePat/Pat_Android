@@ -63,8 +63,9 @@ fun ParticipatingScreenView(
 
 
     LaunchedEffect(uiState.content) {
-        Logger.t("PattingTest").i("${uiState.content}")
+        Logger.t("MainTest").i("${uiState.content}")
     }
+
     Column(
         modifier
             .fillMaxWidth()
@@ -95,12 +96,11 @@ fun ParticipatingScreenView(
         }
         when (patState.value) {
             "참여중인 팟" -> {
-                participatingViewModel.getProgressing()
+                participatingViewModel.getInProgress()
                 uiState.content?.forEach { participatingContent ->
                     ParticipatePat(
                         content = participatingContent,
                         onClick = {
-                            Logger.t("MainTest").i("before : ${participatingContent.patId}")
                             navController.navigate("participatingDetail/${participatingContent.patId}")
                         },
                         buttonText = buttonText(participatingContent.state),
@@ -113,7 +113,7 @@ fun ParticipatingScreenView(
             }
 
             "참여예정 팟" -> {
-                participatingViewModel.getInProgress()
+                participatingViewModel.getScheduled()
                 uiState.content?.forEach { participatingContent ->
                     ParticipatePat(
                         content = participatingContent,

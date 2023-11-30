@@ -54,7 +54,7 @@ fun PostRepImageView(
     navController: NavController,
     bitmap: Bitmap?,
     viewModel: PostViewModel,
-){
+) {
 
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -74,39 +74,39 @@ fun PostRepImageView(
             },
         contentAlignment = Alignment.Center
     ) {
-            bitmap?.let {
-                Image(
-                    bitmap = it.asImageBitmap(),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxWidth(),
-                    contentScale = ContentScale.Crop
-                )
-            }
-            Row(
-                modifier = modifier
-                    .width(141.dp)
-                    .height(36.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .border(1.dp, color = PrimaryMain, RoundedCornerShape(4.dp))
-                    .background(White)
-                    .clickable {
-                        showBottomSheet = true
-                    },
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-            ) {
-                Text(
-                    text = "썸네일 추가하기",
-                    style = Typography.labelMedium,
-                    color = PrimaryMain,
-                )
-                Spacer(modifier = modifier.size(4.dp))
-                Icon(
-                    modifier = modifier.size(16.dp),
-                    painter = painterResource(id = R.drawable.ic_add),
-                    contentDescription = "썸네일 추가하기"
-                )
-            }
+        bitmap?.let {
+            Image(
+                bitmap = it.asImageBitmap(),
+                contentDescription = null,
+                modifier = Modifier.fillMaxWidth(),
+                contentScale = ContentScale.Crop
+            )
+        }
+        Row(
+            modifier = modifier
+                .width(141.dp)
+                .height(36.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .border(1.dp, color = PrimaryMain, RoundedCornerShape(4.dp))
+                .background(White)
+                .clickable {
+                    showBottomSheet = true
+                },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                text = "썸네일 추가하기",
+                style = Typography.labelMedium,
+                color = PrimaryMain,
+            )
+            Spacer(modifier = modifier.size(4.dp))
+            Icon(
+                modifier = modifier.size(16.dp),
+                painter = painterResource(id = R.drawable.ic_add),
+                contentDescription = "썸네일 추가하기"
+            )
+        }
 
         if (showBottomSheet) {
             ModalBottomSheet(
@@ -117,7 +117,8 @@ fun PostRepImageView(
             ) {
                 Column(
                     modifier = modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally) {
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
 
                     Text(
                         "아래 방법 중 하나를 선택해주세요.",
@@ -159,7 +160,6 @@ fun PostRepImageView(
             }
         }
     }
-
 
 
 }

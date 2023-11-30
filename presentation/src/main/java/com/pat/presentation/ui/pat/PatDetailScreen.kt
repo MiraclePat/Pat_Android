@@ -24,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.PatDetailContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
@@ -72,6 +74,10 @@ fun PatDetailView(
 ) {
     val uiState by patDetailViewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
+
+    LaunchedEffect(uiState.content) {
+        Logger.t("MainTest").i("${uiState.content}")
+    }
 
     Scaffold(
         modifier = modifier
@@ -178,7 +184,7 @@ fun PostDetailScreen(
             modifier = modifier
                 .fillMaxWidth()
                 .height(160.dp),
-            imageModel = { content.bodyImg.first() }
+            imageModel = { if (content.bodyImg.isNotEmpty()) content.bodyImg.first() }
         )
         Spacer(modifier.size(10.dp))
         Column {
@@ -314,6 +320,7 @@ fun PostDetailScreen(
                     FinalButton(text = "취소가 불가능해요! (시작 하루 전까지 취소 가능)",
                         backColor = Gray300,
                         textColor = White,
+                        stokeColor = Gray300,
                         onClick = { }
                     )
                 }
@@ -322,6 +329,7 @@ fun PostDetailScreen(
                     FinalButton(text = "인증이 이미 진행중인 팟이에요!",
                         backColor = Gray300,
                         textColor = White,
+                        stokeColor = Gray300,
                         onClick = { }
                     )
                 }
@@ -330,6 +338,7 @@ fun PostDetailScreen(
                     FinalButton(text = "종료된 팟이에요!",
                         backColor = Gray300,
                         textColor = White,
+                        stokeColor = Gray300,
                         onClick = { }
                     )
                 }

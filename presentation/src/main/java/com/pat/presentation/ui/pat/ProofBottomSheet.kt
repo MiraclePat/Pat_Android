@@ -71,8 +71,6 @@ import com.pat.presentation.ui.theme.Typography
 fun ProofImageView(
     navController: NavController,
     modifier: Modifier = Modifier,
-    imageIdx: Int = -1,
-    hasSource: String = "",
     realTime: Boolean = true,
     bitmap: Bitmap?,
     viewModel: ProofViewModel,
@@ -80,12 +78,6 @@ fun ProofImageView(
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
     var isGallery by remember { mutableStateOf(false) }
-
-
-    val roundedCornerShape = if (imageIdx == -1) RoundedCornerShape(
-        topStart = 4.dp,
-        topEnd = 4.dp
-    ) else RoundedCornerShape(4.dp)
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
 
     val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
@@ -101,13 +93,29 @@ fun ProofImageView(
         modifier
             .height(140.dp)
             .width(130.dp)
-            .clip(roundedCornerShape)
+            .clip(RoundedCornerShape(4.dp))
             .background(Gray300)
             .clickable {
                 showBottomSheet = true
             },
         contentAlignment = Alignment.Center
     ) {
+        if (viewModel.proofImageBytes.isEmpty()) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    modifier = modifier.size(24.dp),
+                    painter = painterResource(id = R.drawable.ic_add),
+                    contentDescription = null,
+                    tint = Gray500
+                )
+                Box() {
+                    Text("사진 첨부하기", style = Typography.labelSmall)
+                }
+            }
+        }
         bitmap?.let {
             Image(
                 bitmap = it.asImageBitmap(),
@@ -116,7 +124,7 @@ fun ProofImageView(
                 contentScale = ContentScale.Crop
             )
         }
-        if(isGallery){
+        if (isGallery) {
             AsyncImage(
                 model = selectedImageUri,
                 contentDescription = null,
@@ -183,7 +191,7 @@ fun ProofImageView(
                             singlePhotoPickerLauncher.launch(
                                 PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                             )
-                            isGallery=true
+                            isGallery = true
                         },
                         cornerSize = 100.dp,
                         backColor = Color.White,
@@ -193,27 +201,6 @@ fun ProofImageView(
 
                 }
             }
-        }
-
-
-
-        if (hasSource != "") {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Icon(
-                    modifier = modifier.size(24.dp),
-                    painter = painterResource(id = R.drawable.ic_add),
-                    contentDescription = null,
-                    tint = Gray500
-                )
-                Box() {
-                    if (imageIdx == -1) Text("사진 첨부하기", style = Typography.labelSmall)
-                    else Text("사진$imageIdx 첨부하기", style = Typography.labelSmall)
-                }
-            }
-
         }
     }
 }

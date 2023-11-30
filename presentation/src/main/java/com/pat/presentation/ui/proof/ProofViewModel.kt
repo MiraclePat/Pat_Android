@@ -55,7 +55,7 @@ class ProofViewModel @Inject constructor(
     private val _proofBitmap = MutableStateFlow<Bitmap?>(null)
     val proofBitmap = _proofBitmap.asStateFlow()
 
-    private var proofImageBytes: ByteArray = ByteArray(0)
+    var proofImageBytes: ByteArray = ByteArray(0)
 
     private val _uiState = MutableStateFlow(ParticipatingUiState())
     val uiState: StateFlow<ParticipatingUiState> = _uiState.asStateFlow()
@@ -104,9 +104,9 @@ class ProofViewModel @Inject constructor(
         viewModelScope.launch {
             val result = proofPatUseCase(patId, ProofPatInfo(proofImg))
             if (result.isSuccess) {
-                val content = result.getOrThrow()
+                result.getOrThrow()
             } else {
-                Logger.t("MainTest").i("${proofs}")
+                Logger.t("MainTest").i("${result}")
             }
         }
     }
