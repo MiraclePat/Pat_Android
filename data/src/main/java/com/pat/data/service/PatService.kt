@@ -45,7 +45,7 @@ interface PatService {
     ): PatDetailContentDTO
 
     @Multipart
-    @POST("/api/test/pats")
+    @POST("/api/v1/pats")
     suspend fun createPat(
         @Part repImg : MultipartBody.Part,
         @Part correctImg : MultipartBody.Part,

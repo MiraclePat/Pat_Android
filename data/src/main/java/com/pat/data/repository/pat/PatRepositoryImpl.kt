@@ -19,6 +19,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.HttpException
 import javax.inject.Inject
 
 class PatRepositoryImpl @Inject constructor(
@@ -87,7 +88,7 @@ class PatRepositoryImpl @Inject constructor(
         return if (result.isSuccess) {
             Result.success(result.getOrThrow())
         } else {
-            Result.failure(result.exception())
+            Result.failure(handleRegisterAndGetError(result.exception()))
         }
     }
 
@@ -155,4 +156,14 @@ class PatRepositoryImpl @Inject constructor(
         }
     }
 
+    private fun handleRegisterAndGetError(t: Throwable): Throwable {
+        return if (t is HttpException) {
+            Logger.t("MainTest").i("실패 ${t.message()}")
+
+            UnKnownException()
+        } else {
+            Logger.t("MainTest").i("실패 ${t.message}")
+            t
+        }
+    }
 }
