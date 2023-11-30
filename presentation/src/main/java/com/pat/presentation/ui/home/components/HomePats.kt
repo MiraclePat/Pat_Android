@@ -60,20 +60,20 @@ fun Pats(
 //            Log.e("custom", "통과")
 //        }
         val scrollState = rememberScrollState()
-        content?.forEach { pat ->
-            HomePats(
-                title = pat.patName,
-                category = pat.category,
-                nowPerson = pat.nowPerson,
-                maxPerson = pat.maxPerson,
-                startDate = pat.startDate,
-                imgUri = pat.repImg,
-                location = pat.location.ifEmpty { "어디서나 가능" },
-                onClick = { navController.navigate("patDetail/${pat.patId}") }
-            )
-            Spacer(Modifier.size(10.dp))
-        }
         Row(modifier.horizontalScroll(scrollState)) {
+            content?.forEach { pat ->
+                HomePats(
+                    title = pat.patName,
+                    category = pat.category,
+                    nowPerson = pat.nowPerson,
+                    maxPerson = pat.maxPerson,
+                    startDate = pat.startDate,
+                    imgUri = pat.repImg,
+                    location = pat.location.ifEmpty { "어디서나 가능" },
+                    onClick = { navController.navigate("patDetail/${pat.patId}") }
+                )
+                Spacer(Modifier.size(10.dp))
+            }
         }
     }
 }

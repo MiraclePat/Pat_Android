@@ -160,9 +160,12 @@ class PostViewModel @Inject constructor(
                 patName,
                 patDetail,
                 maxPerson,
-                selectPlace?.mapx?:0,
-                selectPlace?.mapy?:0,
-                selectPlace?.title.toString(),
+//                selectPlace?.mapx?:0,
+//                selectPlace?.mapy?:0,
+//                selectPlace?.title.toString(),
+                latitude,
+                longitude,
+                location,
                 category,
                 startTime,
                 endTime,
@@ -172,7 +175,7 @@ class PostViewModel @Inject constructor(
                 days,
                 realtime
             )
-            Logger.t("patdetail").i("${detail}")
+            Logger.t("MainTest").i("${detail}")
             val result = createPatUseCase(
                 CreatePatInfo(
                     storedBytes.repBytes,
@@ -182,11 +185,13 @@ class PostViewModel @Inject constructor(
                     detail
                 )
             )
-//            if (result.isSuccess) {
-//                //TODO 성공
-//            } else {
-//                //TODO 에러 처리
-//            }
+            Logger.t("MainTest").i("${result}")
+//            Logger.t("patdetail").i("${storedBytes}")
+            if (result.isSuccess) {
+                result.getOrThrow()
+            } else {
+                Logger.t("MainTest").i("실패 ${detail}")
+            }
         }
     }
     fun onSearch(query: String) {

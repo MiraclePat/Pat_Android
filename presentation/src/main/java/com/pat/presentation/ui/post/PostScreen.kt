@@ -384,9 +384,9 @@ fun PostScreenBody(
             Spacer(modifier = modifier.size(14.dp))
 
             Row {
-                CheckBoxView(checked = isRealTime, text = "실시간 촬영", isRealtime = true)
+                CheckBoxView(text = "실시간 촬영")
                 Spacer(modifier = modifier.size(12.dp))
-                CheckBoxView(text = "갤러리에서 사진 가져오기")
+                CheckBoxView(checked = isRealTime, text = "갤러리에서 사진 가져오기", isRealTime = true)
             }
             Spacer(modifier = modifier.size(55.dp))
 
