@@ -148,5 +148,5 @@ dependencies {
     // naver map
     implementation 'io.github.fornewid:naver-map-compose:1.5.1'
     implementation 'io.github.fornewid:naver-map-location:21.0.1'
-    implementation "androidx.lifecycle:lifecycle-runtime-compose:2.7.0-rc01"
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
 }

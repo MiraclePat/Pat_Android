@@ -4,6 +4,7 @@ import com.pat.data.model.ListResponse
 import com.pat.data.model.pat.HomePatContentDTO
 import com.pat.data.model.pat.MapPatContentDTO
 import com.pat.data.model.pat.PatDetailContentDTO
+import com.pat.data.model.place.CoordinateResponseDTO
 import com.pat.data.model.place.ResultGetSearchPlacesDTO
 import okhttp3.MultipartBody
 import retrofit2.Call
@@ -17,14 +18,11 @@ import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface PlaceService {
-    @GET("v1/search/local.json")
-    suspend fun getSearchPlaces(
+interface CoordinateService {
+    @GET("map-geocode/v2/geocode")
+    suspend fun getSearchCoordinate(
         @Query("query") query: String,
-        @Query("display") display: Int?,
-        @Query("start") start: Int?,
-        @Query("sort") sort: String?,
-    ): Response<ResultGetSearchPlacesDTO>
+    ): Response<CoordinateResponseDTO>
 
 
 }

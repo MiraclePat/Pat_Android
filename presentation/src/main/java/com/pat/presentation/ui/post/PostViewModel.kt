@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.camera.core.ImageProxy
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.naver.maps.geometry.LatLng
 import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.CreatePatInfo
 import com.pat.domain.model.pat.CreatePatInfoDetail
@@ -13,6 +14,7 @@ import com.pat.domain.model.place.PlaceDetailInfo
 import com.pat.domain.model.place.PlaceSearchRequestInfo
 import com.pat.domain.usecase.image.GetByteArrayByUriUseCase
 import com.pat.domain.usecase.pat.CreatePatUseCase
+import com.pat.domain.usecase.place.GetSearchCoordinateUseCase
 import com.pat.domain.usecase.place.GetSearchPlaceUseCase
 import com.pat.presentation.model.PatBitmap
 import com.pat.presentation.util.image.byteArrayToBitmap
@@ -43,6 +45,7 @@ class PostViewModel @Inject constructor(
     private val createPatUseCase: CreatePatUseCase,
     private val getByteArrayByUriUseCase: GetByteArrayByUriUseCase,
     private val getSearchPlaceUseCase: GetSearchPlaceUseCase,
+    private val getSearchCoordinateUseCase: GetSearchCoordinateUseCase,
 ) : ViewModel() {
 //    private var searchedPlaces = listOf<PlacePrediction>()
 
@@ -72,6 +75,8 @@ class PostViewModel @Inject constructor(
     val bitmapList = _bitmapList.asStateFlow()
 
     private var selectPlace : PlaceDetailInfo? = null
+    private var selectPlaceCoordinate : LatLng? = null
+
 
     private val storedBytes: PostBytes = PostBytes(
         ByteArray(0), mutableListOf(),
@@ -160,15 +165,12 @@ class PostViewModel @Inject constructor(
                 patName,
                 patDetail,
                 maxPerson,
-//                selectPlace?.mapx?:0,
-//                selectPlace?.mapy?:0,
-//                selectPlace?.title.toString(),
-                latitude,
-                longitude,
-                location,
+                selectPlaceCoordinate?.latitude?:0.0,
+                selectPlaceCoordinate?.longitude?:0.0,
+                selectPlace?.title.toString(),
                 category,
-                startTime,
-                endTime,
+                "09:00",
+                "10:00",
                 startDate,
                 endDate,
                 proofDetail,
@@ -185,12 +187,10 @@ class PostViewModel @Inject constructor(
                     detail
                 )
             )
-            Logger.t("MainTest").i("${result}")
-//            Logger.t("patdetail").i("${storedBytes}")
             if (result.isSuccess) {
-                result.getOrThrow()
+                Logger.t("patdetail").i("성공")
             } else {
-                Logger.t("MainTest").i("실패 ${detail}")
+                Logger.t("patdetail").i("${result.exceptionOrNull()}")
             }
         }
     }
@@ -219,8 +219,25 @@ class PostViewModel @Inject constructor(
         }
     }
 
+    private fun searchCoordinate(place: PlaceDetailInfo) {
+        viewModelScope.launch {
+            val result = getSearchCoordinateUseCase(
+                place.address.toString()
+            )
+            if (result.isSuccess) {
+                val coordinate = result.getOrThrow()
+                selectPlaceCoordinate = LatLng(coordinate.lat,coordinate.long)
+            } else {
+                //TODO 에러 처리 해당주소의 좌표를 찾을 수 없습니다 에러처리
+            }
+        }
+    }
+
+
+
     fun selectPlace(place: PlaceDetailInfo){
         selectPlace = place
+        searchCoordinate(place)
     }
 
     companion object{
