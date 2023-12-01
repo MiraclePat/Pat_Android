@@ -62,10 +62,6 @@ fun ParticipatingScreenView(
     val uiState by participatingViewModel.uiState.collectAsState()
 
 
-    LaunchedEffect(uiState.content) {
-        Logger.t("MainTest").i("${uiState.content}")
-    }
-
     Column(
         modifier
             .fillMaxWidth()

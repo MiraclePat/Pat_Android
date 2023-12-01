@@ -33,9 +33,11 @@ class PatRepositoryImpl @Inject constructor(
     override suspend fun getHomePats(homePatRequestInfo: HomePatRequestInfo): Result<List<HomePatContent>> {
         //TODO hasNext
         val result = runCatching {
-            patDataSource.getHomePats(homePatRequestInfo.lastId,homePatRequestInfo.size,
-                homePatRequestInfo.sort,homePatRequestInfo.query,homePatRequestInfo.category,
-                homePatRequestInfo.showFull,homePatRequestInfo.state)
+            patDataSource.getHomePats(
+                homePatRequestInfo.lastId, homePatRequestInfo.size,
+                homePatRequestInfo.sort, homePatRequestInfo.query, homePatRequestInfo.category,
+                homePatRequestInfo.showFull, homePatRequestInfo.state
+            )
         }
         return if (result.isSuccess) {
             Result.success(result.getOrThrow().content)
@@ -47,10 +49,12 @@ class PatRepositoryImpl @Inject constructor(
 
     override suspend fun getMapPats(mapPatRequestInfo: MapPatRequestInfo): Result<List<MapPatContent>> {
         val result = runCatching {
-            patDataSource.getMapPats(mapPatRequestInfo.size,
-                mapPatRequestInfo.query,mapPatRequestInfo.category,
-                mapPatRequestInfo.leftLongitude,mapPatRequestInfo.rightLongitude,
-                mapPatRequestInfo.bottomLatitude,mapPatRequestInfo.topLatitude)
+            patDataSource.getMapPats(
+                mapPatRequestInfo.size,
+                mapPatRequestInfo.query, mapPatRequestInfo.category,
+                mapPatRequestInfo.leftLongitude, mapPatRequestInfo.rightLongitude,
+                mapPatRequestInfo.bottomLatitude, mapPatRequestInfo.topLatitude
+            )
         }
         return if (result.isSuccess) {
             Result.success(result.getOrThrow().content)
@@ -60,7 +64,7 @@ class PatRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun getMultipartImage(bytes: ByteArray, partName: String): MultipartBody.Part{
+    private suspend fun getMultipartImage(bytes: ByteArray, partName: String): MultipartBody.Part {
         val requestFile = bytes.toRequestBody("image/jpeg".toMediaType(), 0, bytes.size)
         val fileName = imageDataSource.getImageName()
         return MultipartBody.Part.createFormData(
@@ -69,21 +73,22 @@ class PatRepositoryImpl @Inject constructor(
             requestFile,
         )
     }
+
     override suspend fun createPat(createPatInfo: CreatePatInfo): Result<Unit> {
         val result = runCatching {
-            val repImg = getMultipartImage(createPatInfo.repImg,"repImg")
-            val correctImg = getMultipartImage(createPatInfo.correctImg,"correctImg")
-            val incorrectImg = getMultipartImage(createPatInfo.incorrectImg,"incorrectImg")
-            val bodyImg = createPatInfo.bodyImg.map{
-                getMultipartImage(it,"bodyImg")
+            val repImg = getMultipartImage(createPatInfo.repImg, "repImg")
+            val correctImg = getMultipartImage(createPatInfo.correctImg, "correctImg")
+            val incorrectImg = getMultipartImage(createPatInfo.incorrectImg, "incorrectImg")
+            val bodyImg = createPatInfo.bodyImg.map {
+                getMultipartImage(it, "bodyImg")
             }
 
-            val adapter= moshi.adapter(CreatePatInfoDetail::class.java)
+            val adapter = moshi.adapter(CreatePatInfoDetail::class.java)
             val patInfoJson = adapter.toJson(createPatInfo.pat)
             val patRequestBody = patInfoJson.toRequestBody("application/json".toMediaTypeOrNull())
             val patPart = MultipartBody.Part.createFormData("pat", "pat", patRequestBody)
 
-            patDataSource.createPat(repImg,correctImg,incorrectImg,bodyImg,patPart)
+            patDataSource.createPat(repImg, correctImg, incorrectImg, bodyImg, patPart)
         }
         return if (result.isSuccess) {
             Result.success(result.getOrThrow())
@@ -117,32 +122,35 @@ class PatRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updatePat(patId: Long, createPatInfo: CreatePatInfo): Result<Unit> {
-            val repImg = getMultipartImage(createPatInfo.repImg,"repImg")
-            val correctImg = getMultipartImage(createPatInfo.correctImg,"correctImg")
-            val incorrectImg = getMultipartImage(createPatInfo.incorrectImg,"incorrectImg")
-            val bodyImg = createPatInfo.bodyImg.map{
-                getMultipartImage(it,"bodyImg")
-            }
+        val repImg = getMultipartImage(createPatInfo.repImg, "repImg")
+        val correctImg = getMultipartImage(createPatInfo.correctImg, "correctImg")
+        val incorrectImg = getMultipartImage(createPatInfo.incorrectImg, "incorrectImg")
+        val bodyImg = createPatInfo.bodyImg.map {
+            getMultipartImage(it, "bodyImg")
+        }
 
-            val adapter= moshi.adapter(CreatePatInfoDetail::class.java)
-            val patInfoJson = adapter.toJson(createPatInfo.pat)
-            val patRequestBody = patInfoJson.toRequestBody("application/json".toMediaTypeOrNull())
-            val patPart = MultipartBody.Part.createFormData("pat", "pat", patRequestBody)
+        val adapter = moshi.adapter(CreatePatInfoDetail::class.java)
+        val patInfoJson = adapter.toJson(createPatInfo.pat)
+        val patRequestBody = patInfoJson.toRequestBody("application/json".toMediaTypeOrNull())
+        val patPart = MultipartBody.Part.createFormData("pat", "pat", patRequestBody)
 
-           val response =  patDataSource.updatePat(patId,repImg,correctImg,incorrectImg,bodyImg,patPart)
+        val response =
+            patDataSource.updatePat(patId, repImg, correctImg, incorrectImg, bodyImg, patPart)
 
-            return if (response.isSuccessful) {
-                Result.success(Unit)
-            } else {
-                Result.failure(UnKnownException())
-            }
+        return if (response.isSuccessful) {
+            Result.success(Unit)
+        } else {
+            Result.failure(UnKnownException())
+        }
     }
 
     override suspend fun deletePat(patId: Long): Result<Unit> {
         val response = patDataSource.deletePat(patId)
         return if (response.isSuccessful) {
+            Logger.t("MainTest").i("${response}, ${patId}")
             Result.success(Unit)
         } else {
+            Logger.t("MainTest").i("${response}, ${patId}")
             Result.failure(UnKnownException())
         }
     }

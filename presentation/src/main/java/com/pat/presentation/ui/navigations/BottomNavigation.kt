@@ -81,7 +81,7 @@ fun NavigationGraph(navController: NavHostController) {
             ParticipatingScreenView(navController = navController)
         }
         composable(BottomNavItem.Map.screenRoute) {
-            MapScreenView()
+            MapScreenView(navController = navController)
         }
         composable(BottomNavItem.Setting.screenRoute) {
             SettingScreenView()
