@@ -164,7 +164,7 @@ fun ProofScreen(
     fun finalButton(text: String) {
         FinalButton(
             text = text,
-            textColor = PrimaryMain,
+            textColor = White,
             backColor = Gray300,
             stokeColor = Gray300
         )
@@ -451,7 +451,7 @@ fun ProofScreen(
 
             "IN_PROGRESS" -> {
                 if (content.isCompleted) {
-                    finalButton("인증하기 (이미 인증했어요!)")
+                    finalButton("인증완료!")
                 } else {
                     FinalButton(text = "인증하기", onClick = { showBottomSheet = true })
                 }

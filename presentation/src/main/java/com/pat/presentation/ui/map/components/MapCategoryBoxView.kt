@@ -79,8 +79,8 @@ fun MapCategoryBox(
                 color = if (isSelected) categoryInfo.backColor else Gray100,
                 shape = RoundedCornerShape(4.dp)
             )
-            .width(41.dp)
-            .height(26.dp)
+            .width(if (category == "전체보기") 69.dp else 47.dp)
+            .height(32.dp)
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
