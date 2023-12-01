@@ -1,4 +1,4 @@
-package com.pat.presentation.ui.common
+package com.pat.presentation.ui.map.components
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -26,12 +26,15 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.naver.maps.geometry.LatLng
 import com.pat.presentation.R
 import com.pat.presentation.ui.home.components.CategoryButton
+import com.pat.presentation.ui.map.MapViewModel
 import com.pat.presentation.ui.theme.*
 
 
 enum class CategoryEnum(val category: Int, val backColor: Color, val textColor: Color) {
+    ALL(R.string.category_all, ALLBackColor, ALLTextColor),
     ENVIRONMENT(R.string.category_environment, EnvironmentBackColor, EnvironmentTextColor),
     HEALTH(R.string.category_health, HealthBackColor, HealthTextColor),
     HABIT(R.string.category_habit, HabitBackColor, HabitTextColor),
@@ -41,14 +44,19 @@ enum class CategoryEnum(val category: Int, val backColor: Color, val textColor: 
 }
 
 @Composable
-fun CategoryBoxList(
-    state: MutableState<String>) {
+fun MapCategoryBoxList(
+    state: MutableState<String>,
+    viewModel: MapViewModel,
+    northEastCoordinate: LatLng?,
+    southWestCoordinate: LatLng?
+) {
     CategoryEnum.values().forEach {
         val category = stringResource(id = it.category)
-        CategoryBox(
+        MapCategoryBox(
             category = category,
             onClick = {
                 state.value = category
+                viewModel.getMapPats(northEastCoordinate, southWestCoordinate, category)
             },
             isSelected = state.value == category
         )
@@ -57,7 +65,7 @@ fun CategoryBoxList(
 }
 
 @Composable
-fun CategoryBox(
+fun MapCategoryBox(
     modifier: Modifier = Modifier,
     category: String,
     onClick: () -> Unit = {},

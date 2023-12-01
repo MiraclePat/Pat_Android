@@ -37,6 +37,7 @@ val RedText = Color(0xFFFF4646)
 val SystemRed = Color(0xFFFF6262)
 val SystemBlue = Color(0xFF6BA6FF)
 
+val ALLBackColor = PrimaryMain
 val EnvironmentBackColor = Color(0xFFE2FFEC)
 val HealthBackColor = Color(0xFFEAFBFF)
 val HabitBackColor = Color(0xFFFFF6D5)
@@ -44,6 +45,7 @@ val HobbyBackColor = Color(0xFFFFE5F5)
 val DailyBackColor = Color(0xFFFFEEED)
 val EtcBackColor = Gray300
 
+val ALLTextColor = White
 val EnvironmentTextColor = Color(0xFF009D65)
 val HealthTextColor = Color(0xFF2BA4BF)
 val HabitTextColor = Color(0xFFDE9301)

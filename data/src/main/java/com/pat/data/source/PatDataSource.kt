@@ -2,6 +2,7 @@ package com.pat.data.source
 
 import com.pat.data.model.ListResponse
 import com.pat.data.model.pat.HomePatContentDTO
+import com.pat.data.model.pat.MapListResponse
 import com.pat.data.model.pat.MapPatContentDTO
 import com.pat.data.model.pat.PatDetailContentDTO
 import com.pat.data.service.PatService
@@ -25,7 +26,6 @@ class PatDataSource @Inject constructor(
     }
 
     suspend fun getMapPats(
-        lastId: Long?,
         size: Int?,
         query: String?,
         category: String?,
@@ -33,8 +33,8 @@ class PatDataSource @Inject constructor(
         rightLongitude: Double?,
         bottomLatitude: Double?,
         topLatitude: Double?,
-    ): ListResponse<MapPatContentDTO> {
-        return service.getMapPats(lastId, size, query, category, leftLongitude,rightLongitude,bottomLatitude,topLatitude)
+    ): MapListResponse {
+        return service.getMapPats(size, query, category, leftLongitude,rightLongitude,bottomLatitude,topLatitude)
     }
 
     suspend fun getPatDetail(patId: Long
