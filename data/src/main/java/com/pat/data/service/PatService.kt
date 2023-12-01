@@ -2,6 +2,7 @@ package com.pat.data.service
 
 import com.pat.data.model.ListResponse
 import com.pat.data.model.pat.HomePatContentDTO
+import com.pat.data.model.pat.MapListResponse
 import com.pat.data.model.pat.MapPatContentDTO
 import com.pat.data.model.pat.PatDetailContentDTO
 import okhttp3.MultipartBody
@@ -29,7 +30,6 @@ interface PatService {
 
     @GET("/api/v1/pats/map")
     suspend fun getMapPats(
-        @Query("lastId") lastId: Long?,
         @Query("size") size: Int?,
         @Query("query") query: String?,
         @Query("category") category: String?,
@@ -37,7 +37,7 @@ interface PatService {
         @Query("rightLongitude") rightLongitude: Double?,
         @Query("bottomLatitude") bottomLatitude: Double?,
         @Query("topLatitude") topLatitude: Double?,
-    ): ListResponse<MapPatContentDTO>
+    ): MapListResponse
 
     @GET("/api/v1/pats/{pat-id}")
     suspend fun getPatDetail(

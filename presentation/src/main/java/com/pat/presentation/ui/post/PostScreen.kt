@@ -58,6 +58,7 @@ import com.pat.presentation.ui.common.WheelTimePickerView
 import com.pat.presentation.ui.common.convertDateFormat
 import com.pat.presentation.ui.common.convertTimeFormat
 import com.pat.presentation.ui.post.components.PostRepImageView
+import com.pat.presentation.ui.post.components.SearchPlaceTextField
 import com.pat.presentation.ui.post.components.SearchResultList
 import com.pat.presentation.ui.post.components.SelectDayButtonList
 import com.pat.presentation.ui.theme.Gray100
@@ -486,7 +487,7 @@ fun SelectLocationButtonList(
 
     when (locationState.value) {
         "주소 검색" -> {
-            CustomTextField(placeholderText = "서초동 스타벅스",
+            SearchPlaceTextField(placeholderText = "서초동 스타벅스",
                 maxLength = 30,
                 state = searchValue,
                 onScreen = onSearchScreen,
