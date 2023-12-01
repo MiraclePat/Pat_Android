@@ -76,12 +76,12 @@ fun SelectImage(
     navController: NavController,
     modifier: Modifier = Modifier,
     imageIdx: Int = -1,
-    hasSource: String = "",
     realTime: Boolean = true,
     bitmap: Bitmap?,
     bitmapType: String,
     viewModel: PostViewModel,
-    selectable: Boolean = true
+    selectable: Boolean = true,
+    hasSource: Boolean = false
 ) {
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -102,7 +102,6 @@ fun SelectImage(
             selectedImageUri = uri
         }
     )
-
     Box(
         modifier
             .height(140.dp)
@@ -114,6 +113,23 @@ fun SelectImage(
             },
         contentAlignment = Alignment.Center
     ) {
+        if (!hasSource) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    modifier = modifier.size(24.dp),
+                    painter = painterResource(id = R.drawable.ic_add),
+                    contentDescription = null,
+                    tint = Gray500
+                )
+                Box() {
+                    if (imageIdx == -1) Text("사진 첨부하기", style = Typography.labelSmall)
+                    else Text("사진$imageIdx 첨부하기", style = Typography.labelSmall)
+                }
+            }
+        }
         bitmap?.let {
             Logger.t("bodyimage").i("selectimage에서 ${bitmap}")
 
@@ -124,7 +140,7 @@ fun SelectImage(
                 contentScale = ContentScale.Crop
             )
         }
-        if(isGallery){
+        if (isGallery) {
             AsyncImage(
                 model = selectedImageUri,
                 contentDescription = null,
@@ -191,7 +207,7 @@ fun SelectImage(
                             singlePhotoPickerLauncher.launch(
                                 PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                             )
-                            isGallery=true
+                            isGallery = true
                         },
                         cornerSize = 100.dp,
                         backColor = Color.White,
@@ -204,25 +220,6 @@ fun SelectImage(
         }
 
 
-
-        if (hasSource != "") {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Icon(
-                    modifier = modifier.size(24.dp),
-                    painter = painterResource(id = R.drawable.ic_add),
-                    contentDescription = null,
-                    tint = Gray500
-                )
-                Box() {
-                    if (imageIdx == -1) Text("사진 첨부하기", style = Typography.labelSmall)
-                    else Text("사진$imageIdx 첨부하기", style = Typography.labelSmall)
-                }
-            }
-
-        }
     }
 }
 
@@ -329,7 +326,7 @@ fun SelectImageList(
 ) {
     Logger.t("bodyimage").i("selectimagelist에서 ${bitmapList}")
 
-    val maxSize = IntArray(5 - bitmapList.size) { it + 1 }
+    val maxSize = IntArray(5 - bitmapList.size) { it + 1 + bitmapList.size }
 
     LazyRow() {
         items(bitmapList) { bitmap ->
@@ -339,6 +336,7 @@ fun SelectImageList(
                 bitmap = bitmap,
                 bitmapType = bitmapType,
                 viewModel = viewModel,
+                hasSource = true
             )
             Spacer(modifier = modifier.padding(horizontal = 10.dp))
         }
@@ -349,7 +347,8 @@ fun SelectImageList(
                 bitmap = null,
                 bitmapType = bitmapType,
                 viewModel = viewModel,
-                )
+                hasSource = false
+            )
             Spacer(modifier = modifier.padding(horizontal = 10.dp))
         }
     }

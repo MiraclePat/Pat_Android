@@ -106,9 +106,9 @@ class ProofViewModel @Inject constructor(
         viewModelScope.launch {
             val result = proofPatUseCase(patId, ProofPatInfo(proofImg))
             if (result.isSuccess) {
-                val content = result.getOrThrow()
+                result.getOrThrow()
             } else {
-                Logger.t("MainTest").i("${proofs}")
+                Logger.t("MainTest").i("${result}")
             }
         }
     }

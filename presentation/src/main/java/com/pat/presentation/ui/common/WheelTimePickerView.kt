@@ -250,7 +250,7 @@ fun Picker(
     items: List<String>,
     state: PickerState = rememberPickerState(),
     modifier: Modifier = Modifier,
-    startIndex: Int = 0,
+    startIndex: Int = 11,
     visibleItemsCount: Int = 3,
     textModifier: Modifier = Modifier,
     textStyle: TextStyle = LocalTextStyle.current,

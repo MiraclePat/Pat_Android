@@ -3,6 +3,7 @@ package com.pat.presentation.ui.pat
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +25,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,10 +42,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.PatDetailContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
 import com.pat.presentation.ui.common.DayButtonList
+import com.pat.presentation.ui.common.Divider
 import com.pat.presentation.ui.common.FinalButton
 import com.pat.presentation.ui.common.IconWithTextView
 import com.pat.presentation.ui.common.SimpleTextView
@@ -53,6 +57,7 @@ import com.pat.presentation.ui.theme.Gray300
 import com.pat.presentation.ui.theme.Gray50
 import com.pat.presentation.ui.theme.Gray500
 import com.pat.presentation.ui.theme.Gray700
+import com.pat.presentation.ui.theme.Gray800
 import com.pat.presentation.ui.theme.GreenBack
 import com.pat.presentation.ui.theme.GreenText
 import com.pat.presentation.ui.theme.PrimaryMain
@@ -73,6 +78,10 @@ fun PatDetailView(
     val uiState by patDetailViewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
 
+    LaunchedEffect(uiState.content) {
+        Logger.t("MainTest").i("${uiState.content}")
+    }
+
     Scaffold(
         modifier = modifier
             .fillMaxSize(),
@@ -80,25 +89,29 @@ fun PatDetailView(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "강아지 산책",
-                        fontSize = 14.sp
+                        text = uiState.content?.patName ?: "공고글 상세",
+                        style = Typography.labelMedium,
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_back_arrow),
-                            contentDescription = "Go back"
+                            contentDescription = "Go back",
+                            tint = Gray800
                         )
                     }
                 },
                 actions = {
-                    IconButton(onClick = {
+                    IconButton(modifier = modifier
+                        .padding(end = 12.dp)
+                        .size(24.dp), onClick = {
                         navController.navigate("patUpdate/${uiState.content?.patId}")
                     }) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_write),
-                            contentDescription = "Write"
+                            contentDescription = "Write",
+                            tint = Gray800
                         )
                     }
                 },
@@ -139,16 +152,15 @@ fun PostDetailScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             CategoryBox(
-                modifier = modifier.padding(8.dp),
+                modifier = modifier.padding(end = 8.dp),
                 category = content.category,
                 isSelected = true
             )
             Text(
                 style = Typography.displayLarge,
-                text = "강아지 산책",
+                text = content.patName,
                 fontSize = 20.sp,
                 color = Color.Black,
-                modifier = modifier.padding(3.dp)
             )
         }
         Spacer(modifier.height(16.dp))
@@ -165,87 +177,79 @@ fun PostDetailScreen(
             userProfile = content.profileImg,
             isOpener = content.isWriter
         )
-        Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .height(10.dp)
-                .background(Gray50)
-        )
-        Spacer(modifier.size(20.dp))
-
-        Text("팟 상세정보", fontSize = 16.sp, modifier = modifier.padding(3.dp))
-        GlideImage(
-            modifier = modifier
-                .fillMaxWidth()
-                .height(160.dp),
-            imageModel = { content.bodyImg.first() }
-        )
-        Spacer(modifier.size(10.dp))
-        Column {
-            if (isOpenBtnClicked) {
-                PatPhotos(patUriInfo = content.bodyImg)
-            } else {
-                FinalButton(
-                    text = "펼쳐보기",
-                    backColor = White,
-                    textColor = PrimaryMain,
-                    stokeColor = PrimaryMain,
-                    stokeWidth = 1.dp,
-                    onClick = {
-                        isOpenBtnClicked = true
-                    }
-                )
+        Spacer(modifier.size(8.dp))
+        if (content.bodyImg.isNotEmpty()) {
+            Divider()
+            Spacer(modifier.size(24.dp))
+            Text("팟 상세정보", style = Typography.titleLarge, color = Gray800)
+            Spacer(modifier.size(16.dp))
+            GlideImage(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(160.dp),
+                imageModel = { content.bodyImg.first() }
+            )
+            Spacer(modifier.size(10.dp))
+            Column {
+                if (isOpenBtnClicked) {
+                    PatPhotos(patUriInfo = content.bodyImg)
+                } else {
+                    FinalButton(
+                        text = "펼쳐보기",
+                        backColor = White,
+                        textColor = PrimaryMain,
+                        stokeColor = PrimaryMain,
+                        stokeWidth = 1.dp,
+                        onClick = {
+                            isOpenBtnClicked = true
+                        }
+                    )
+                }
             }
+            Spacer(modifier.size(20.dp))
         }
-        Spacer(modifier.size(20.dp))
-        Box(modifier = modifier
-            .fillMaxWidth()
-            .height(10.dp)
-            .background(Gray50))
-
-        Text(
-            modifier = modifier
-                .padding(3.dp)
-                .fillMaxWidth(), text = "팟 소개", fontSize = 16.sp
-        )
+        Divider()
+        Spacer(modifier.size(24.dp))
+        Text("팟 소개", style = Typography.titleLarge, color = Gray800)
+        Spacer(modifier.size(14.dp))
         IconWithTextView(content.patDetail, iconResource = R.drawable.ic_chat_dot)
-        Spacer(modifier.size(20.dp))
+        Spacer(modifier.size(28.dp))
 
-        Text(
-            modifier = modifier
-                .padding(3.dp)
-                .fillMaxWidth(), text = "위치 정보", fontSize = 16.sp
-        )
+        Text("위치 정보", style = Typography.titleLarge, color = Gray800)
+        Spacer(modifier.size(14.dp))
         IconWithTextView(content.location.ifEmpty { "어디서나 가능" }, iconResource = R.drawable.ic_map)
-        Spacer(modifier.size(20.dp))
+        Spacer(modifier.size(28.dp))
 
-        Text("인증 가능 시간", fontSize = 16.sp, modifier = modifier.padding(3.dp))
+        Text("인증 가능 시간", style = Typography.titleLarge, color = Gray800)
+        Spacer(modifier.size(14.dp))
         IconWithTextView(
             "${convertTimeViewFormat(content.startTime)}부터 ${convertTimeViewFormat(content.endTime)}까지",
             iconResource = R.drawable.ic_alram
         )
-        Spacer(modifier.size(20.dp))
+        Spacer(modifier.size(28.dp))
 
-        Text("인증 빈도", fontSize = 16.sp, modifier = modifier.padding(3.dp))
+        Text("인증 빈도", style = Typography.titleLarge, color = Gray800)
         Spacer(modifier.size(14.dp))
         DayButtonList(content.dayList)
-        Spacer(modifier.size(20.dp))
+        Spacer(modifier.size(28.dp))
 
-        Text("시작일 - 종료일", fontSize = 16.sp, modifier = modifier.padding(3.dp))
+        Text("시작일 - 종료일", style = Typography.titleLarge, color = Gray800)
+        Spacer(modifier.size(14.dp))
         DateText(
             startDate = content.startDate,
             endDate = content.endDate,
             iconResource = R.drawable.ic_calendar
         )
-        Spacer(modifier.size(20.dp))
+        Spacer(modifier.size(28.dp))
 
-        Text("인증 방법", fontSize = 16.sp, modifier = modifier.padding(3.dp))
+        Text("인증 방법", style = Typography.titleLarge, color = Gray800)
+        Spacer(modifier.size(14.dp))
         IconWithTextView(
             content.proofDetail,
             iconResource = R.drawable.ic_chat_check
         )
-        Spacer(modifier.size(20.dp))
-        Row() {
+        Spacer(modifier.size(28.dp))
+        Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Column {
                 GlideImage(
                     modifier = modifier.size(130.dp),
@@ -288,8 +292,9 @@ fun PostDetailScreen(
                 }
             }
         }
-        Spacer(modifier.size(20.dp))
-        Text("인증 수단", fontSize = 16.sp, modifier = modifier.padding(3.dp))
+        Spacer(modifier.size(28.dp))
+        Text("인증 수단", style = Typography.titleLarge, color = Gray800)
+        Spacer(modifier.size(14.dp))
         if (content.realtime) {
             IconWithTextView("실시간 촬영", iconResource = R.drawable.ic_camera)
             Spacer(modifier.size(44.dp))
@@ -314,6 +319,7 @@ fun PostDetailScreen(
                     FinalButton(text = "취소가 불가능해요! (시작 하루 전까지 취소 가능)",
                         backColor = Gray300,
                         textColor = White,
+                        stokeColor = Gray300,
                         onClick = { }
                     )
                 }
@@ -322,6 +328,7 @@ fun PostDetailScreen(
                     FinalButton(text = "인증이 이미 진행중인 팟이에요!",
                         backColor = Gray300,
                         textColor = White,
+                        stokeColor = Gray300,
                         onClick = { }
                     )
                 }
@@ -330,6 +337,7 @@ fun PostDetailScreen(
                     FinalButton(text = "종료된 팟이에요!",
                         backColor = Gray300,
                         textColor = White,
+                        stokeColor = Gray300,
                         onClick = { }
                     )
                 }
@@ -362,6 +370,9 @@ fun UserInfo(
     isOpener: Boolean
 ) {
     Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(60.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         GlideImage(
@@ -400,19 +411,25 @@ fun PatSimpleInfo(
         SimpleTextView(
             text = location.ifEmpty { "어디서나 가능" },
             vectorResource = R.drawable.ic_map,
-            spacePadding = 6.dp
+            spacePadding = 6.dp,
+            iconSize = 16.dp,
+            style = Typography.bodySmall
         )
         Spacer(modifier.height(8.dp))
         SimpleTextView(
             text = "$startDate - $endDate",
             vectorResource = R.drawable.ic_calendar,
-            spacePadding = 6.dp
+            spacePadding = 6.dp,
+            iconSize = 16.dp,
+            style = Typography.bodySmall
         )
         Spacer(modifier.height(8.dp))
         SimpleTextView(
             text = "현재 $nowPerson / $maxPerson",
             vectorResource = R.drawable.ic_user,
-            spacePadding = 6.dp
+            spacePadding = 6.dp,
+            iconSize = 16.dp,
+            style = Typography.bodySmall
         )
     }
 }

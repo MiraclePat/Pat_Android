@@ -440,7 +440,6 @@ fun ProofScreen(
                 isAll = "전체"
             )
         }
-
         when (content.state) {
             "CANCELABLE" -> {
                 FinalButton(text = "팟 취소하기", onClick = { viewModel.withdrawPat(content.patId) })

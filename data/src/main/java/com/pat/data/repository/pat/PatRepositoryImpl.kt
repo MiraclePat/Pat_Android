@@ -47,7 +47,7 @@ class PatRepositoryImpl @Inject constructor(
 
     override suspend fun getMapPats(mapPatRequestInfo: MapPatRequestInfo): Result<List<MapPatContent>> {
         val result = runCatching {
-            patDataSource.getMapPats(mapPatRequestInfo.lastId,mapPatRequestInfo.size,
+            patDataSource.getMapPats(mapPatRequestInfo.size,
                 mapPatRequestInfo.query,mapPatRequestInfo.category,
                 mapPatRequestInfo.leftLongitude,mapPatRequestInfo.rightLongitude,
                 mapPatRequestInfo.bottomLatitude,mapPatRequestInfo.topLatitude)

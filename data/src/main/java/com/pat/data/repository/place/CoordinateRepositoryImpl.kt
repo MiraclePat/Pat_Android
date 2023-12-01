@@ -30,6 +30,6 @@ class CoordinateRepositoryImpl @Inject constructor(
         }    }
 
     fun AddressDTO.toCoordinateInfo() : CoordinateInfo {
-        return CoordinateInfo(x!!.toDouble(),y!!.toDouble())
+        return CoordinateInfo(y!!.toDouble(),x!!.toDouble())
     }
 }
