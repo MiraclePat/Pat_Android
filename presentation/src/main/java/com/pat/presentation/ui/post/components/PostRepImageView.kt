@@ -62,7 +62,9 @@ fun PostRepImageView(
     val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
-            viewModel.getBitmapByUri(uri, "REP")
+            if( uri != null){
+                viewModel.getBitmapByUri(uri, "REP")
+            }
         }
     )
     Box(
@@ -135,7 +137,7 @@ fun PostRepImageView(
                     SelectButton(
                         text = "사진촬영",
                         onClick = {
-                            navController.navigate("camera/REP")
+                            navController.navigate("camera/REP/ / ")
                         },
                         backColor = Color.White,
                         textColor = PrimaryMain,

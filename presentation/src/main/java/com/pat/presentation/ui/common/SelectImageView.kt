@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cameraswitch
@@ -81,26 +82,33 @@ fun SelectImage(
     bitmapType: String,
     viewModel: PostViewModel,
     selectable: Boolean = true,
-    hasSource: Boolean = false
+    hasSource: Boolean = false,
+    originalIdx: Int = -1
 ) {
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
     var isGallery by remember { mutableStateOf(false) }
-
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    var updateState by remember { mutableStateOf("false") }
+    if(bitmap != null || selectedImageUri != null){
+        updateState = "true"
+    }
 
     val roundedCornerShape = if (imageIdx == -1) RoundedCornerShape(
         topStart = 4.dp,
         topEnd = 4.dp
     ) else RoundedCornerShape(4.dp)
-    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
 
     val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
-            showBottomSheet = false
-            viewModel.getBitmapByUri(uri, bitmapType)
-            selectedImageUri = uri
-        }
+            if (uri != null) {
+                showBottomSheet = false
+                viewModel.getBitmapByUri(uri, bitmapType, updateState, originalIdx)
+                selectedImageUri = uri
+            }
+        },
+
     )
     Box(
         modifier
@@ -130,9 +138,8 @@ fun SelectImage(
                 }
             }
         }
-        bitmap?.let {
-            Logger.t("bodyimage").i("selectimage에서 ${bitmap}")
 
+        bitmap?.let {
             Image(
                 bitmap = it.asImageBitmap(),
                 contentDescription = null,
@@ -170,7 +177,7 @@ fun SelectImage(
                         SelectButton(
                             text = "사진촬영",
                             onClick = {
-                                navController.navigate("camera/${bitmapType}")
+                                navController.navigate("camera/${bitmapType}/${updateState}/${originalIdx}")
                             },
                             backColor = Color.White,
                             textColor = PrimaryMain,
@@ -228,6 +235,8 @@ fun SettingCamera(
     navController: NavController,
     viewModel: PostViewModel,
     bitmapType: String,
+    updateState: String?,
+    originalIdx: String?,
 ) {
     val context: Context = LocalContext.current
     val controller = remember {
@@ -281,6 +290,8 @@ fun SettingCamera(
                         controller = controller,
                         onPhotoTaken = viewModel::onTakePhoto,
                         bitmapType = bitmapType,
+                        updateState = updateState,
+                        originalIdx = originalIdx
                     )
                 }
             ) {
@@ -297,15 +308,17 @@ private fun takePhoto(
     navController: NavController,
     context: Context,
     controller: LifecycleCameraController,
-    onPhotoTaken: (ImageProxy, String) -> Unit,
+    onPhotoTaken: (ImageProxy, String, String?, String?) -> Unit,
     bitmapType: String,
+    updateState: String?,
+    originalIdx: String?,
 ) {
     controller.takePicture(
         ContextCompat.getMainExecutor(context),
         object : ImageCapture.OnImageCapturedCallback() {
             override fun onCaptureSuccess(image: ImageProxy) {
                 super.onCaptureSuccess(image)
-                onPhotoTaken(image, bitmapType)
+                onPhotoTaken(image, bitmapType, updateState, originalIdx)
                 navController.popBackStack()
             }
 
@@ -324,19 +337,19 @@ fun SelectImageList(
     bitmapType: String,
     viewModel: PostViewModel,
 ) {
-    Logger.t("bodyimage").i("selectimagelist에서 ${bitmapList}")
 
     val maxSize = IntArray(5 - bitmapList.size) { it + 1 + bitmapList.size }
 
     LazyRow() {
-        items(bitmapList) { bitmap ->
+        itemsIndexed(bitmapList) { idx, bitmap ->
             SelectImage(
                 navController = navController,
                 imageIdx = 0,
                 bitmap = bitmap,
                 bitmapType = bitmapType,
                 viewModel = viewModel,
-                hasSource = true
+                hasSource = true,
+                originalIdx = idx,
             )
             Spacer(modifier = modifier.padding(horizontal = 10.dp))
         }
@@ -347,7 +360,8 @@ fun SelectImageList(
                 bitmap = null,
                 bitmapType = bitmapType,
                 viewModel = viewModel,
-                hasSource = false
+                hasSource = false,
+                originalIdx = idx-1
             )
             Spacer(modifier = modifier.padding(horizontal = 10.dp))
         }

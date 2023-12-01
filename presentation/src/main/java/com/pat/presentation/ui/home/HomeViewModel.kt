@@ -34,6 +34,8 @@ class HomeViewModel @Inject constructor(
     val homePat: StateFlow<HomeUiState> = _homePat.asStateFlow()
 
     init {
+        Logger.t("home").i("홈 초기화")
+
         viewModelScope.launch {
             val hotResult = getHomePatsUseCase(HomePatRequestInfo(sort = "HOT"))
             if (hotResult.isSuccess) {

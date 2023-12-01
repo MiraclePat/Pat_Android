@@ -83,7 +83,7 @@ class PostViewModel @Inject constructor(
         ByteArray(0), ByteArray(0)
     )
 
-    fun onTakePhoto(image: ImageProxy, bitmapType: String) {
+    fun onTakePhoto(image: ImageProxy, bitmapType: String, updateState: String?, originalIdx: String?) {
         val rotatedBitmap = getRotatedBitmap(image)
         val scaledBitmap = getScaledBitmap(rotatedBitmap)
         val bytes = getCompressedBytes(scaledBitmap)
@@ -107,14 +107,21 @@ class PostViewModel @Inject constructor(
             }
 
             PatBitmap.BODY.toString() -> {
-                totalBody.add(newBitmap)
-                _bodyBitmap.value = totalBody
-                storedBytes.bodyBytes.add(bytes)
+                if (updateState == "true" && totalBody.isNotEmpty() && originalIdx != null) {
+                    val idx = originalIdx.toInt()
+                    totalBody[idx] = newBitmap
+                    storedBytes.bodyBytes[idx] = bytes
+                    _bodyBitmap.value = totalBody
+                }else{
+                    totalBody.add(newBitmap)
+                    _bodyBitmap.value = totalBody
+                    storedBytes.bodyBytes.add(bytes)
+                }
             }
         }
     }
 
-    fun getBitmapByUri(uri: Uri?, bitmapType: String) {
+    fun getBitmapByUri(uri: Uri?, bitmapType: String, updateState: String?= null, originalIdx: Int?= null) {
         viewModelScope.launch {
             val bytes = getByteArrayByUriUseCase(uri.toString())
             val newBitmap = byteArrayToBitmap(bytes)
@@ -135,9 +142,15 @@ class PostViewModel @Inject constructor(
                 }
 
                 PatBitmap.BODY.toString() -> {
-                    totalBody.add(newBitmap)
-                    _bodyBitmap.value = totalBody
-                    storedBytes.bodyBytes.add(bytes)
+                    if (updateState == "true" && totalBody.isNotEmpty() && originalIdx!= null) {
+                        totalBody[originalIdx] = newBitmap
+                        storedBytes.bodyBytes[originalIdx] = bytes
+                        _bodyBitmap.value = totalBody
+                    }else{
+                        totalBody.add(newBitmap)
+                        _bodyBitmap.value = totalBody
+                        storedBytes.bodyBytes.add(bytes)
+                    }
                 }
             }
         }
@@ -148,9 +161,6 @@ class PostViewModel @Inject constructor(
         patName: String,
         patDetail: String,
         maxPerson: Int,
-        latitude: Double,
-        longitude: Double,
-        location: String,
         category: String,
         startTime: String,
         endTime: String,
@@ -240,6 +250,17 @@ class PostViewModel @Inject constructor(
     fun selectPlace(place: PlaceDetailInfo){
         selectPlace = place
         searchCoordinate(place)
+    }
+
+    fun clearImageData(){
+        _repBitmap.value = null
+        storedBytes.repBytes = ByteArray(0)
+        _correctBitmap.value = null
+        storedBytes.correctBytes = ByteArray(0)
+        _incorrectBitmap.value = null
+        storedBytes.incorrectBytes = ByteArray(0)
+        _bodyBitmap.value = emptyList()
+        storedBytes.bodyBytes = mutableListOf()
     }
 
     companion object{

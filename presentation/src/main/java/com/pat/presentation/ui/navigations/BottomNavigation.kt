@@ -104,13 +104,18 @@ fun NavigationGraph(navController: NavHostController) {
             PatDetailView(navController = navController)
         }
 
-        composable("camera/{bitmapType}") { backStackEntry ->
+        composable("camera/{bitmapType}/{updateState}/{originalIdx}") { backStackEntry ->
             val bitmapType = backStackEntry.arguments?.getString("bitmapType")
+            val updateState = backStackEntry.arguments?.getString("updateState")
+            val originalIdx = backStackEntry.arguments?.getString("originalIdx")
+
             if (bitmapType != null) {
                 SettingCamera(
                     navController = navController,
                     viewModel = postViewModel,
-                    bitmapType = bitmapType
+                    bitmapType = bitmapType,
+                    updateState = updateState,
+                    originalIdx = originalIdx,
                 )
             }
         }
