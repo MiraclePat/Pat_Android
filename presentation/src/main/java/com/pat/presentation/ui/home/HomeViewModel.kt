@@ -30,6 +30,8 @@ class HomeViewModel @Inject constructor(
     val recentUiState: StateFlow<HomeUiState> = _recentUiState.asStateFlow()
     private val _searchUiState = MutableStateFlow(HomeUiState())
     val searchUiState: StateFlow<HomeUiState> = _searchUiState.asStateFlow()
+    private val _homePat = MutableStateFlow(HomeUiState())
+    val homePat: StateFlow<HomeUiState> = _homePat.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -46,6 +48,15 @@ class HomeViewModel @Inject constructor(
             if (recentResult.isSuccess) {
                 val content = recentResult.getOrThrow()
                 _recentUiState.emit(HomeUiState(content = content))
+            } else {
+                Logger.t("MainTest").i("홈 pat 에러")
+            }
+
+            val homePatResult =
+                getHomePatsUseCase(HomePatRequestInfo(state = "IN_PROGRESS"))
+            if (homePatResult.isSuccess) {
+                val content = homePatResult.getOrThrow()
+                _homePat.emit(HomeUiState(content = content))
             } else {
                 Logger.t("MainTest").i("홈 pat 에러")
             }

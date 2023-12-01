@@ -34,6 +34,7 @@ fun HomeScreenView(
 ) {
     val hotUiState by homeViewModel.hotUiState.collectAsState()
     val recentUiState by homeViewModel.recentUiState.collectAsState()
+    val homePat by homeViewModel.homePat.collectAsState()
     val scrollState = rememberScrollState()
     val searchValue = remember { mutableStateOf("") }
     val categoryState = remember { mutableStateOf("전체") }
@@ -63,7 +64,7 @@ fun HomeScreenView(
                     .padding(innerPadding)
                     .verticalScroll(scrollState),
             ) {
-                HomeMyPat()
+                HomeMyPat(content = homePat.content, navController = navController)
                 HomeCategory(state = categoryState)
                 Pats(
                     navController,

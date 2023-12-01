@@ -160,7 +160,15 @@ fun ProofScreen(
     LaunchedEffect(content) {
         Logger.t("MainTest").i("${content}")
     }
-
+    @Composable
+    fun finalButton(text: String) {
+        FinalButton(
+            text = text,
+            textColor = PrimaryMain,
+            backColor = Gray300,
+            stokeColor = Gray300
+        )
+    }
 
     Column(
         modifier = modifier
@@ -432,34 +440,25 @@ fun ProofScreen(
                 isAll = "전체"
             )
         }
-        // 진행 중이면
-        if (content.state == "COMPLETED") {
-            FinalButton(
-                text = "종료된 팟이에요!!",
-                onClick = { },
-                textColor = White,
-                backColor = Gray300,
-                stokeColor = Gray300
-            )
-        } else if (content.state != "IN_PROGRESS") {
-            FinalButton(
-                text = "인증하기 (아직 시작 전이에요!)",
-                onClick = { },
-                textColor = White,
-                backColor = Gray300,
-                stokeColor = Gray300
-            )
-        } else {
-            if (content.isCompleted) {
-                FinalButton(
-                    text = "인증하기 (이미 인증했어요!)",
-                    onClick = { },
-                    textColor = White,
-                    backColor = Gray300,
-                    stokeColor = Gray300
-                )
-            } else {
-                FinalButton(text = "인증하기", onClick = { showBottomSheet = true })
+        when (content.state) {
+            "CANCELABLE" -> {
+                FinalButton(text = "팟 취소하기", onClick = { viewModel.withdrawPat(content.patId) })
+            }
+
+            "NO_CANCELABLE" -> {
+                finalButton("시작 하루 전이에요!")
+            }
+
+            "IN_PROGRESS" -> {
+                if (content.isCompleted) {
+                    finalButton("인증하기 (이미 인증했어요!)")
+                } else {
+                    FinalButton(text = "인증하기", onClick = { showBottomSheet = true })
+                }
+            }
+
+            "COMPLETED" -> {
+                finalButton("이미 종료된 팟이에요!")
             }
         }
 
