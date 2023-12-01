@@ -71,8 +71,6 @@ import com.pat.presentation.ui.theme.Typography
 fun ProofImageView(
     navController: NavController,
     modifier: Modifier = Modifier,
-    imageIdx: Int = -1,
-    hasSource: String = "",
     realTime: Boolean = true,
     bitmap: Bitmap?,
     viewModel: ProofViewModel,
@@ -80,12 +78,6 @@ fun ProofImageView(
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
     var isGallery by remember { mutableStateOf(false) }
-
-
-    val roundedCornerShape = if (imageIdx == -1) RoundedCornerShape(
-        topStart = 4.dp,
-        topEnd = 4.dp
-    ) else RoundedCornerShape(4.dp)
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
 
     val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
@@ -101,13 +93,29 @@ fun ProofImageView(
         modifier
             .height(140.dp)
             .width(130.dp)
-            .clip(roundedCornerShape)
+            .clip(RoundedCornerShape(4.dp))
             .background(Gray300)
             .clickable {
                 showBottomSheet = true
             },
         contentAlignment = Alignment.Center
     ) {
+        if (viewModel.proofImageBytes.isEmpty()) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    modifier = modifier.size(24.dp),
+                    painter = painterResource(id = R.drawable.ic_add),
+                    contentDescription = null,
+                    tint = Gray500
+                )
+                Box() {
+                    Text("사진 첨부하기", style = Typography.labelSmall)
+                }
+            }
+        }
         bitmap?.let {
             Image(
                 bitmap = it.asImageBitmap(),
@@ -116,7 +124,7 @@ fun ProofImageView(
                 contentScale = ContentScale.Crop
             )
         }
-        if(isGallery){
+        if (isGallery) {
             AsyncImage(
                 model = selectedImageUri,
                 contentDescription = null,
@@ -144,16 +152,19 @@ fun ProofImageView(
                         Spacer(modifier = modifier.padding(16.dp))
 
                         SelectButton(
-                            text = "사진촬영",
+                            stokeColor = PrimaryMain, stokeWidth = 1.dp,
+                            text = "갤러리에서 가져오기",
                             onClick = {
-                                navController.navigate("pattingCamera")
+                                singlePhotoPickerLauncher.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
+                                isGallery = true
                             },
-                            backColor = Color.White,
-                            textColor = PrimaryMain,
                             cornerSize = 100.dp,
-                            stokeColor = PrimaryMain,
-                            stokeWidth = 1.dp
+                            backColor = Color.White,
+                            textColor = PrimaryMain
                         )
+
                     }
 
                 } else {
@@ -161,9 +172,9 @@ fun ProofImageView(
                         modifier = modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("이 팟은 갤러리 인증만 가능해요.", style = Typography.titleLarge, color = Gray800)
+                        Text("이 팟은 사진 촬영인증만 가능해요.", style = Typography.titleLarge, color = Gray800)
                         Text(
-                            "아래 버튼을 눌러 사진을 불러와주세요.",
+                            "아래 버튼을 눌러 사진을 촬영해주세요.",
                             style = Typography.titleMedium,
                             color = Gray600
                         )
@@ -175,45 +186,20 @@ fun ProofImageView(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(modifier = modifier.padding(10.dp))
-
                     SelectButton(
-                        stokeColor = PrimaryMain, stokeWidth = 1.dp,
-                        text = "갤러리에서 가져오기",
+                        text = "사진촬영",
                         onClick = {
-                            singlePhotoPickerLauncher.launch(
-                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                            )
-                            isGallery=true
+                            navController.navigate("pattingCamera")
                         },
-                        cornerSize = 100.dp,
                         backColor = Color.White,
-                        textColor = PrimaryMain
+                        textColor = PrimaryMain,
+                        cornerSize = 100.dp,
+                        stokeColor = PrimaryMain,
+                        stokeWidth = 1.dp
                     )
                     Spacer(modifier = modifier.padding(10.dp))
-
                 }
             }
-        }
-
-
-
-        if (hasSource != "") {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Icon(
-                    modifier = modifier.size(24.dp),
-                    painter = painterResource(id = R.drawable.ic_add),
-                    contentDescription = null,
-                    tint = Gray500
-                )
-                Box() {
-                    if (imageIdx == -1) Text("사진 첨부하기", style = Typography.labelSmall)
-                    else Text("사진$imageIdx 첨부하기", style = Typography.labelSmall)
-                }
-            }
-
         }
     }
 }

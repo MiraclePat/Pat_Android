@@ -59,3 +59,5 @@ val SuccessCircleColor = Color(0xFFC3DBFF)
 val FailTextColor = Color(0xFFFF8A8A)
 val FailCircleColor = Color(0xFFFFCBCB)
 val RemainColor = Color(0xFFEEEEEE)
+
+val StarColor = Color(0xFFF86D41)

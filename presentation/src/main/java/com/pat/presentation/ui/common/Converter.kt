@@ -27,7 +27,8 @@ val convertTimeFormat: (String) -> (String) = { inputTimeString ->
     val am = tempList.first()
     // TODO 예외처리
     // 만약 입력이 빈 값이면 hour 은 0으로 처리 됩니다. 예외 처리 필요!
-    val hour = tempList.last().replace("시", "").toIntOrNull() ?: 0
+    var hour = tempList.last().replace("시", "").toIntOrNull() ?: 0
+    if (hour == 12) hour = 0
     val result = if (am == "오전") hour.toString() else (hour + 12).toString()
     result.padStart(2, '0') + ":00"
 }
@@ -46,12 +47,13 @@ val convertTimeViewFormat: (String) -> (String) = { inputTimeString ->
     val tempList = inputTimeString.split(":")
     var hour = tempList.first().trimStart('0').toIntOrNull() ?: 0
     val am: String
-    if (hour > 12) {
+    if (hour >= 12) {
         am = "오후"
         hour -= 12
     } else {
         am = "오전"
     }
+    if (hour == 0) hour = 12
     am + " ${hour}시"
 }
 

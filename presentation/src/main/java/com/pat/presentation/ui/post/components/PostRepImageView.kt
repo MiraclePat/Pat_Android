@@ -54,7 +54,7 @@ fun PostRepImageView(
     navController: NavController,
     bitmap: Bitmap?,
     viewModel: PostViewModel,
-){
+) {
 
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -71,10 +71,14 @@ fun PostRepImageView(
             .fillMaxWidth()
             .height(160.dp)
             .clickable {
+                showBottomSheet = true
             },
         contentAlignment = Alignment.Center
     ) {
-            bitmap?.let {
+        bitmap?.let {
+            Box(modifier.clickable {
+                showBottomSheet = true
+            }) {
                 Image(
                     bitmap = it.asImageBitmap(),
                     contentDescription = null,
@@ -82,16 +86,16 @@ fun PostRepImageView(
                     contentScale = ContentScale.Crop
                 )
             }
+        }
+
+        if (bitmap == null) {
             Row(
                 modifier = modifier
                     .width(141.dp)
                     .height(36.dp)
                     .clip(RoundedCornerShape(4.dp))
                     .border(1.dp, color = PrimaryMain, RoundedCornerShape(4.dp))
-                    .background(White)
-                    .clickable {
-                        showBottomSheet = true
-                    },
+                    .background(White),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
             ) {
@@ -107,6 +111,7 @@ fun PostRepImageView(
                     contentDescription = "썸네일 추가하기"
                 )
             }
+        }
 
         if (showBottomSheet) {
             ModalBottomSheet(
@@ -117,7 +122,8 @@ fun PostRepImageView(
             ) {
                 Column(
                     modifier = modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally) {
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
 
                     Text(
                         "아래 방법 중 하나를 선택해주세요.",
@@ -159,7 +165,6 @@ fun PostRepImageView(
             }
         }
     }
-
 
 
 }

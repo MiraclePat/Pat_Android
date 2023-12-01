@@ -110,7 +110,7 @@ fun ProofScreenView(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_back_arrow),
                             contentDescription = "Go back"
@@ -157,6 +157,9 @@ fun ProofScreen(
     val proofBitmap by viewModel.proofBitmap.collectAsState() //인증사진
     val bottomSheetState by viewModel.bottomSheetState.collectAsState()
 
+    LaunchedEffect(content) {
+        Logger.t("MainTest").i("${content}")
+    }
 
 
     Column(
@@ -429,7 +432,37 @@ fun ProofScreen(
                 isAll = "전체"
             )
         }
-        FinalButton(text = "인증하기", onClick = { showBottomSheet = true })
+        // 진행 중이면
+        if (content.state == "COMPLETED") {
+            FinalButton(
+                text = "종료된 팟이에요!!",
+                onClick = { },
+                textColor = White,
+                backColor = Gray300,
+                stokeColor = Gray300
+            )
+        } else if (content.state != "IN_PROGRESS") {
+            FinalButton(
+                text = "인증하기 (아직 시작 전이에요!)",
+                onClick = { },
+                textColor = White,
+                backColor = Gray300,
+                stokeColor = Gray300
+            )
+        } else {
+            if (content.isCompleted) {
+                FinalButton(
+                    text = "인증하기 (이미 인증했어요!)",
+                    onClick = { },
+                    textColor = White,
+                    backColor = Gray300,
+                    stokeColor = Gray300
+                )
+            } else {
+                FinalButton(text = "인증하기", onClick = { showBottomSheet = true })
+            }
+        }
+
         if (showBottomSheet || bottomSheetState) {
             ModalBottomSheet(
                 onDismissRequest = {
@@ -455,17 +488,20 @@ fun ProofScreen(
                         navController = navController,
                         bitmap = proofBitmap,
                         viewModel = viewModel,
-                        realTime = true
+                        realTime = !content.realtime
                     )
 
                     Spacer(modifier.padding(bottom = 32.dp))
 
 
                     SelectButton(
-                        text = "인증하기",
+                        text = "이 사진으로 인증하기",
                         onClick = {
-//                            val proofImageByte = viewModel.
-//                            viewModel.proofPat()
+                            Logger.t("MainTest").i("${content.isCompleted}")
+                            Logger.t("MainTest").i("${viewModel.proofImageBytes}")
+                            val proofImageByte = viewModel.proofImageBytes
+                            viewModel.proofPat(proofImageByte)
+                            showBottomSheet = false
                         },
                         backColor = if (proofBitmap == null) Gray300 else PrimaryMain,
                         textColor = if (proofBitmap == null) White else White,
@@ -592,7 +628,7 @@ fun PercentBar(modifier: Modifier = Modifier, success: Int, fail: Int, all: Int)
         )
         Box(
             modifier
-                .fillMaxWidth((all - success - fail) / all.toFloat())
+                .fillMaxWidth((all - success - fail) / all.toFloat() - 0.01f) // 부동 소수점 ^^
                 .fillMaxHeight()
                 .clip(
                     if (success == 0 && fail == 0) RoundedCornerShape(100.dp) else RoundedCornerShape(
