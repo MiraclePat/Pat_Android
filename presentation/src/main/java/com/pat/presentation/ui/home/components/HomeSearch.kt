@@ -16,16 +16,19 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.HomePatContent
 import com.pat.presentation.ui.home.HomeViewModel
 import com.pat.presentation.ui.theme.Gray600
@@ -39,12 +42,12 @@ fun HomeSearchView(
     searchValue: MutableState<String>,
     onSearchScreen: MutableState<Boolean>,
     navController: NavController,
-    searchResult: MutableState<Boolean>,
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by homeViewModel.searchUiState.collectAsState()
     val backPressedState by remember { mutableStateOf(true) }
     val content = uiState.content
+    var searchTextView by remember { mutableStateOf(searchValue) }
 
     BackHandler(enabled = backPressedState) {
         onSearchScreen.value = false
@@ -55,7 +58,10 @@ fun HomeSearchView(
         topBar = {
             SearchTopBar(
                 searchValue = searchValue,
-                inputEnter = { homeViewModel.searchPat(searchValue.value) },
+                inputEnter = {
+                    homeViewModel.searchPat(searchValue.value)
+                    searchTextView = searchValue
+                },
                 onSearchScreen = onSearchScreen
             )
         },
@@ -97,10 +103,10 @@ fun HomeSearchView(
                     modifier = modifier.padding(start = 20.dp, end = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("'${searchValue.value}' 결과입니다.", style = Typography.titleLarge)
+                    Text("'${searchTextView.value}' 결과입니다.", style = Typography.titleLarge)
                     Spacer(modifier = modifier.weight(1f)) // 임의 값
                     Text(
-                        "총 ${content?.size ?: 0}개 검색결과.",
+                        "총 ${content.size}개 검색결과.",
                         style = Typography.labelSmall,
                         color = Gray800
                     )

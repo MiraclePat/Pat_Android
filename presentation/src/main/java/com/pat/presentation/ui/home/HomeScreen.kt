@@ -49,7 +49,10 @@ fun HomeScreenView(
                     searchTextField = {
                         SearchTextField(
                             state = searchValue,
-                            inputEnter = { onSearchScreen.value = true })
+                            inputEnter = {
+                                homeViewModel.searchPat(searchValue.value)
+                                onSearchScreen.value = true
+                            })
                     },
                     addButton = {
                         BarIcon(onclick = {
@@ -84,7 +87,6 @@ fun HomeScreenView(
             searchValue = searchValue,
             onSearchScreen = onSearchScreen,
             navController = navController,
-            searchResult = searchResult
         )
     }
 }
