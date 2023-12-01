@@ -23,6 +23,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -211,7 +212,6 @@ fun MapBottomSheet(
     navController: NavController,
     content: MapPatContent
 ) {
-    Log.e("navermap", "작동은 과연?")
     if (showBottomSheet.value) {
         ModalBottomSheet(
             modifier = modifier
@@ -227,16 +227,17 @@ fun MapBottomSheet(
                     .padding(start = 22.dp, end = 22.dp, top = 10.dp, bottom = 40.dp)
                     .clickable {
                         navController.navigate("participatingDetail/${content.patId}")
-                    }) {
+                    },
+                verticalAlignment = Alignment.CenterVertically) {
                 Column(modifier) {
                     Row() {
                         CategoryBox(
-                            category = "환경",
+                            category = content.category,
                             isSelected = true
                         )
                         Spacer(modifier.size(8.dp))
                         Text(
-                            text = "강아지 산책",
+                            text = content.patName,
                             style = Typography.labelMedium,
                             color = Color.Black
                         )
@@ -244,25 +245,25 @@ fun MapBottomSheet(
                     Spacer(modifier.size(12.dp))
                     SimpleTextView(
                         modifier = modifier.padding(bottom = 6.dp),
-                        text = "임의 주소",
+                        text = content.location.ifEmpty { "어디서나 가능" },
                         vectorResource = R.drawable.ic_map,
                         iconColor = Gray400
                     )
                     SimpleTextView(
                         modifier = modifier.padding(bottom = 6.dp),
-                        text = "11월 9일 시작",
+                        text = "${content.startDate} 시작",
                         vectorResource = R.drawable.ic_calendar,
                         iconColor = Gray400
                     )
                     SimpleTextView(
                         modifier = modifier.padding(bottom = 6.dp),
-                        text = "월,화,수,목,금 인증",
+                        text = "${content.days} 인증",
                         vectorResource = R.drawable.ic_chat_check,
                         iconColor = Gray400
                     )
                     SimpleTextView(
                         modifier = modifier.padding(bottom = 6.dp),
-                        text = "8명 / 20명",
+                        text = "${content.nowPerson}명 / ${content.maxPerson}명",
                         vectorResource = R.drawable.ic_user,
                         iconColor = Gray400
                     )

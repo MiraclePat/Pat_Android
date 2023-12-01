@@ -33,6 +33,8 @@ interface PatService {
         @Query("size") size: Int?,
         @Query("query") query: String?,
         @Query("category") category: String?,
+        @Query("state") state: String?,
+        @Query("showFull") showFull: Boolean?,
         @Query("leftLongitude") leftLongitude: Double?,
         @Query("rightLongitude") rightLongitude: Double?,
         @Query("bottomLatitude") bottomLatitude: Double?,
