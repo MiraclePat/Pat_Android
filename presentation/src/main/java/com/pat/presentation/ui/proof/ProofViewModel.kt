@@ -13,6 +13,7 @@ import com.pat.domain.model.proof.ProofContent
 import com.pat.domain.model.proof.ProofRequestInfo
 import com.pat.domain.usecase.image.GetByteArrayByUriUseCase
 import com.pat.domain.usecase.member.GetParticipatingDetailUseCase
+import com.pat.domain.usecase.pat.WithdrawPatUseCase
 import com.pat.domain.usecase.proof.GetMyProofUseCase
 import com.pat.domain.usecase.proof.GetSomeoneProofUseCase
 import com.pat.domain.usecase.proof.ProofPatUseCase
@@ -44,6 +45,7 @@ class ProofViewModel @Inject constructor(
     private val getSomeoneProofUseCase: GetSomeoneProofUseCase,
     private val getParticipatingDetailUseCase: GetParticipatingDetailUseCase,
     private val getByteArrayByUriUseCase: GetByteArrayByUriUseCase,
+    private val withdrawPatUseCase: WithdrawPatUseCase,
 ) : ViewModel() {
     private val patId = savedStateHandle.get<Long?>(
         key = "patId"
@@ -55,7 +57,7 @@ class ProofViewModel @Inject constructor(
     private val _proofBitmap = MutableStateFlow<Bitmap?>(null)
     val proofBitmap = _proofBitmap.asStateFlow()
 
-    private var proofImageBytes: ByteArray = ByteArray(0)
+    var proofImageBytes: ByteArray = ByteArray(0)
 
     private val _uiState = MutableStateFlow(ParticipatingUiState())
     val uiState: StateFlow<ParticipatingUiState> = _uiState.asStateFlow()
@@ -123,7 +125,6 @@ class ProofViewModel @Inject constructor(
         }
     }
 
-
     fun getSomeoneProof() {
         viewModelScope.launch {
             val result = getSomeoneProofUseCase(patId, ProofRequestInfo())
@@ -132,6 +133,17 @@ class ProofViewModel @Inject constructor(
                 _proofs.emit(ProofUiState(content = content))
             } else {
                 Logger.t("MainTest").i("${proofs}")
+            }
+        }
+    }
+
+    fun withdrawPat(patId: Long) {
+        viewModelScope.launch {
+            val result = withdrawPatUseCase(patId)
+            if (result.isSuccess) {
+                result.getOrThrow()
+            } else {
+                Logger.t("MainTest").i("취소 실패")
             }
         }
     }
