@@ -59,6 +59,7 @@ import com.pat.presentation.ui.common.WheelTimePickerView
 import com.pat.presentation.ui.common.convertDateFormat
 import com.pat.presentation.ui.common.convertTimeFormat
 import com.pat.presentation.ui.navigations.BottomNavItem
+import com.pat.presentation.ui.navigations.HOME
 import com.pat.presentation.ui.post.components.PostRepImageView
 import com.pat.presentation.ui.post.components.SearchPlaceTextField
 import com.pat.presentation.ui.post.components.SearchResultList
@@ -84,7 +85,6 @@ import com.pat.presentation.ui.theme.White
 @Composable
 fun PostScreenView(
     navController: NavController,
-    onNavigateToHome: () -> Unit,
     viewModel: PostViewModel,
 ) {
 
@@ -97,7 +97,10 @@ fun PostScreenView(
         CustomDialog(
             okRequest = {
                 viewModel.clearImageData()
-                onNavigateToHome()
+                navController.popBackStack(
+                    route = HOME,
+                    inclusive = false
+                )
             }, state = declarationDialogState,
             message = "공고글 작성을 취소하시겠어요?",
             cancelMessage = "계속 작성",
@@ -137,7 +140,6 @@ fun PostScreenView(
 
             PostScreenBody(
                 navController = navController,
-                onNavigateToHome = onNavigateToHome,
                 viewModel = viewModel,
             )
         }
@@ -148,7 +150,6 @@ fun PostScreenView(
 fun PostScreenBody(
     navController: NavController,
     modifier: Modifier = Modifier,
-    onNavigateToHome: () -> Unit,
     viewModel: PostViewModel,
 ) {
     val isRealTime = remember { mutableStateOf(false) }         // 사진 선택
@@ -454,8 +455,10 @@ fun PostScreenBody(
                         category = category.value,
                         realtime = !isRealTime.value,
                     )
-//                    onNavigateToHome()
-                    navController.navigate(BottomNavItem.Home.screenRoute)
+                    navController.popBackStack(
+                        route = HOME,
+                        inclusive = false
+                    )
                 })
         }
     }

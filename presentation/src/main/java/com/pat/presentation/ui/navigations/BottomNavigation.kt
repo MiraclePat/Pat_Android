@@ -89,7 +89,6 @@ fun NavigationGraph(navController: NavHostController) {
         composable(POST) {
             PostScreenView(
                 navController = navController,
-                onNavigateToHome = { navController.popBackStack() },
                 viewModel = postViewModel
             )
         }
