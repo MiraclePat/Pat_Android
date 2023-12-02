@@ -1,13 +1,4 @@
 <resources>
-    <string-array name="category_array">
-        <item>환경</item>
-        <item>건강</item>
-        <item>식습관</item>
-        <item>취미</item>
-        <item>일상</item>
-        <item>기타</item>
-    </string-array>
-
     <string name="title_activity_post_detail">PostDetailActivity</string>
     <string name="title_activity_post_screen">PostScreen</string>
     <string name="title_activity_main">MainActivity</string>

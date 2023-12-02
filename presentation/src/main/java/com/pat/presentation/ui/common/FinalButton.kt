@@ -29,17 +29,18 @@ fun FinalButton(
     backColor: Color = PrimaryMain,
     textColor: Color = White,
     stokeColor: Color = PrimaryMain,
-    stokeWidth: Dp = 0.dp
+    stokeWidth: Dp = 0.dp,
+    cornerShape: RoundedCornerShape = RoundedCornerShape(4.dp)
 ) {
     Box(
         modifier
             .fillMaxWidth()
             .height(46.dp)
-            .clip(RoundedCornerShape(4.dp))
+            .clip(cornerShape)
             .background(backColor)
             .border(
                 BorderStroke(stokeWidth, stokeColor),
-                shape = RoundedCornerShape(4.dp)
+                shape = cornerShape
             )
             .clickable { onClick() }, contentAlignment = Alignment.Center
     ) {

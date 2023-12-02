@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -141,7 +143,6 @@ fun PostDetailScreen(
     content: PatDetailContent,
     patDetailViewModel: PatDetailViewModel,
 ) {
-    var isOpenBtnClicked by remember { mutableStateOf(false) }
     GlideImage(
         modifier = modifier
             .fillMaxWidth()
@@ -189,24 +190,38 @@ fun PostDetailScreen(
                     .height(160.dp),
                 imageModel = { content.bodyImg.first() }
             )
-            Spacer(modifier.size(10.dp))
-            Column {
-                if (isOpenBtnClicked) {
-                    PatPhotos(patUriInfo = content.bodyImg)
-                } else {
-                    FinalButton(
-                        text = "펼쳐보기",
-                        backColor = White,
-                        textColor = PrimaryMain,
-                        stokeColor = PrimaryMain,
-                        stokeWidth = 1.dp,
-                        onClick = {
-                            isOpenBtnClicked = true
-                        }
-                    )
+            if (content.bodyImg.size >= 2) { // 사진이 2장 이상인 경우
+                var isOpenBtnClicked by remember { mutableStateOf(false) }
+                Spacer(modifier.size(10.dp))
+                Column {
+                    if (isOpenBtnClicked) {
+                        PatPhotos(patUriInfo = content.bodyImg)
+                        Spacer(modifier = modifier.size(10.dp))
+                        FinalButton(
+                            text = "접기",
+                            backColor = White,
+                            textColor = PrimaryMain,
+                            stokeColor = PrimaryMain,
+                            stokeWidth = 1.dp,
+                            onClick = {
+                                isOpenBtnClicked = false
+                            }
+                        )
+                    } else {
+                        FinalButton(
+                            text = "펼쳐보기",
+                            backColor = White,
+                            textColor = PrimaryMain,
+                            stokeColor = PrimaryMain,
+                            stokeWidth = 1.dp,
+                            onClick = {
+                                isOpenBtnClicked = true
+                            }
+                        )
+                    }
                 }
+                Spacer(modifier.size(20.dp))
             }
-            Spacer(modifier.size(20.dp))
         }
         Divider()
         Spacer(modifier.size(24.dp))
@@ -371,13 +386,14 @@ fun UserInfo(
 ) {
     Row(
         modifier = modifier
-            .fillMaxWidth()
-            .height(60.dp),
+            .height(60.dp)
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         GlideImage(
-            modifier = modifier
-                .size(40.dp)
+            modifier = Modifier
+                .padding(end = 8.dp)
+                .requiredSize(40.dp)
                 .clip(CircleShape),
             imageModel = { userProfile })
         Text(

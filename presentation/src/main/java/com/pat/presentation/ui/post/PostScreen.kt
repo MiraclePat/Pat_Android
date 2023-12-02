@@ -58,6 +58,7 @@ import com.pat.presentation.ui.common.SelectImageList
 import com.pat.presentation.ui.common.WheelTimePickerView
 import com.pat.presentation.ui.common.convertDateFormat
 import com.pat.presentation.ui.common.convertTimeFormat
+import com.pat.presentation.ui.navigations.BottomNavItem
 import com.pat.presentation.ui.post.components.PostRepImageView
 import com.pat.presentation.ui.post.components.SearchPlaceTextField
 import com.pat.presentation.ui.post.components.SearchResultList
@@ -453,7 +454,8 @@ fun PostScreenBody(
                         category = category.value,
                         realtime = !isRealTime.value,
                     )
-                    onNavigateToHome()
+//                    onNavigateToHome()
+                    navController.navigate(BottomNavItem.Home.screenRoute)
                 })
         }
     }

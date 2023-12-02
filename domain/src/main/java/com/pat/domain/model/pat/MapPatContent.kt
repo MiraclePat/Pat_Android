@@ -9,4 +9,8 @@ interface MapPatContent {
     val category: String
     val latitude: Double
     val longitude: Double
+    val nowPerson: Int
+    val maxPerson: Int
+    val days: String
+    val location: String
 }

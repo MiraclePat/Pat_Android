@@ -27,9 +27,9 @@ fun SimpleTextView(
     spacePadding: Dp = 4.dp,
     iconColor: Color = Gray400
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         Icon(
-            modifier = modifier.size(iconSize),
+            modifier = Modifier.size(iconSize),
             imageVector = ImageVector.vectorResource(id = vectorResource),
             contentDescription = null,
             tint = iconColor

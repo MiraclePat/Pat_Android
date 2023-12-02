@@ -29,12 +29,14 @@ class PatDataSource @Inject constructor(
         size: Int?,
         query: String?,
         category: String?,
+        state: String?,
+        showFull: Boolean?,
         leftLongitude: Double?,
         rightLongitude: Double?,
         bottomLatitude: Double?,
         topLatitude: Double?,
     ): MapListResponse {
-        return service.getMapPats(size, query, category, leftLongitude,rightLongitude,bottomLatitude,topLatitude)
+        return service.getMapPats(size, query, category, state, showFull, leftLongitude,rightLongitude,bottomLatitude,topLatitude)
     }
 
     suspend fun getPatDetail(patId: Long
