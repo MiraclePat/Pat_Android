@@ -45,6 +45,7 @@ class PatDetailViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            Logger.t("MainTest").i("patID ${patId}")
             val result = getPatDetailUseCase(patId)
             if (result.isSuccess) {
                 val content = result.getOrThrow()
@@ -57,7 +58,6 @@ class PatDetailViewModel @Inject constructor(
 
     fun participatePat() {
         viewModelScope.launch {
-            Log.e("custom", "patid : $patId")
             val result = participatePatUseCase(patId)
             if (result.isSuccess) {
                 result.getOrThrow()

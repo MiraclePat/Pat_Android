@@ -1,6 +1,5 @@
 package com.pat.presentation.ui.home.components
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
@@ -10,18 +9,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.orhanobut.logger.Logger
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
 import com.pat.presentation.ui.common.SimpleTextView
@@ -38,6 +33,7 @@ fun Pats(
     text: String,
 ) {
     val content = uiState.content
+
     Column(modifier.padding(vertical = 20.dp, horizontal = 16.dp)) {
         Text(
             text = text,
@@ -49,13 +45,14 @@ fun Pats(
             content?.forEach { pat ->
                 HomePats(
                     title = pat.patName,
-                    category = pat.category,
+                    category = pat.category.ifEmpty { "어디서나 가능" },
                     nowPerson = pat.nowPerson,
                     maxPerson = pat.maxPerson,
                     startDate = pat.startDate,
                     imgUri = pat.repImg,
-                    location = pat.location.ifEmpty { "어디서나 가능" },
-                    onClick = { navController.navigate("patDetail/${pat.patId}") }
+                    location = pat.location,
+                    onClick = {
+                        navController.navigate("patDetail/${pat.patId}") }
                 )
                 Spacer(Modifier.size(10.dp))
             }

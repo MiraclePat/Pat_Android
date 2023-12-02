@@ -39,7 +39,6 @@ fun HomeScreenView(
     val searchValue = remember { mutableStateOf("") }
     val categoryState = remember { mutableStateOf("전체") }
     val onSearchScreen = remember { mutableStateOf(false) }
-    val searchResult = remember { mutableStateOf(true) } // 임시
 
 
     if (!onSearchScreen.value) {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" >
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -11,21 +12,29 @@
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
-    <application android:theme="@style/Theme.AppCompat.Light">
-        <meta-data
-            android:name="com.naver.maps.map.CLIENT_ID"
-            android:value="yq842snxuz" />
+
+    <application>
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.SplashActivity"
             android:exported="true"
-            android:label="@string/title_activity_main"
-            android:theme="@style/Theme.AppCompat.Light"
-            android:usesCleartextTraffic="true">
+            android:theme="@style/Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="com.naver.maps.map.CLIENT_ID"
+            android:value="yq842snxuz" />
+
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="true"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Splash"
+            android:usesCleartextTraffic="true" >
         </activity>
     </application>
 
