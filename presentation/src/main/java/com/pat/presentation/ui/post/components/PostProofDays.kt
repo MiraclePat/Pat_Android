@@ -61,8 +61,10 @@ fun DayButtonView(
     }
 }
 
+
+
 @Composable
-fun SelectDayButtonList(state: MutableState<String>) {
+fun SelectDayButtonList(state: MutableState<List<String>>) {
     val days = listOf<String>("월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일")
 
     @Composable
@@ -70,9 +72,11 @@ fun SelectDayButtonList(state: MutableState<String>) {
         DayButtonView(
             text = day,
             onClick = {
-                state.value = day
+                val temp = state.value.toMutableList()
+                if (!temp.contains(day)) temp.add(day)
+                state.value = temp
             },
-            isSelected = state.value == day
+            isSelected = state.value.contains(day)
         )
         Spacer(Modifier.size(10.dp))
     }
