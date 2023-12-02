@@ -1,9 +1,5 @@
-package com.pat.presentation.ui.common
+package com.pat.presentation.ui.setting.components
 
-
-import android.util.Log
-import androidx.annotation.Dimension.Companion.DP
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -37,30 +33,20 @@ import com.pat.presentation.ui.theme.Gray800
 import com.pat.presentation.ui.theme.SystemBlue
 import com.pat.presentation.ui.theme.Typography
 
-
 @Composable
-fun CustomTextField(
+fun SettingTextField(
     modifier: Modifier = Modifier,
-    placeholderText: String,
+    placeholderText: String = "",
     style: TextStyle = Typography.labelMedium,
-    maxLength: Int,
-    maxLines: Int = Int.MAX_VALUE,
-    inputEnter: () -> Unit = {},
-    onScreen : MutableState<Boolean> = rememberSaveable {
-        mutableStateOf(false)
-    },
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    state: MutableState<String> = rememberSaveable {
-        mutableStateOf("")
-    },
-    viewModel: PostViewModel?= null,
+    state: MutableState<String>
 ) {
     var isFocused by remember { mutableStateOf(false) }
     val borderColor = if (!isFocused) Gray200 else SystemBlue
 
     BasicTextField(modifier = modifier
+        .padding(horizontal = 16.dp)
+        .height(45.dp)
         .fillMaxWidth()
-        .heightIn(1.dp, Dp.Infinity)
         .clip(RoundedCornerShape(4.dp))
         .onFocusChanged {
             isFocused = it.hasFocus
@@ -69,20 +55,11 @@ fun CustomTextField(
         value = state.value,
         onValueChange = {
             state.value = it
-            onScreen.value = true
-            viewModel?.onSearch(state.value)
         },
         cursorBrush = SolidColor(SystemBlue),
         textStyle = style.copy(
             color = Gray800,
         ),
-        keyboardOptions = keyboardOptions,
-        keyboardActions = KeyboardActions(
-            onDone = {
-                inputEnter()
-            }
-        ),
-        maxLines = maxLines,
         decorationBox = { innerTextField ->
             Row(
                 modifier

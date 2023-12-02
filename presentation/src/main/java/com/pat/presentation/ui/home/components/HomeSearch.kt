@@ -126,10 +126,10 @@ fun HomeSearchView(
                             maxPerson = pat.maxPerson,
                             startDate = pat.startDate,
                             imgUri = pat.repImg,
-                            location = pat.location,
-                            onClick = { navController.navigate("patDetail/${pat.patId}") }
+                            location = pat.location ?: "어디서나 가능",
+                            onClick = {
+                                navController.navigate("patDetail/${pat.patId}") }
                         )
-
                     }
                 }
             }
