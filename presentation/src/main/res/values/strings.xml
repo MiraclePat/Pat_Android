@@ -2,6 +2,7 @@
     <string name="title_activity_post_detail">PostDetailActivity</string>
     <string name="title_activity_post_screen">PostScreen</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="text_app_name">미라클 팟</string>
     <string name="text_home">홈</string>
     <string name="text_certification">인증</string>
     <string name="text_map">맵</string>
