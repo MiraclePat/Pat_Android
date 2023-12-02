@@ -52,6 +52,7 @@ class PatRepositoryImpl @Inject constructor(
             patDataSource.getMapPats(
                 mapPatRequestInfo.size,
                 mapPatRequestInfo.query, mapPatRequestInfo.category,
+                mapPatRequestInfo.state, mapPatRequestInfo.showFull,
                 mapPatRequestInfo.leftLongitude, mapPatRequestInfo.rightLongitude,
                 mapPatRequestInfo.bottomLatitude, mapPatRequestInfo.topLatitude
             )

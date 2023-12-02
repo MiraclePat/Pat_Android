@@ -14,4 +14,8 @@ data class MapPatContentDTO(
     @field:Json(name = "category") override val category: String,
     @field:Json(name = "latitude") override val latitude: Double,
     @field:Json(name = "longitude") override val longitude: Double,
+    @field:Json(name = "nowPerson") override val nowPerson: Int,
+    @field:Json(name = "maxPerson") override val maxPerson: Int,
+    @field:Json(name = "days") override val days: String,
+    @field:Json(name = "location") override val location: String,
 ) : MapPatContent
