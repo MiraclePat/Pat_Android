@@ -33,6 +33,7 @@ class HomeViewModel @Inject constructor(
     private val _homePat = MutableStateFlow(HomeUiState())
     val homePat: StateFlow<HomeUiState> = _homePat.asStateFlow()
 
+
     fun getPats() {
         viewModelScope.launch {
             val hotResult = getHomePatsUseCase(HomePatRequestInfo(sort = "HOT"))

@@ -95,7 +95,10 @@ fun PostScreenView(
     }
     if (declarationDialogState.value) {
         CustomDialog(
-            okRequest = onNavigateToHome, state = declarationDialogState,
+            okRequest = {
+                viewModel.clearImageData()
+                onNavigateToHome()
+            }, state = declarationDialogState,
             message = "공고글 작성을 취소하시겠어요?",
             cancelMessage = "계속 작성",
             okMessage = "작성 취소"
@@ -449,9 +452,6 @@ fun PostScreenBody(
                         endTime = outputEndTime,
                         days = dayList.toList(),
                         category = category.value,
-                        latitude = 0.0,
-                        longitude = 0.0,
-                        location = "서울",
                         realtime = !isRealTime.value,
                     )
 //                    onNavigateToHome()

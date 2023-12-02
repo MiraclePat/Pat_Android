@@ -17,7 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import com.orhanobut.logger.Logger
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.BarIcon
 import com.pat.presentation.ui.home.components.HomeCategory
@@ -26,13 +28,15 @@ import com.pat.presentation.ui.home.components.HomeSearchView
 import com.pat.presentation.ui.home.components.HomeTopBar
 import com.pat.presentation.ui.home.components.Pats
 import com.pat.presentation.ui.home.components.SearchTextField
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun HomeScreenView(
-    homeViewModel: HomeViewModel = hiltViewModel(),
     onNavigateToPost: () -> Unit,
     navController: NavController,
 ) {
+    val homeViewModel: HomeViewModel = hiltViewModel()
+
     val hotUiState by homeViewModel.hotUiState.collectAsState()
     val recentUiState by homeViewModel.recentUiState.collectAsState()
     val homePat by homeViewModel.homePat.collectAsState()
@@ -41,6 +45,11 @@ fun HomeScreenView(
     val categoryState = remember { mutableStateOf("전체") }
     val onSearchScreen = remember { mutableStateOf(false) }
 
+//    LaunchedEffect(Unit){
+//        homeViewModel.hotUiState.collectLatest {
+//            Logger.t("home").i("${it.content}")
+//        }
+//    }
 
     if (!onSearchScreen.value) {
         homeViewModel.getPats()
