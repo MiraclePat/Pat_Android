@@ -39,17 +39,18 @@ class MapViewModel @Inject constructor(
     private val _mapPats = MutableStateFlow<List<MapPatContent>>(emptyList())
     val mapPats = _mapPats.asStateFlow()
 
-    init{
+    init {
         getMapPats(
-            northEastCoordinate = LatLng(37.56594885934854,127.0174440699783),
-            southWestCoordinate = LatLng(37.39048754490495,126.88560813002232)
+            northEastCoordinate = LatLng(37.56594885934854, 127.0174440699783),
+            southWestCoordinate = LatLng(37.39048754490495, 126.88560813002232)
         )
     }
+
     fun getMapPats(
-        northEastCoordinate : LatLng?,
-        southWestCoordinate : LatLng?,
-        category: String?= null,
-        query: String?= null
+        northEastCoordinate: LatLng?,
+        southWestCoordinate: LatLng?,
+        category: String? = null,
+        query: String? = null
     ) {
         viewModelScope.launch {
             val categoryValue =
@@ -59,18 +60,19 @@ class MapViewModel @Inject constructor(
                     category
                 }
 
+            // state가 null이면 전체, SCHEDULED , IN_PROGRESS ,COMPLETED
             val result = getMapPatsUseCase(
-                 MapPatRequestInfo(
-                     size = null,
-                     query = query,
-                     category = categoryValue,
-                     leftLongitude = southWestCoordinate?.longitude,
-                     rightLongitude = northEastCoordinate?.longitude,
-                     topLatitude = northEastCoordinate?.latitude,
-                     bottomLatitude = southWestCoordinate?.latitude,
-                 )
+                MapPatRequestInfo(
+                    state = "SCHEDULED",
+                    size = null,
+                    query = query,
+                    category = categoryValue,
+                    leftLongitude = southWestCoordinate?.longitude,
+                    rightLongitude = northEastCoordinate?.longitude,
+                    topLatitude = northEastCoordinate?.latitude,
+                    bottomLatitude = southWestCoordinate?.latitude,
+                )
             )
-            Logger.t("navermap").i("result : $result, ${northEastCoordinate}")
             if (result.isSuccess) {
                 _mapPats.emit(result.getOrThrow())
             } else {

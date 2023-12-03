@@ -58,7 +58,6 @@ class PatRepositoryImpl @Inject constructor(
             )
         }
         return if (result.isSuccess) {
-            Logger.t("naverMap").i("${result}")
             Result.success(result.getOrThrow().content)
         } else {
             Logger.t("naverMap").i("${result.exception().message}")

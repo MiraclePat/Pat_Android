@@ -23,6 +23,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -153,8 +154,7 @@ fun MapScreenView(
             cameraPositionState = cameraPositionState,
         ) {
             mapPats.forEach { content ->
-                Logger.t("navermap").i("${content}")
-                val focused = remember { mutableStateOf(false) }
+                val focused = rememberSaveable { mutableStateOf(false) }
                 if (focused.value) {
                     MapBottomSheet(
                         showBottomSheet = showBottomSheet,
@@ -170,11 +170,9 @@ fun MapScreenView(
                             )
                         ),
                         onClick = { clickedMarker ->
-                            focused.value = !focused.value
-                            clickedMarker.icon =
-                                OverlayImage.fromResource(mapIcon(content.category))
-                            showBottomSheet.value = true
-                            true
+                            focused.value = false
+                            showBottomSheet.value = false
+                            false
                         },
                         icon = OverlayImage.fromResource(
                             mapSelectIcon(content.category)
@@ -189,11 +187,9 @@ fun MapScreenView(
                             )
                         ),
                         onClick = { clickedMarker ->
-                            focused.value = !focused.value
-                            clickedMarker.icon =
-                                OverlayImage.fromResource(mapSelectIcon(content.category))
+                            focused.value = true
                             showBottomSheet.value = true
-                            true
+                            false
                         },
                         icon = OverlayImage.fromResource(
                             mapIcon(content.category)
@@ -221,7 +217,7 @@ fun MapBottomSheet(
             containerColor = White,
             onDismissRequest = {
                 showBottomSheet.value = false
-                focused.value = !focused.value
+                focused.value = false
             },
         ) {
             Row(
