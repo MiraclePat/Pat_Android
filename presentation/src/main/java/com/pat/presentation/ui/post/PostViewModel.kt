@@ -77,8 +77,8 @@ class PostViewModel @Inject constructor(
     private val _bitmapList = MutableStateFlow<PostBytes?>(null)
     val bitmapList = _bitmapList.asStateFlow()
 
-    private var selectPlace : String? = null
-    private var selectPlaceCoordinate : LatLng? = null
+    private var selectPlace: String? = null
+    private var selectPlaceCoordinate: LatLng? = null
 
 
     private val storedBytes: PostBytes = PostBytes(
@@ -99,38 +99,38 @@ class PostViewModel @Inject constructor(
         val newBitmap = byteArrayToBitmap(bytes)
 
 
-            //TOSTRING을 어떻게 할까, 코루틴을 쓰는방법으로 바꿔야함 , 위에 데이터 처리를 data layer에서 못하는문제
-            when (bitmapType) {
-                PatBitmap.REP.toString() -> {
-                    _repBitmap.value = newBitmap
-                    storedBytes.repBytes = bytes
-                }
+        //TOSTRING을 어떻게 할까, 코루틴을 쓰는방법으로 바꿔야함 , 위에 데이터 처리를 data layer에서 못하는문제
+        when (bitmapType) {
+            PatBitmap.REP.toString() -> {
+                _repBitmap.value = newBitmap
+                storedBytes.repBytes = bytes
+            }
 
-                PatBitmap.CORRECT.toString() -> {
-                    _correctBitmap.value = newBitmap
-                    storedBytes.correctBytes = bytes
-                }
+            PatBitmap.CORRECT.toString() -> {
+                _correctBitmap.value = newBitmap
+                storedBytes.correctBytes = bytes
+            }
 
-                PatBitmap.INCORRECT.toString() -> {
-                    _incorrectBitmap.value = newBitmap
-                    storedBytes.incorrectBytes = bytes
-                }
+            PatBitmap.INCORRECT.toString() -> {
+                _incorrectBitmap.value = newBitmap
+                storedBytes.incorrectBytes = bytes
+            }
 
-                PatBitmap.BODY.toString() -> {
-                    if (updateState == "true" && totalBody.isNotEmpty() && originalIdx != null) {
-                        val idx = originalIdx.toInt()
-                        totalBody[idx] = newBitmap
-                        storedBytes.bodyBytes[idx] = bytes
-                        _bodyBitmap.value = totalBody
-                    } else {
-                        totalBody.add(newBitmap)
-                        _bodyBitmap.value = totalBody
-                        storedBytes.bodyBytes.add(bytes)
-                    }
+            PatBitmap.BODY.toString() -> {
+                if (updateState == "true" && totalBody.isNotEmpty() && originalIdx != null) {
+                    val idx = originalIdx.toInt()
+                    totalBody[idx] = newBitmap
+                    storedBytes.bodyBytes[idx] = bytes
+                    _bodyBitmap.value = totalBody
+                } else {
+                    totalBody.add(newBitmap)
+                    _bodyBitmap.value = totalBody
+                    storedBytes.bodyBytes.add(bytes)
                 }
             }
         }
     }
+
 
     fun getBitmapByUri(
         uri: Uri?,
@@ -191,9 +191,9 @@ class PostViewModel @Inject constructor(
                 patName,
                 patDetail,
                 maxPerson,
-                selectPlaceCoordinate?.latitude?:0.0,
-                selectPlaceCoordinate?.longitude?:0.0,
-                selectPlace?: "",
+                selectPlaceCoordinate?.latitude ?: 0.0,
+                selectPlaceCoordinate?.longitude ?: 0.0,
+                selectPlace ?: "",
                 category,
                 startTime,
                 endTime,
@@ -220,6 +220,7 @@ class PostViewModel @Inject constructor(
             }
         }
     }
+
 
     fun onSearch(query: String) {
         searchJob.cancel()
@@ -263,11 +264,11 @@ class PostViewModel @Inject constructor(
     }
 
 
-    fun selectPlace(place: PlaceDetailInfo?=null){
-        if(place != null){
+    fun selectPlace(place: PlaceDetailInfo? = null) {
+        if (place != null) {
             selectPlace = place.title
             searchCoordinate(place)
-        }else{
+        } else {
             selectPlace = ""
         }
 
