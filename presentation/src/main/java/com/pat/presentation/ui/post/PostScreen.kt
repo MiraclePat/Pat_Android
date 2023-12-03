@@ -37,7 +37,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.orhanobut.logger.Logger
 import com.pat.domain.model.place.PlaceDetailInfo
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBoxList
@@ -57,7 +56,6 @@ import com.pat.presentation.ui.common.convertTimeFormat
 import com.pat.presentation.ui.post.components.PostRepImageView
 import com.pat.presentation.ui.post.components.SearchPlaceTextField
 import com.pat.presentation.ui.post.components.SearchResultList
-import com.pat.presentation.ui.post.components.SelectDayButtonList
 import com.pat.presentation.ui.theme.Gray300
 import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.Gray600
