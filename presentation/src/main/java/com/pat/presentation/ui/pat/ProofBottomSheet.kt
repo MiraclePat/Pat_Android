@@ -178,7 +178,6 @@ fun ProofImageView(
                             style = Typography.titleMedium,
                             color = Gray600
                         )
-                        Spacer(modifier = modifier.padding(13.dp))
                     }
                 }
                 Column(
@@ -197,7 +196,6 @@ fun ProofImageView(
                         stokeColor = PrimaryMain,
                         stokeWidth = 1.dp
                     )
-                    Spacer(modifier = modifier.padding(10.dp))
                 }
             }
         }

@@ -139,11 +139,8 @@ fun UpdateRepImageView(
                         textColor = PrimaryMain
                     )
                 }
-                Spacer(modifier = modifier.padding(16.dp))
-
+                Spacer(modifier = modifier.padding(30.dp))
             }
         }
     }
-
-
 }

@@ -469,10 +469,9 @@ fun ProofScreen(
                     viewModel.clearBitmap()
                 },
                 sheetState = sheetState,
-                modifier = modifier.height(320.dp)
             ) {
                 Column(
-                    modifier = modifier.fillMaxWidth(),
+                    modifier = modifier.padding(bottom = 40.dp).fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(

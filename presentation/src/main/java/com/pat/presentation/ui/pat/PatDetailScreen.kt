@@ -166,7 +166,7 @@ fun PostDetailScreen(
         }
         Spacer(modifier.height(16.dp))
         PatSimpleInfo(
-            location = content.location,
+            location = content.location.ifEmpty { "어디서나 가능" },
             startDate = content.startDate,
             endDate = content.endDate,
             nowPerson = content.nowPerson,
