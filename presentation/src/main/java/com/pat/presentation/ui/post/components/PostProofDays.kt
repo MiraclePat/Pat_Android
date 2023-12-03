@@ -61,33 +61,33 @@ fun DayButtonView(
     }
 }
 
-@Composable
-fun SelectDayButtonList(state: MutableState<String>) {
-    val days = listOf<String>("월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일")
-
-    @Composable
-    fun dayButtonView(day: String) {
-        DayButtonView(
-            text = day,
-            onClick = {
-                state.value = day
-            },
-            isSelected = state.value == day
-        )
-        Spacer(Modifier.size(10.dp))
-    }
-
-    Column {
-        Row() {
-            days.take(5).forEach { day ->
-                dayButtonView(day)
-            }
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-        Row() {
-            days.takeLast(2).forEach { day ->
-                dayButtonView(day)
-            }
-        }
-    }
-}
+//@Composable
+//fun SelectDayButtonList(state: MutableState<String>) {
+//    val days = listOf<String>("월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일")
+//
+//    @Composable
+//    fun dayButtonView(day: String) {
+//        DayButtonView(
+//            text = day,
+//            onClick = {
+//                state.value = day
+//            },
+//            isSelected = state.value == day
+//        )
+//        Spacer(Modifier.size(10.dp))
+//    }
+//
+//    Column {
+//        Row() {
+//            days.take(5).forEach { day ->
+//                dayButtonView(day)
+//            }
+//        }
+//        Spacer(modifier = Modifier.height(10.dp))
+//        Row() {
+//            days.takeLast(2).forEach { day ->
+//                dayButtonView(day)
+//            }
+//        }
+//    }
+//}

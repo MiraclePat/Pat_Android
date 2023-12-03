@@ -10,6 +10,33 @@ import com.pat.presentation.util.Constants.DEFAULT_RESIZE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
+
+suspend fun getBitmapByExistedUri(uri: String): Bitmap? =
+    withContext(Dispatchers.IO) {
+        try {
+            val url = URL(uri)
+            val connection = url.openConnection() as HttpURLConnection
+            connection.doInput = true
+            connection.connect()
+
+            val inputStream = connection.inputStream
+            return@withContext BitmapFactory.decodeStream(inputStream)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return@withContext null
+        }
+    }
+
+suspend fun getCompressedExistedBytes(bitmap: Bitmap?): ByteArray =
+    withContext(Dispatchers.IO) {
+        ByteArrayOutputStream().use { outputStream ->
+            bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+            outputStream.toByteArray()
+        }
+    }
+
 
 fun byteArrayToBitmap(byteArray: ByteArray): Bitmap {
     return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
