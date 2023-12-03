@@ -15,6 +15,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.pat.presentation.R
@@ -72,6 +74,23 @@ fun HomePats(
     maxPerson: Int,
     category: String,
 ) {
+    val styledText = buildAnnotatedString {
+        if (title.length > 9) {
+            withStyle(
+                style = Typography.labelMedium.toSpanStyle()
+            ) {
+                append(title.substring(0, 9))
+            }
+            withStyle(style = Typography.labelMedium.toSpanStyle()) {
+                append("...")
+            }
+        } else {
+            withStyle(style = Typography.labelMedium.toSpanStyle()) {
+                append(title)
+            }
+        }
+    }
+
     Column(
         modifier
             .wrapContentSize()
@@ -89,7 +108,8 @@ fun HomePats(
             )
         }
         Spacer(modifier.size(10.dp))
-        Text(text = title, style = Typography.labelMedium)
+
+        Text(text = styledText, style = Typography.labelMedium)
         Spacer(modifier.size(6.dp))
         SimpleTextView(text = location, vectorResource = R.drawable.ic_map, iconColor = Gray700)
         SimpleTextView(

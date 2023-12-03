@@ -61,3 +61,5 @@ val FailCircleColor = Color(0xFFFFCBCB)
 val RemainColor = Color(0xFFEEEEEE)
 
 val StarColor = Color(0xFFF86D41)
+
+val KaKaoColor = Color(0xFFFEE500)

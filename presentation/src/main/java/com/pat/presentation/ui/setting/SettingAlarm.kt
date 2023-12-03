@@ -27,6 +27,8 @@ import com.pat.presentation.ui.theme.Gray300
 import com.pat.presentation.ui.theme.PrimaryMain
 import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.ui.theme.White
+import com.pat.presentation.util.ALARM
+import com.pat.presentation.util.BODY
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

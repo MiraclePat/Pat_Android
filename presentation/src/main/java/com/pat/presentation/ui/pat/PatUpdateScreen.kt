@@ -56,11 +56,15 @@ import com.pat.presentation.ui.pat.components.UpdateSelectImageList
 import com.pat.presentation.ui.pat.components.UpdateSelectLocationButtonList
 import com.pat.presentation.ui.theme.GreenBack
 import com.pat.presentation.ui.theme.GreenText
+import com.pat.presentation.ui.post.SelectDayButtonList
+import com.pat.presentation.ui.theme.Gray100
 import com.pat.presentation.ui.theme.PrimaryMain
 import com.pat.presentation.ui.theme.RedBack
 import com.pat.presentation.ui.theme.RedText
 import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.ui.theme.White
+import com.pat.presentation.util.HOME
+import com.skydoves.landscapist.glide.GlideImage
 
 
 @OptIn(ExperimentalMaterial3Api::class)
