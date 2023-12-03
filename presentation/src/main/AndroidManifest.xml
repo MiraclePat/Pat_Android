@@ -25,6 +25,8 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+                <data android:host="oauth"
+                    android:scheme="${kakao_api_key}" />
             </intent-filter>
         </activity>
 

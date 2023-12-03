@@ -55,7 +55,6 @@ import com.pat.presentation.ui.common.SelectImageList
 import com.pat.presentation.ui.common.WheelTimePickerView
 import com.pat.presentation.ui.common.convertDateFormat
 import com.pat.presentation.ui.common.convertTimeFormat
-import com.pat.presentation.ui.navigations.HOME
 import com.pat.presentation.ui.post.components.PostRepImageView
 import com.pat.presentation.ui.post.components.SearchPlaceTextField
 import com.pat.presentation.ui.post.components.SearchResultList
@@ -73,6 +72,7 @@ import com.pat.presentation.ui.theme.RedText
 import com.pat.presentation.ui.theme.StarColor
 import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.ui.theme.White
+import com.pat.presentation.util.HOME
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -434,8 +434,6 @@ fun PostScreenBody(
                 onClick = {
                     val outputStartTime = convertTimeFormat(startTime.value)
                     val outputEndTime = convertTimeFormat(endTime.value)
-//                    Logger.t("MainTest").i("$outputStartTime, ${outputEndTime}")
-                    Logger.t("MainTest").i("${dayList}")
 
                     viewModel.post(
                         patName = title.value,

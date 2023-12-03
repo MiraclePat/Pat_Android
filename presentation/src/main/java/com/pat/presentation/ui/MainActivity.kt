@@ -10,11 +10,16 @@ import androidx.camera.view.LifecycleCameraController
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
+import com.android.identity.android.legacy.Utility
+import com.kakao.sdk.common.KakaoSdk
+import com.pat.presentation.BuildConfig
+import com.pat.presentation.ui.login.LoginScreenView
 import com.pat.presentation.ui.navigations.BottomNavi
 import com.pat.presentation.ui.navigations.NavigationGraph
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,16 +33,23 @@ class MainActivity : ComponentActivity() {
                 this, CAMERAX_PERMISSIONS, 0
             )
         }
+
+        KakaoSdk.init(this, BuildConfig.kakao_api_key)
+
         setContent {
             val navController = rememberNavController()
+            val isLogin = remember { mutableStateOf(false) }
 
-
-            Scaffold(
-                bottomBar = { BottomNavi(navController = navController) }
-            ) {
-                Box(Modifier.padding(it)) {
-                    NavigationGraph(navController = navController)
+            if (isLogin.value) {
+                Scaffold(
+                    bottomBar = { BottomNavi(navController = navController) }
+                ) {
+                    Box(Modifier.padding(it)) {
+                        NavigationGraph(navController = navController)
+                    }
                 }
+            } else {
+                LoginScreenView(loginState = isLogin)
             }
         }
     }
