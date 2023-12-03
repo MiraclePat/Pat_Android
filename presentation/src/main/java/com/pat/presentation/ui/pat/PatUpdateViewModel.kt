@@ -1,8 +1,10 @@
-package com.pat.presentation.ui.post
+package com.pat.presentation.ui.pat
 
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Log
 import androidx.camera.core.ImageProxy
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.naver.maps.geometry.LatLng
@@ -10,33 +12,41 @@ import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.CreatePatInfo
 import com.pat.domain.model.pat.CreatePatInfoDetail
 import com.pat.domain.model.pat.HomePatContent
+import com.pat.domain.model.pat.HomePatRequestInfo
+import com.pat.domain.model.pat.PatDetailContent
 import com.pat.domain.model.place.PlaceDetailInfo
 import com.pat.domain.model.place.PlaceSearchRequestInfo
 import com.pat.domain.usecase.image.GetByteArrayByUriUseCase
-import com.pat.domain.usecase.pat.CreatePatUseCase
+import com.pat.domain.usecase.pat.DeletePatUseCase
+import com.pat.domain.usecase.pat.GetHomePatsUseCase
+import com.pat.domain.usecase.pat.GetPatDetailUseCase
+import com.pat.domain.usecase.pat.ParticipatePatUseCase
+import com.pat.domain.usecase.pat.UpdatePatUseCase
 import com.pat.domain.usecase.place.GetSearchCoordinateUseCase
 import com.pat.domain.usecase.place.GetSearchPlaceUseCase
 import com.pat.presentation.model.PatBitmap
+import com.pat.presentation.ui.home.HomeUiState
+import com.pat.presentation.ui.post.PostBytes
 import com.pat.presentation.util.image.byteArrayToBitmap
+import com.pat.presentation.util.image.getBitmapByExistedUri
 import com.pat.presentation.util.image.getCompressedBytes
+import com.pat.presentation.util.image.getCompressedExistedBytes
 import com.pat.presentation.util.image.getRotatedBitmap
 import com.pat.presentation.util.image.getScaledBitmap
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-data class PostUiState(
-    val content: List<HomePatContent>? = null
+data class PatUpdateUiState(
+    val content: PatDetailContent? = null
 )
 
-data class PostBytes(
+data class UpdateBytes(
     var repBytes: ByteArray,
     var bodyBytes: MutableList<ByteArray>,
     var incorrectBytes: ByteArray,
@@ -44,13 +54,21 @@ data class PostBytes(
 )
 
 @HiltViewModel
-class PostViewModel @Inject constructor(
-    private val createPatUseCase: CreatePatUseCase,
+class PatUpdateViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
+    private val getPatDetailUseCase: GetPatDetailUseCase,
+    private val deletePatUseCase: DeletePatUseCase,
+    private val updatePatUseCase: UpdatePatUseCase,
     private val getByteArrayByUriUseCase: GetByteArrayByUriUseCase,
     private val getSearchPlaceUseCase: GetSearchPlaceUseCase,
     private val getSearchCoordinateUseCase: GetSearchCoordinateUseCase,
 ) : ViewModel() {
-//    private var searchedPlaces = listOf<PlacePrediction>()
+//    private val patId = savedStateHandle.get<Long?>(
+//        key = "patId"
+//    ) ?: -1
+    private var patId : Long = -1
+    private val _uiState = MutableStateFlow(PatUpdateUiState())
+    val uiState: StateFlow<PatUpdateUiState> = _uiState.asStateFlow()
 
     private var searchJob: Job = Job().apply {
         complete()
@@ -74,36 +92,74 @@ class PostViewModel @Inject constructor(
     private val _incorrectBitmap = MutableStateFlow<Bitmap?>(null)
     val incorrectBitmap = _incorrectBitmap.asStateFlow()
 
-    private val _bitmapList = MutableStateFlow<PostBytes?>(null)
+    private val _bitmapList = MutableStateFlow<UpdateBytes?>(null)
     val bitmapList = _bitmapList.asStateFlow()
 
     private var selectPlace : String? = null
     private var selectPlaceCoordinate : LatLng? = null
 
 
-    private val storedBytes: PostBytes = PostBytes(
+    private val storedBytes: UpdateBytes = UpdateBytes(
         ByteArray(0), mutableListOf(),
         ByteArray(0), ByteArray(0)
     )
 
+    fun getPatDetail(padId: Long){
+        viewModelScope.launch {
+            Logger.t("MainTest").i("patID ${patId}")
+            patId = padId
+            val result = getPatDetailUseCase(padId)
+            if (result.isSuccess) {
+                val content = result.getOrThrow()
+                totalBody.clear()
+                //썸네일
+                beforeBitmapByExistedUri(content.repImg,"REP")
+                //옳은 사진
+                beforeBitmapByExistedUri(content.correctImg,"CORRECT")
+                //틀린 사진
+                beforeBitmapByExistedUri(content.incorrectImg,"INCORRECT")
+                //팟상세 정보 사진
+                content.bodyImg.forEach { uri ->
+                    beforeBitmapByExistedUri(uri,"BODY")
+                }
+                _uiState.emit(PatUpdateUiState(content = content))
+            } else {
+                Logger.t("MainTest").i("detail viewmodel ${_uiState.value}")
+            }
+        }
+    }
 
-    fun onTakePhoto(
-        image: ImageProxy,
-        bitmapType: String,
-        updateState: String?,
-        originalIdx: String?
-    ) {
-        val rotatedBitmap = getRotatedBitmap(image)
-        val scaledBitmap = getScaledBitmap(rotatedBitmap)
-        val bytes = getCompressedBytes(scaledBitmap)
-        val newBitmap = byteArrayToBitmap(bytes)
+
+    fun deletePat(patId: Long) {
+        viewModelScope.launch {
+            val result = deletePatUseCase(patId)
+            if (result.isSuccess) {
+                result.getOrThrow()
+            } else {
+                Log.e("custom", "fail")
+            }
+        }
+    }
+
+    fun onTakePhoto(image: ImageProxy, bitmapType: String, updateState: String?, originalIdx: String?) {
+        viewModelScope.launch {
+
+            Log.e("updateCamera", "카메라 촬영 들어옹ㅁ viewmodel")
 
 
-            //TOSTRING을 어떻게 할까, 코루틴을 쓰는방법으로 바꿔야함 , 위에 데이터 처리를 data layer에서 못하는문제
+            val rotatedBitmap = getRotatedBitmap(image)
+            val scaledBitmap = getScaledBitmap(rotatedBitmap)
+            val bytes = getCompressedBytes(scaledBitmap)
+            val newBitmap = byteArrayToBitmap(bytes)
+
             when (bitmapType) {
                 PatBitmap.REP.toString() -> {
                     _repBitmap.value = newBitmap
+                    Log.e("updateCamera", "1${newBitmap}")
+
                     storedBytes.repBytes = bytes
+                    Log.e("updateCamera", "1${bytes}")
+
                 }
 
                 PatBitmap.CORRECT.toString() -> {
@@ -132,12 +188,40 @@ class PostViewModel @Inject constructor(
         }
     }
 
-    fun getBitmapByUri(
-        uri: Uri?,
-        bitmapType: String,
-        updateState: String? = null,
-        originalIdx: Int? = null
-    ) {
+    private fun beforeBitmapByExistedUri(uri: String, bitmapType: String) {
+        viewModelScope.launch {
+            val newBitmap = getBitmapByExistedUri(uri)
+            val bytes = getCompressedExistedBytes(newBitmap)
+            when (bitmapType) {
+                PatBitmap.REP.toString() -> {
+                    _repBitmap.value = newBitmap
+                    storedBytes.repBytes = bytes
+                }
+
+                PatBitmap.CORRECT.toString() -> {
+                    _correctBitmap.value = newBitmap
+                    storedBytes.correctBytes = bytes
+                }
+
+                PatBitmap.INCORRECT.toString() -> {
+                    _incorrectBitmap.value = newBitmap
+                    storedBytes.incorrectBytes = bytes
+                }
+
+                PatBitmap.BODY.toString() -> {
+                    if (newBitmap != null) {
+                        totalBody.add(newBitmap)
+                    }
+                        _bodyBitmap.value = totalBody
+                        storedBytes.bodyBytes.add(bytes)
+                    }
+                }
+            }
+        }
+
+
+    //uri를 string으로 바꿈 넘겨줄때 uri.tostring()해야함
+    fun getBitmapByUri(uri: String?, bitmapType: String, updateState: String?= null, originalIdx: Int?= null) {
         viewModelScope.launch {
             val bytes = getByteArrayByUriUseCase(uri.toString())
             val newBitmap = byteArrayToBitmap(bytes)
@@ -158,11 +242,11 @@ class PostViewModel @Inject constructor(
                 }
 
                 PatBitmap.BODY.toString() -> {
-                    if (updateState == "true" && totalBody.isNotEmpty() && originalIdx != null) {
+                    if (updateState == "true" && totalBody.isNotEmpty() && originalIdx!= null) {
                         totalBody[originalIdx] = newBitmap
                         storedBytes.bodyBytes[originalIdx] = bytes
                         _bodyBitmap.value = totalBody
-                    } else {
+                    }else{
                         totalBody.add(newBitmap)
                         _bodyBitmap.value = totalBody
                         storedBytes.bodyBytes.add(bytes)
@@ -173,7 +257,7 @@ class PostViewModel @Inject constructor(
     }
 
 
-    fun post(
+    fun updatePat(
         patName: String,
         patDetail: String,
         maxPerson: Int,
@@ -200,11 +284,14 @@ class PostViewModel @Inject constructor(
                 startDate,
                 endDate,
                 proofDetail,
-                days,
+                listOf("월요일","화요일"),
                 realtime
             )
-            Logger.t("patdetail").i("${detail}")
-            val result = createPatUseCase(
+            Logger.t("updateInfo").i("${storedBytes.bodyBytes.toList()}")
+            Logger.t("updateInfo").i("${detail}")
+
+            val result = updatePatUseCase(
+                patId,
                 CreatePatInfo(
                     storedBytes.repBytes,
                     storedBytes.correctBytes,
@@ -220,7 +307,6 @@ class PostViewModel @Inject constructor(
             }
         }
     }
-
     fun onSearch(query: String) {
         searchJob.cancel()
         _searchPlaceResult.value = emptyList()
@@ -231,7 +317,7 @@ class PostViewModel @Inject constructor(
         searchJob = viewModelScope.launch {
             val result = getSearchPlaceUseCase(
                 PlaceSearchRequestInfo(
-                    query, MAX_PLACE_SIZE
+                    query,MAX_PLACE_SIZE
                 )
             )
             if (result.isSuccess) {
@@ -253,14 +339,13 @@ class PostViewModel @Inject constructor(
             )
             if (result.isSuccess) {
                 val coordinate = result.getOrThrow()
-                Logger.t("coordinate").i("관악구청 ${coordinate.lat} ${coordinate.long}")
-
-                selectPlaceCoordinate = LatLng(coordinate.lat, coordinate.long)
+                selectPlaceCoordinate = LatLng(coordinate.lat,coordinate.long)
             } else {
                 //TODO 에러 처리 해당주소의 좌표를 찾을 수 없습니다 에러처리
             }
         }
     }
+
 
 
     fun selectPlace(place: PlaceDetailInfo?=null){
@@ -270,10 +355,9 @@ class PostViewModel @Inject constructor(
         }else{
             selectPlace = ""
         }
-
     }
 
-    fun clearImageData() {
+    fun clearImageData(){
         _repBitmap.value = null
         storedBytes.repBytes = ByteArray(0)
         _correctBitmap.value = null
@@ -285,8 +369,7 @@ class PostViewModel @Inject constructor(
         storedBytes.bodyBytes = mutableListOf()
     }
 
-    companion object {
+    companion object{
         const val MAX_PLACE_SIZE = 5
     }
-
 }

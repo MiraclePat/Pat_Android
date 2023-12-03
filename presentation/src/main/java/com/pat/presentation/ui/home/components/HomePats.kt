@@ -47,12 +47,12 @@ fun Pats(
             content?.forEach { pat ->
                 HomePats(
                     title = pat.patName,
-                    category = pat.category.ifEmpty { "어디서나 가능" },
+                    category = pat.category,
                     nowPerson = pat.nowPerson,
                     maxPerson = pat.maxPerson,
                     startDate = pat.startDate,
                     imgUri = pat.repImg,
-                    location = pat.location,
+                    location = pat.location.ifEmpty { "어디서나 가능" },
                     onClick = {
                         navController.navigate("patDetail/${pat.patId}") }
                 )

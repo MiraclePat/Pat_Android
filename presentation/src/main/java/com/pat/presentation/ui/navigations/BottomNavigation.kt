@@ -29,6 +29,8 @@ import com.pat.presentation.ui.map.MapScreenView
 import com.pat.presentation.ui.pat.PatDetailView
 import com.pat.presentation.ui.pat.SettingPattingCamera
 import com.pat.presentation.ui.pat.PatUpdateView
+import com.pat.presentation.ui.pat.PatUpdateViewModel
+import com.pat.presentation.ui.pat.components.UpdateSettingCamera
 import com.pat.presentation.ui.post.PostScreenView
 import com.pat.presentation.ui.proof.ParticipatingScreenView
 import com.pat.presentation.ui.post.PostViewModel
@@ -64,7 +66,8 @@ sealed class BottomNavItem(
 @Composable
 fun NavigationGraph(navController: NavHostController) {
     val postViewModel: PostViewModel = hiltViewModel()
-//    val proofViewModel: ProofViewModel = hiltViewModel()
+    val proofViewModel: ProofViewModel = hiltViewModel()
+    val updateViewModel: PatUpdateViewModel = hiltViewModel()
 
     NavHost(navController = navController, startDestination = BottomNavItem.Home.screenRoute) {
         composable(BottomNavItem.Home.screenRoute) {
@@ -95,7 +98,8 @@ fun NavigationGraph(navController: NavHostController) {
                     defaultValue = -1
                 }
             )) {
-            PatDetailView(navController = navController)
+            PatDetailView(
+                navController = navController)
         }
 
         composable("camera/{bitmapType}/{updateState}/{originalIdx}") { backStackEntry ->
@@ -114,8 +118,24 @@ fun NavigationGraph(navController: NavHostController) {
             }
         }
 
+        composable("updateCamera/{bitmapType}/{updateState}/{originalIdx}") { backStackEntry ->
+            val bitmapType = backStackEntry.arguments?.getString("bitmapType")
+            val updateState = backStackEntry.arguments?.getString("updateState")
+            val originalIdx = backStackEntry.arguments?.getString("originalIdx")
+
+            if (bitmapType != null) {
+                UpdateSettingCamera(
+                    navController = navController,
+                    viewModel = updateViewModel,
+                    bitmapType = bitmapType,
+                    updateState = updateState,
+                    originalIdx = originalIdx,
+                )
+            }
+        }
+
         composable("pattingCamera") {
-//            SettingPattingCamera(navController = navController, viewModel = proofViewModel)
+            SettingPattingCamera(navController = navController, viewModel = proofViewModel)
         }
 
         composable(
@@ -125,8 +145,12 @@ fun NavigationGraph(navController: NavHostController) {
                     type = NavType.LongType
                     defaultValue = -1
                 }
-            )) {
-            PatUpdateView(navController = navController)
+            )) { backStackEntry ->
+            val patId = backStackEntry.arguments?.getLong("patId") ?: -1
+            PatUpdateView(
+                patId = patId,
+                patUpdateViewModel = updateViewModel,
+                navController = navController)
         }
         composable(
             route = "participatingDetail/{patId}",

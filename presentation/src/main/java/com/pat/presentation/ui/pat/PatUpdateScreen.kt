@@ -1,11 +1,6 @@
 package com.pat.presentation.ui.pat
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,9 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
@@ -52,13 +44,23 @@ import com.pat.presentation.ui.common.CustomPicker
 import com.pat.presentation.ui.common.CustomTextField
 import com.pat.presentation.ui.common.DateTimePickerView
 import com.pat.presentation.ui.common.FinalButton
+import com.pat.presentation.ui.common.SelectDayButtonList
 import com.pat.presentation.ui.common.WheelTimePickerView
 import com.pat.presentation.ui.common.convertDateFormat
 import com.pat.presentation.ui.common.convertTimeFormat
 import com.pat.presentation.ui.common.convertTimeViewFormat
+import com.pat.presentation.ui.navigations.HOME
+import com.pat.presentation.ui.pat.components.UpdateExampleImageView
+import com.pat.presentation.ui.pat.components.UpdateRepImageView
+import com.pat.presentation.ui.pat.components.UpdateSelectImageList
+import com.pat.presentation.ui.pat.components.UpdateSelectLocationButtonList
+import com.pat.presentation.ui.theme.GreenBack
+import com.pat.presentation.ui.theme.GreenText
 import com.pat.presentation.ui.post.SelectDayButtonList
 import com.pat.presentation.ui.theme.Gray100
 import com.pat.presentation.ui.theme.PrimaryMain
+import com.pat.presentation.ui.theme.RedBack
+import com.pat.presentation.ui.theme.RedText
 import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.ui.theme.White
 import com.pat.presentation.util.HOME
@@ -69,10 +71,14 @@ import com.skydoves.landscapist.glide.GlideImage
 @Composable
 fun PatUpdateView(
     modifier: Modifier = Modifier,
-    patDetailViewModel: PatDetailViewModel = hiltViewModel(),
+    patId: Long = -1,
+    patUpdateViewModel: PatUpdateViewModel,
     navController: NavController,
 ) {
-    val uiState by patDetailViewModel.uiState.collectAsState()
+    //patid 가 -1이 아닐경우에 호출
+    //카메라 뷰에서 이동
+    patUpdateViewModel.getPatDetail(patId)
+    val uiState by patUpdateViewModel.uiState.collectAsState()
     val deleteDialogState = remember { mutableStateOf(false) }
     val updateDialogState = remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
@@ -90,7 +96,7 @@ fun PatUpdateView(
     if (deleteDialogState.value) {
         CustomDialog(
             okRequest = {
-                if (uiState.content != null) patDetailViewModel.deletePat(uiState.content!!.patId)
+                if (uiState.content != null) patUpdateViewModel.deletePat(uiState.content!!.patId)
                 navController.popBackStack(
                     route = HOME,
                     inclusive = false
@@ -142,7 +148,7 @@ fun PatUpdateView(
             if (uiState.content != null) {
                 PatUpdateScreen(
                     content = uiState.content!!,
-                    patDetailViewModel = patDetailViewModel,
+                    viewModel = patUpdateViewModel,
                     navController = navController
                 )
             }
@@ -155,7 +161,7 @@ fun PatUpdateView(
 fun PatUpdateScreen(
     modifier: Modifier = Modifier,
     content: PatDetailContent,
-    patDetailViewModel: PatDetailViewModel,
+    viewModel: PatUpdateViewModel,
     navController: NavController,
 ) {
     val isRealTime = remember { mutableStateOf(false) }         // 사진 선택
@@ -176,203 +182,226 @@ fun PatUpdateScreen(
     content.dayList.forEach {
         dayList.add(it)
     }
+    val locationSelect = remember { mutableStateOf("") }        // 주소 입력 방식
+    val locationSearchValue = remember { mutableStateOf(content.location) }        // 주소 입력 방식
+    val onSearchScreen = remember { mutableStateOf(false) }
+
+    val bodyBitmap by viewModel.bodyBitmap.collectAsState() //팟 상세이미지들
+    val correctBitmap by viewModel.correctBitmap.collectAsState() //올바른 이미지
+    val incorrectBitmap by viewModel.incorrectBitmap.collectAsState() //나쁜이미지!
+    val repBitmap by viewModel.repBitmap.collectAsState() //썸네일
+
+    val searchPlaceResult by viewModel.searchPlaceResult.collectAsState() //주소검색결과
 
     LaunchedEffect(content) {
         Logger.t("MainTest").i("수정 ${content}")
     }
 
     Column() {
-        Box(contentAlignment = Alignment.BottomEnd) {
-            GlideImage(
-                modifier = modifier
-                    .background(Gray100)
-                    .fillMaxWidth()
-                    .height(160.dp)
-                    .clickable {
-                        // TODO click Event
-                    }, imageModel = { content.repImg })
-            Row(
-                modifier
-                    .width(160.dp)
-                    .height(60.dp)
-                    .padding(12.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(White)
-                    .border(1.dp, PrimaryMain, RoundedCornerShape(4.dp)),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-            ) {
-                Text("썸네일 변경하기", style = Typography.bodySmall, color = PrimaryMain)
-                Icon(
-                    modifier = modifier
-                        .padding(start = 4.dp)
-                        .size(16.dp),
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_add),
-                    contentDescription = null,
-                    tint = PrimaryMain
-                )
-            }
+        UpdateRepImageView(
+            navController = navController,
+            bitmap = repBitmap,
+            viewModel = viewModel
+        )
+
+    }
+
+    Spacer(modifier = modifier.size(20.dp))
+    Column(modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
+        Text(text = "카테고리 선택", style = Typography.titleLarge)
+        Spacer(modifier = modifier.size(14.dp))
+        Row {
+            CategoryBoxList(state = category)
         }
+        Spacer(modifier = modifier.size(36.dp))
 
-        Spacer(modifier = modifier.size(20.dp))
-        Column(modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
-            Text(text = "카테고리 선택", style = Typography.titleLarge)
-            Spacer(modifier = modifier.size(14.dp))
-            Row {
-                CategoryBoxList(state = category)
-            }
-            Spacer(modifier = modifier.size(36.dp))
+        Text(text = "팟 제목", style = Typography.titleLarge)
+        Spacer(modifier = modifier.size(14.dp))
+        CustomTextField(placeholderText = "최대 15자", maxLength = 15, state = title)
+        Spacer(modifier = modifier.size(36.dp))
 
-            Text(text = "팟 제목", style = Typography.titleLarge)
-            Spacer(modifier = modifier.size(14.dp))
-            CustomTextField(placeholderText = "최대 15자", maxLength = 15, state = title)
-            Spacer(modifier = modifier.size(36.dp))
+        Text(text = "팟 상세정보", style = Typography.titleLarge)
+        Spacer(modifier = modifier.size(14.dp))
+        UpdateSelectImageList(
+            navController = navController,
+            bitmapList = bodyBitmap,
+            bitmapType = "BODY",
+            viewModel = viewModel
+        )
+        Spacer(modifier = modifier.size(36.dp))
 
-            Text(text = "팟 상세정보", style = Typography.titleLarge)
-            Spacer(modifier = modifier.size(14.dp))
-//            SelectImageList()
-            Spacer(modifier = modifier.size(36.dp))
+        Text(text = "위치정보", style = Typography.titleLarge)
+        Spacer(modifier = modifier.size(16.dp))
+        Row(
+            modifier
+                .fillMaxWidth()
+                .height(36.dp)
+        ) {
+            UpdateSelectLocationButtonList(
+                locationState = locationSelect,
+                viewModel = viewModel,
+                searchValue = locationSearchValue,
+                onSearchScreen = onSearchScreen,
+                searchPlaceResult = searchPlaceResult,
+            )        }
+        Spacer(modifier = modifier.size(36.dp))
 
-            Text(text = "위치정보", style = Typography.titleLarge)
-            Spacer(modifier = modifier.size(16.dp))
-            Row(
-                modifier
-                    .fillMaxWidth()
-                    .height(36.dp)
-            ) {
-//                SelectLocationButtonList(modifier.weight(1f), locationState = locationSelect)
-            }
-            Spacer(modifier = modifier.size(36.dp))
+        Text(text = "팟 인원 설정", style = Typography.titleLarge)
+        Spacer(modifier = modifier.size(14.dp))
+        CustomTextField(
+            placeholderText = "숫자만 입력해주세요. (최대 10,000명 가능)",
+            state = maxPerson,
+            maxLength = 5
+        )
+        Spacer(modifier = modifier.size(36.dp))
 
-            Text(text = "팟 인원 설정", style = Typography.titleLarge)
-            Spacer(modifier = modifier.size(14.dp))
-            CustomTextField(
-                placeholderText = "숫자만 입력해주세요. (최대 10,000명 가능)",
-                state = maxPerson,
-                maxLength = 5
-            )
-            Spacer(modifier = modifier.size(36.dp))
-
-            Text(text = "시작일-종료일", style = Typography.titleLarge)
-            Spacer(modifier = modifier.size(14.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                val startPressed = remember { mutableStateOf(false) }
-                CustomPicker(
-                    text = "시작일 선택",
-                    dateState = startDate,
-                    formatter = convertDateFormat,
-                    widthSize = 96.dp,
-                    content = {
-                        DateTimePickerView(
-                            onDateSelected = { startDate.value = it },
-                            onDismiss = { startPressed.value = !startPressed.value },
-                        )
-                    },
-                    clickState = startPressed
-                )
-                Spacer(modifier = modifier.padding(8.dp))
-                Text("부터 시작", style = Typography.bodySmall)
-                Spacer(modifier = modifier.padding(10.dp))
-                val endPressed = remember { mutableStateOf(false) }
-                CustomPicker(
-                    text = "종료일 선택",
-                    dateState = endDate,
-                    formatter = convertDateFormat,
-                    widthSize = 96.dp,
-                    content = {
-                        DateTimePickerView(
-                            onDateSelected = { endDate.value = it },
-                            onDismiss = { endPressed.value = !endPressed.value },
-                        )
-                    },
-                    clickState = endPressed
-                )
-                Spacer(modifier = modifier.padding(8.dp))
-                Text("에 종료", style = Typography.bodySmall)
-            }
-            Spacer(modifier = modifier.size(36.dp))
-
-            Text(text = "인증 가능 시간", style = Typography.titleLarge)
-            Spacer(modifier = modifier.size(14.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                val startPressed = remember { mutableStateOf(false) }
-                CustomPicker(
-                    text = "시작시간",
-                    dateState = startTime,
-                    content = {
-                        WheelTimePickerView(onDismiss = {
-                            startPressed.value = !startPressed.value
-                        }, timeState = startTime)
-                    },
-                    clickState = startPressed
-                )
-                Spacer(modifier = modifier.padding(8.dp))
-                Text("부터", style = Typography.bodySmall)
-                Spacer(modifier = modifier.padding(10.dp))
-                val endPressed = remember { mutableStateOf(false) }
-                CustomPicker(
-                    text = "종료시간",
-                    dateState = endTime,
-                    content = {
-                        WheelTimePickerView(onDismiss = {
-                            endPressed.value = !endPressed.value
-                        }, timeState = endTime)
-                    },
-                    clickState = endPressed
-                )
-                Spacer(modifier = modifier.padding(8.dp))
-                Text("까지", style = Typography.bodySmall)
-            }
-            Spacer(modifier = modifier.size(36.dp))
-
-            Text(text = "팟 소개", style = Typography.titleLarge)
-            Spacer(modifier = modifier.size(14.dp))
-            CustomTextField(placeholderText = "최대 500자", maxLength = 500, state = patDetail)
-            Spacer(modifier = modifier.size(36.dp))
-
-            Text(text = "인증 빈도", style = Typography.titleLarge)
-            Spacer(modifier = modifier.size(14.dp))
-            Row() {
-                SelectDayButtonList(state = dayList)
-            }
-            Spacer(modifier = modifier.size(36.dp))
-
-            Text(text = "인증방법 설명", style = Typography.titleLarge)
-            Spacer(modifier = modifier.size(14.dp))
-            CustomTextField(placeholderText = "최대 30자", maxLength = 30, state = proofDetail)
-            Spacer(modifier = modifier.size(36.dp))
-
-            Text(text = "인증사진 예시", style = Typography.titleLarge)
-            Spacer(modifier = modifier.size(14.dp))
-            Row() {
-//                ExampleImageView(text = "올바른 예시", backColor = GreenBack, textColor = GreenText)
-//                Spacer(modifier = modifier.size(10.dp))
-//                ExampleImageView(text = "잘못된 예시", backColor = RedBack, textColor = RedText)
-            }
-            Spacer(modifier = modifier.size(36.dp))
-
-            Text(text = "인증 수단", style = Typography.titleLarge)
-            Spacer(modifier = modifier.size(14.dp))
-
-            Row {
-                CheckBoxView(checked = isRealTime, text = "실시간 촬영")
-                Spacer(modifier = modifier.size(12.dp))
-                CheckBoxView(checked = isGallery, text = "갤러리에서 사진 가져오기")
-            }
-            Spacer(modifier = modifier.size(55.dp))
-
-            FinalButton(text = "확정",
-                backColor = PrimaryMain,
-                textColor = White,
-                onClick = {
-                    val outputStartTime = convertTimeFormat(startTime.value)
-                    val outputEndTime = convertTimeFormat(endTime.value)
-//                    patDetailViewModel.updatePat(content.patId, CreatePatInfoDetail())
-                    navController.popBackStack(
-                        route = HOME,
-                        inclusive = false
+        Text(text = "시작일-종료일", style = Typography.titleLarge)
+        Spacer(modifier = modifier.size(14.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            val startPressed = remember { mutableStateOf(false) }
+            CustomPicker(
+                text = "시작일 선택",
+                dateState = startDate,
+                formatter = convertDateFormat,
+                widthSize = 96.dp,
+                content = {
+                    DateTimePickerView(
+                        onDateSelected = { startDate.value = it },
+                        onDismiss = { startPressed.value = !startPressed.value },
                     )
-                })
+                },
+                clickState = startPressed
+            )
+            Spacer(modifier = modifier.padding(8.dp))
+            Text("부터 시작", style = Typography.bodySmall)
+            Spacer(modifier = modifier.padding(10.dp))
+            val endPressed = remember { mutableStateOf(false) }
+            CustomPicker(
+                text = "종료일 선택",
+                dateState = endDate,
+                formatter = convertDateFormat,
+                widthSize = 96.dp,
+                content = {
+                    DateTimePickerView(
+                        onDateSelected = { endDate.value = it },
+                        onDismiss = { endPressed.value = !endPressed.value },
+                    )
+                },
+                clickState = endPressed
+            )
+            Spacer(modifier = modifier.padding(8.dp))
+            Text("에 종료", style = Typography.bodySmall)
         }
+        Spacer(modifier = modifier.size(36.dp))
+
+        Text(text = "인증 가능 시간", style = Typography.titleLarge)
+        Spacer(modifier = modifier.size(14.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            val startPressed = remember { mutableStateOf(false) }
+            CustomPicker(
+                text = "시작시간",
+                dateState = startTime,
+                content = {
+                    WheelTimePickerView(onDismiss = {
+                        startPressed.value = !startPressed.value
+                    }, timeState = startTime)
+                },
+                clickState = startPressed
+            )
+            Spacer(modifier = modifier.padding(8.dp))
+            Text("부터", style = Typography.bodySmall)
+            Spacer(modifier = modifier.padding(10.dp))
+            val endPressed = remember { mutableStateOf(false) }
+            CustomPicker(
+                text = "종료시간",
+                dateState = endTime,
+                content = {
+                    WheelTimePickerView(onDismiss = {
+                        endPressed.value = !endPressed.value
+                    }, timeState = endTime)
+                },
+                clickState = endPressed
+            )
+            Spacer(modifier = modifier.padding(8.dp))
+            Text("까지", style = Typography.bodySmall)
+        }
+        Spacer(modifier = modifier.size(36.dp))
+
+        Text(text = "팟 소개", style = Typography.titleLarge)
+        Spacer(modifier = modifier.size(14.dp))
+        CustomTextField(placeholderText = "최대 500자", maxLength = 500, state = patDetail)
+        Spacer(modifier = modifier.size(36.dp))
+
+        Text(text = "인증 빈도", style = Typography.titleLarge)
+        Spacer(modifier = modifier.size(14.dp))
+        Row() {
+            SelectDayButtonList(state = dayList)
+        }
+        Spacer(modifier = modifier.size(36.dp))
+
+        Text(text = "인증방법 설명", style = Typography.titleLarge)
+        Spacer(modifier = modifier.size(14.dp))
+        CustomTextField(placeholderText = "최대 30자", maxLength = 30, state = proofDetail)
+        Spacer(modifier = modifier.size(36.dp))
+
+        Text(text = "인증사진 예시", style = Typography.titleLarge)
+        Spacer(modifier = modifier.size(14.dp))
+        Row() {
+            UpdateExampleImageView(
+                navController = navController,
+                text = "올바른 예시",
+                backColor = GreenBack,
+                textColor = GreenText,
+                bitmap = correctBitmap,
+                bitmapType = "CORRECT",
+                viewModel = viewModel
+            )
+            Spacer(modifier = modifier.size(10.dp))
+            UpdateExampleImageView(
+                navController = navController,
+                text = "잘못된 예시",
+                backColor = RedBack,
+                textColor = RedText,
+                bitmap = incorrectBitmap,
+                bitmapType = "INCORRECT",
+                viewModel = viewModel
+            )
+        }
+        Spacer(modifier = modifier.size(36.dp))
+
+        Text(text = "인증 수단", style = Typography.titleLarge)
+        Spacer(modifier = modifier.size(14.dp))
+
+        Row {
+            CheckBoxView(checked = isRealTime, text = "실시간 촬영")
+            Spacer(modifier = modifier.size(12.dp))
+            CheckBoxView(checked = isGallery, text = "갤러리에서 사진 가져오기")
+        }
+        Spacer(modifier = modifier.size(55.dp))
+
+        FinalButton(text = "확정",
+            backColor = PrimaryMain,
+            textColor = White,
+            onClick = {
+                val outputStartTime = convertTimeFormat(startTime.value)
+                val outputEndTime = convertTimeFormat(endTime.value)
+                viewModel.updatePat(
+                    patName = title.value,
+                    maxPerson = maxPerson.value.toInt(),
+                    patDetail = patDetail.value,
+                    proofDetail = proofDetail.value,
+                    startDate = startDate.value,
+                    endDate = endDate.value,
+                    startTime = outputStartTime,
+                    endTime = outputEndTime,
+                    days = dayList.toList(),
+                    category = category.value,
+                    realtime = !isRealTime.value,
+                )
+                navController.popBackStack(
+                    route = HOME,
+                    inclusive = false
+                )
+            })
     }
 }
