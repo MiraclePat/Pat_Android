@@ -83,6 +83,7 @@ fun MapScreenView(
         if (cameraPositionState.isMoving) {
             val northEastCoordinate = cameraPositionState.contentBounds?.northEast
             val southWestCoordinate = cameraPositionState.contentBounds?.southWest
+            Logger.t("navermap").i("${northEastCoordinate}, ${southWestCoordinate}")
             mapViewModel.getMapPats(northEastCoordinate, southWestCoordinate, category.value)
         }
     }
@@ -152,6 +153,7 @@ fun MapScreenView(
             cameraPositionState = cameraPositionState,
         ) {
             mapPats.forEach { content ->
+                Logger.t("navermap").i("${content}")
                 val focused = remember { mutableStateOf(false) }
                 if (focused.value) {
                     MapBottomSheet(

@@ -70,9 +70,9 @@ class MapViewModel @Inject constructor(
                      bottomLatitude = southWestCoordinate?.latitude,
                  )
             )
+            Logger.t("navermap").i("result : $result, ${northEastCoordinate}")
             if (result.isSuccess) {
                 _mapPats.emit(result.getOrThrow())
-                Logger.t("navermap").i("${result.getOrThrow()}")
             } else {
                 Logger.t("navermap").i("${result.exceptionOrNull()}")
             }
