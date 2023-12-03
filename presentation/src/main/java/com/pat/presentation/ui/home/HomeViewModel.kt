@@ -4,8 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.orhanobut.logger.Logger
+import com.pat.domain.model.pat.HomeBannerContent
 import com.pat.domain.model.pat.HomePatContent
 import com.pat.domain.model.pat.HomePatRequestInfo
+import com.pat.domain.usecase.pat.GetHomeBannerUseCase
 import com.pat.domain.usecase.pat.GetHomePatsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,9 +22,14 @@ data class HomeUiState(
     val content: List<HomePatContent>? = null
 )
 
+data class BannerUiState(
+    val content: HomeBannerContent? = null
+)
+
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getHomePatsUseCase: GetHomePatsUseCase,
+    private val getHomeBannerUseCase: GetHomeBannerUseCase,
 ) : ViewModel() {
     private val _hotUiState = MutableStateFlow(HomeUiState())
     val hotUiState: StateFlow<HomeUiState> = _hotUiState.asStateFlow()
@@ -30,9 +37,21 @@ class HomeViewModel @Inject constructor(
     val recentUiState: StateFlow<HomeUiState> = _recentUiState.asStateFlow()
     private val _searchUiState = MutableStateFlow(HomeUiState())
     val searchUiState: StateFlow<HomeUiState> = _searchUiState.asStateFlow()
-    private val _homePat = MutableStateFlow(HomeUiState())
-    val homePat: StateFlow<HomeUiState> = _homePat.asStateFlow()
+    private val _homeBanner = MutableStateFlow(BannerUiState())
+    val homeBanner: StateFlow<BannerUiState> = _homeBanner.asStateFlow()
 
+
+    init {
+        viewModelScope.launch {
+            val homeBannerResult = getHomeBannerUseCase()
+            if (homeBannerResult.isSuccess) {
+                val content = homeBannerResult.getOrThrow()
+                _homeBanner.emit(BannerUiState(content))
+            } else {
+                Logger.t("MainTest").i("홈 pat 에러")
+            }
+        }
+    }
 
     fun getPats() {
         viewModelScope.launch {
@@ -49,15 +68,6 @@ class HomeViewModel @Inject constructor(
             if (recentResult.isSuccess) {
                 val content = recentResult.getOrThrow()
                 _recentUiState.emit(HomeUiState(content = content))
-            } else {
-                Logger.t("MainTest").i("홈 pat 에러")
-            }
-
-            val homePatResult =
-                getHomePatsUseCase(HomePatRequestInfo(state = "IN_PROGRESS"))
-            if (homePatResult.isSuccess) {
-                val content = homePatResult.getOrThrow()
-                _homePat.emit(HomeUiState(content = content))
             } else {
                 Logger.t("MainTest").i("홈 pat 에러")
             }

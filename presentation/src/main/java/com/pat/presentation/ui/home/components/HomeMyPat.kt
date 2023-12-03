@@ -21,8 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.orhanobut.logger.Logger
-import com.pat.domain.model.pat.HomePatContent
+import com.pat.domain.model.pat.HomeBannerContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.theme.Gray700
 import com.pat.presentation.ui.theme.PrimaryMain
@@ -31,7 +30,7 @@ import com.pat.presentation.ui.theme.Typography
 @Composable
 fun HomeMyPat(
     modifier: Modifier = Modifier,
-    content: List<HomePatContent>?,
+    content: HomeBannerContent?,
     navController: NavController
 ) {
     LaunchedEffect(content) {}
@@ -62,7 +61,7 @@ fun HomeMyPat(
             modifier
                 .padding(horizontal = 26.dp, vertical = 25.dp)
                 .clickable {
-//                    navController.navigate("participatingDetail/${content.patId}")
+                    navController.navigate("participatingDetail/${content.patId}")
                 },
             verticalAlignment = Alignment.Bottom
         ) {
@@ -74,11 +73,14 @@ fun HomeMyPat(
                 )
                 Spacer(modifier.padding(bottom = 6.dp))
                 Text(
-                    text = "쓰레기 줍기 팟 D+7",
+                    text = "${content.patName} ${content.date}",
                     style = Typography.displayLarge,
                 )
                 Spacer(modifier.padding(bottom = 14.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(verticalAlignment = Alignment.CenterVertically,
+                    modifier = modifier.clickable {
+
+                    }) {
                     Text(
                         text = "바로 인증하기",
                         style = Typography.labelMedium,

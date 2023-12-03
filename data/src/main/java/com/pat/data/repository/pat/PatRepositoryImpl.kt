@@ -8,6 +8,7 @@ import com.pat.data.util.exception
 import com.pat.domain.model.exception.UnKnownException
 import com.pat.domain.model.pat.CreatePatInfo
 import com.pat.domain.model.pat.CreatePatInfoDetail
+import com.pat.domain.model.pat.HomeBannerContent
 import com.pat.domain.model.pat.HomePatContent
 import com.pat.domain.model.pat.HomePatRequestInfo
 import com.pat.domain.model.pat.MapPatContent
@@ -29,6 +30,20 @@ class PatRepositoryImpl @Inject constructor(
     private val moshi: Moshi,
 
     ) : PatRepository {
+    override suspend fun getHomeBanner(): Result<HomeBannerContent> {
+        val result = runCatching {
+            patDataSource.getHomeBanner()
+        }
+        return if (result.isSuccess) {
+            Logger.t("MainTest").i("${result.getOrThrow()}")
+
+            Result.success(result.getOrThrow())
+        } else {
+            Logger.t("MainTest").i("${result.exception().message}")
+
+            Result.failure(result.exception())
+        }
+    }
 
     override suspend fun getHomePats(homePatRequestInfo: HomePatRequestInfo): Result<List<HomePatContent>> {
         //TODO hasNext
