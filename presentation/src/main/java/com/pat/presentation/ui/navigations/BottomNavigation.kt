@@ -69,6 +69,7 @@ fun NavigationGraph(navController: NavHostController) {
     val proofViewModel: ProofViewModel = hiltViewModel()
     val updateViewModel: PatUpdateViewModel = hiltViewModel()
 
+
     NavHost(navController = navController, startDestination = BottomNavItem.Home.screenRoute) {
         composable(BottomNavItem.Home.screenRoute) {
             HomeScreenView(
@@ -99,7 +100,8 @@ fun NavigationGraph(navController: NavHostController) {
                 }
             )) {
             PatDetailView(
-                navController = navController)
+                navController = navController
+            )
         }
 
         composable("camera/{bitmapType}/{updateState}/{originalIdx}") { backStackEntry ->
@@ -150,7 +152,8 @@ fun NavigationGraph(navController: NavHostController) {
             PatUpdateView(
                 patId = patId,
                 patUpdateViewModel = updateViewModel,
-                navController = navController)
+                navController = navController
+            )
         }
         composable(
             route = "participatingDetail/{patId}",
@@ -174,49 +177,61 @@ fun BottomNavi(navController: NavHostController) {
         BottomNavItem.Map,
         BottomNavItem.Setting,
     )
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    var isBottomBarVisible = true
+    currentRoute?.let { route ->
+        isBottomBarVisible = when (route) {
+            BottomNavItem.Home.screenRoute -> true
+            BottomNavItem.Certification.screenRoute -> true
+            BottomNavItem.Map.screenRoute -> true
+            BottomNavItem.Setting.screenRoute -> true
+            else -> false
+        }
+    }
 
-    BottomNavigation(
-        backgroundColor = White,
-        contentColor = PrimaryMain
-    ) {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route
-        items.forEach { item ->
-            val textColor = if (currentRoute == item.screenRoute) PrimaryMain else Gray400
-            val iconImage = if (currentRoute == item.screenRoute) item.iconFill else item.icon
-            BottomNavigationItem(
-                icon = {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(iconImage),
-                        contentDescription = stringResource(id = item.title),
-                        modifier = Modifier
-                            .width(24.dp)
-                            .height(24.dp),
-                        tint = Color.Unspecified
-                    )
-                },
-                label = {
-                    Text(
-                        stringResource(id = item.title),
-                        style = Typography.titleLarge,
-                        fontSize = 12.sp,
-                        color = textColor
-                    )
-                },
-                selectedContentColor = PrimaryMain,
-                unselectedContentColor = Gray400,
-                selected = currentRoute == item.screenRoute,
-                alwaysShowLabel = true,
-                onClick = {
-                    navController.navigate(item.screenRoute) {
-                        navController.graph.startDestinationRoute?.let {
-                            popUpTo(it) { saveState = true }
+    if (isBottomBarVisible) {
+        BottomNavigation(
+            backgroundColor = White,
+            contentColor = PrimaryMain
+        ) {
+            items.forEach { item ->
+                val textColor = if (currentRoute == item.screenRoute) PrimaryMain else Gray400
+                val iconImage = if (currentRoute == item.screenRoute) item.iconFill else item.icon
+                BottomNavigationItem(
+                    icon = {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(iconImage),
+                            contentDescription = stringResource(id = item.title),
+                            modifier = Modifier
+                                .width(24.dp)
+                                .height(24.dp),
+                            tint = Color.Unspecified
+                        )
+                    },
+                    label = {
+                        Text(
+                            stringResource(id = item.title),
+                            style = Typography.titleLarge,
+                            fontSize = 12.sp,
+                            color = textColor
+                        )
+                    },
+                    selectedContentColor = PrimaryMain,
+                    unselectedContentColor = Gray400,
+                    selected = currentRoute == item.screenRoute,
+                    alwaysShowLabel = true,
+                    onClick = {
+                        navController.navigate(item.screenRoute) {
+                            navController.graph.startDestinationRoute?.let {
+                                popUpTo(it) { saveState = true }
+                            }
+                            launchSingleTop = true
+                            restoreState = true
                         }
-                        launchSingleTop = true
-                        restoreState = true
                     }
-                }
-            )
+                )
+            }
         }
     }
 }

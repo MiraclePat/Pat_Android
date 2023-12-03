@@ -496,8 +496,8 @@ fun ProofScreen(
                     SelectButton(
                         text = "이 사진으로 인증하기",
                         onClick = {
-                            Logger.t("MainTest").i("${content.isCompleted}")
-                            Logger.t("MainTest").i("${viewModel.proofImageBytes}")
+                            Logger.t("ProofTest").i("${content.isCompleted}")
+                            Logger.t("ProofTest").i("${viewModel.proofImageBytes}")
                             val proofImageByte = viewModel.proofImageBytes
                             viewModel.proofPat(proofImageByte)
                             showBottomSheet = false
@@ -526,6 +526,7 @@ fun ProofStatus(
     isAll: String = "",
     imgUriList: List<ProofContent>?
 ) {
+    Logger.t("ProofTest").i("${imgUriList}")
     val title = if (isAll == "") "나의 인증사진" else "참여자들의 인증사진"
     Row() {
         Text("${isAll}인증 성공 횟수", style = Typography.titleLarge, color = Gray600, fontSize = 14.sp)

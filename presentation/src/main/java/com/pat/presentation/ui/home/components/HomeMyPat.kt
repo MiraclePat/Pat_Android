@@ -77,10 +77,7 @@ fun HomeMyPat(
                     style = Typography.displayLarge,
                 )
                 Spacer(modifier.padding(bottom = 14.dp))
-                Row(verticalAlignment = Alignment.CenterVertically,
-                    modifier = modifier.clickable {
-
-                    }) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "바로 인증하기",
                         style = Typography.labelMedium,
