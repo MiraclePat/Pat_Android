@@ -17,6 +17,8 @@ import androidx.compose.ui.res.painterResource
 import com.pat.presentation.R
 import com.pat.presentation.ui.setting.components.SettingAnnounceBox
 import com.pat.presentation.ui.theme.Typography
+import com.pat.presentation.util.ANNOUNCE
+import com.pat.presentation.util.BODY
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -3,6 +3,12 @@ package com.pat.presentation.ui.setting
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import com.pat.presentation.util.ACCOUNT
+import com.pat.presentation.util.ALARM
+import com.pat.presentation.util.ANNOUNCE
+import com.pat.presentation.util.BODY
+import com.pat.presentation.util.PASSWORD
+import com.pat.presentation.util.WITHDRAWAL
 
 
 @Composable
@@ -19,10 +25,3 @@ fun SettingScreenView() {
     }
 }
 
-const val BODY = "마이페이지"
-const val ACCOUNT = "계정 설정"
-const val ALARM = "알림 정보 설정"
-const val ANNOUNCE = "공지사항"
-const val PASSWORD = "비밀번호 수정"
-const val LOGOUT = "로그아웃"
-const val WITHDRAWAL = "회원탈퇴"

@@ -22,7 +22,10 @@ import com.pat.presentation.util.image.getCompressedBytes
 import com.pat.presentation.util.image.getRotatedBitmap
 import com.pat.presentation.util.image.getScaledBitmap
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -74,8 +77,8 @@ class PostViewModel @Inject constructor(
     private val _bitmapList = MutableStateFlow<PostBytes?>(null)
     val bitmapList = _bitmapList.asStateFlow()
 
-    private var selectPlace : PlaceDetailInfo? = null
-    private var selectPlaceCoordinate : LatLng? = null
+    private var selectPlace: PlaceDetailInfo? = null
+    private var selectPlaceCoordinate: LatLng? = null
 
 
     private val storedBytes: PostBytes = PostBytes(
@@ -83,7 +86,12 @@ class PostViewModel @Inject constructor(
         ByteArray(0), ByteArray(0)
     )
 
-    fun onTakePhoto(image: ImageProxy, bitmapType: String, updateState: String?, originalIdx: String?) {
+    fun onTakePhoto(
+        image: ImageProxy,
+        bitmapType: String,
+        updateState: String?,
+        originalIdx: String?
+    ) {
         val rotatedBitmap = getRotatedBitmap(image)
         val scaledBitmap = getScaledBitmap(rotatedBitmap)
         val bytes = getCompressedBytes(scaledBitmap)
@@ -112,7 +120,7 @@ class PostViewModel @Inject constructor(
                     totalBody[idx] = newBitmap
                     storedBytes.bodyBytes[idx] = bytes
                     _bodyBitmap.value = totalBody
-                }else{
+                } else {
                     totalBody.add(newBitmap)
                     _bodyBitmap.value = totalBody
                     storedBytes.bodyBytes.add(bytes)
@@ -121,7 +129,12 @@ class PostViewModel @Inject constructor(
         }
     }
 
-    fun getBitmapByUri(uri: Uri?, bitmapType: String, updateState: String?= null, originalIdx: Int?= null) {
+    fun getBitmapByUri(
+        uri: Uri?,
+        bitmapType: String,
+        updateState: String? = null,
+        originalIdx: Int? = null
+    ) {
         viewModelScope.launch {
             val bytes = getByteArrayByUriUseCase(uri.toString())
             val newBitmap = byteArrayToBitmap(bytes)
@@ -142,11 +155,11 @@ class PostViewModel @Inject constructor(
                 }
 
                 PatBitmap.BODY.toString() -> {
-                    if (updateState == "true" && totalBody.isNotEmpty() && originalIdx!= null) {
+                    if (updateState == "true" && totalBody.isNotEmpty() && originalIdx != null) {
                         totalBody[originalIdx] = newBitmap
                         storedBytes.bodyBytes[originalIdx] = bytes
                         _bodyBitmap.value = totalBody
-                    }else{
+                    } else {
                         totalBody.add(newBitmap)
                         _bodyBitmap.value = totalBody
                         storedBytes.bodyBytes.add(bytes)
@@ -175,8 +188,8 @@ class PostViewModel @Inject constructor(
                 patName,
                 patDetail,
                 maxPerson,
-                selectPlaceCoordinate?.latitude?:0.0,
-                selectPlaceCoordinate?.longitude?:0.0,
+                selectPlaceCoordinate?.latitude ?: 0.0,
+                selectPlaceCoordinate?.longitude ?: 0.0,
                 selectPlace?.title.toString(),
                 category,
                 startTime,
@@ -204,6 +217,7 @@ class PostViewModel @Inject constructor(
             }
         }
     }
+
     fun onSearch(query: String) {
         searchJob.cancel()
         _searchPlaceResult.value = emptyList()
@@ -214,7 +228,7 @@ class PostViewModel @Inject constructor(
         searchJob = viewModelScope.launch {
             val result = getSearchPlaceUseCase(
                 PlaceSearchRequestInfo(
-                    query,MAX_PLACE_SIZE
+                    query, MAX_PLACE_SIZE
                 )
             )
             if (result.isSuccess) {
@@ -238,7 +252,7 @@ class PostViewModel @Inject constructor(
                 val coordinate = result.getOrThrow()
                 Logger.t("coordinate").i("관악구청 ${coordinate.lat} ${coordinate.long}")
 
-                selectPlaceCoordinate = LatLng(coordinate.lat,coordinate.long)
+                selectPlaceCoordinate = LatLng(coordinate.lat, coordinate.long)
             } else {
                 //TODO 에러 처리 해당주소의 좌표를 찾을 수 없습니다 에러처리
             }
@@ -246,13 +260,12 @@ class PostViewModel @Inject constructor(
     }
 
 
-
-    fun selectPlace(place: PlaceDetailInfo){
+    fun selectPlace(place: PlaceDetailInfo) {
         selectPlace = place
         searchCoordinate(place)
     }
 
-    fun clearImageData(){
+    fun clearImageData() {
         _repBitmap.value = null
         storedBytes.repBytes = ByteArray(0)
         _correctBitmap.value = null
@@ -263,7 +276,7 @@ class PostViewModel @Inject constructor(
         storedBytes.bodyBytes = mutableListOf()
     }
 
-    companion object{
+    companion object {
         const val MAX_PLACE_SIZE = 5
     }
 

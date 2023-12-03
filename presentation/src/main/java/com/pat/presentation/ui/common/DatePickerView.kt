@@ -2,7 +2,9 @@ package com.pat.presentation.ui.common
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -15,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.pat.presentation.ui.theme.StarColor
 import com.pat.presentation.ui.theme.Typography
 
 
@@ -26,8 +29,11 @@ fun DateTimePickerView(
 ) {
     val datePickerState = rememberDatePickerState(selectableDates = object : SelectableDates {
         override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-            return true
-//            return utcTimeMillis >= System.currentTimeMillis()
+            val currentMillis = System.currentTimeMillis()
+            val oneDayInMillis = 24 * 60 * 60 * 1000
+            val result = currentMillis + oneDayInMillis
+
+            return utcTimeMillis >= result
         }
     })
 
@@ -42,12 +48,13 @@ fun DateTimePickerView(
         confirmButton = {},
     ) {
         DatePicker(modifier = Modifier.weight(1f), state = datePickerState)
-
         Row(
-            Modifier.fillMaxWidth(),
+            Modifier.fillMaxWidth().padding(10.dp),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Text("* 2일 뒤 부터 고를 수 있어요.", style = Typography.labelMedium, color = StarColor)
+            Spacer(modifier = Modifier.weight(1f))
             TextButton(onClick = {
                 onDismiss()
                 onDateSelected("")

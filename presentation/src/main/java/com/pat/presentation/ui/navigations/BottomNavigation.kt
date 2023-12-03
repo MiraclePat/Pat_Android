@@ -39,13 +39,8 @@ import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.PrimaryMain
 import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.ui.theme.White
+import com.pat.presentation.util.*
 
-const val HOME = "HOME"
-const val CERTIFICATION = "CERTIFICATION"
-const val MAP = "MAP"
-const val SETTING = "SETTING"
-const val POST = "POST"
-const val POST_DETAIL = "POST_DETAIL"
 
 sealed class BottomNavItem(
     val title: Int, val icon: Int, val iconFill: Int, val screenRoute: String,
@@ -89,7 +84,6 @@ fun NavigationGraph(navController: NavHostController) {
         composable(POST) {
             PostScreenView(
                 navController = navController,
-                onNavigateToHome = { navController.popBackStack() },
                 viewModel = postViewModel
             )
         }

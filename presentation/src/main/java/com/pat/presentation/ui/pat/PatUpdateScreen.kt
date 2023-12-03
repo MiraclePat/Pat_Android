@@ -56,12 +56,12 @@ import com.pat.presentation.ui.common.WheelTimePickerView
 import com.pat.presentation.ui.common.convertDateFormat
 import com.pat.presentation.ui.common.convertTimeFormat
 import com.pat.presentation.ui.common.convertTimeViewFormat
-import com.pat.presentation.ui.navigations.HOME
 import com.pat.presentation.ui.post.SelectDayButtonList
 import com.pat.presentation.ui.theme.Gray100
 import com.pat.presentation.ui.theme.PrimaryMain
 import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.ui.theme.White
+import com.pat.presentation.util.HOME
 import com.skydoves.landscapist.glide.GlideImage
 
 

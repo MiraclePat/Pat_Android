@@ -80,7 +80,7 @@ import kotlinx.coroutines.flow.map
 fun WheelTimePickerView(
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit,
-    timeState: MutableState<String>
+    timeState: MutableState<String>,
 ) {
     val amState = remember { mutableStateOf(true) }
     val hourPickerState = rememberPickerState()
@@ -154,7 +154,8 @@ fun WheelTimePickerView(
 fun PickerExample(
     modifier: Modifier = Modifier,
     hourPickerState: PickerState,
-    amState: MutableState<Boolean>
+    amState: MutableState<Boolean>,
+
 ) {
     val hour = remember { (1..12).map { it.toString().padStart(2, '0') } }
 

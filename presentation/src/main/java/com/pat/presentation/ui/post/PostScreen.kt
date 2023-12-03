@@ -2,8 +2,6 @@ package com.pat.presentation.ui.post
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,7 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -58,18 +55,14 @@ import com.pat.presentation.ui.common.SelectImageList
 import com.pat.presentation.ui.common.WheelTimePickerView
 import com.pat.presentation.ui.common.convertDateFormat
 import com.pat.presentation.ui.common.convertTimeFormat
-import com.pat.presentation.ui.navigations.BottomNavItem
 import com.pat.presentation.ui.post.components.PostRepImageView
 import com.pat.presentation.ui.post.components.SearchPlaceTextField
 import com.pat.presentation.ui.post.components.SearchResultList
 import com.pat.presentation.ui.post.components.SelectDayButtonList
-import com.pat.presentation.ui.theme.Gray100
-import com.pat.presentation.ui.theme.Gray200
 import com.pat.presentation.ui.theme.Gray300
 import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.Gray500
 import com.pat.presentation.ui.theme.Gray600
-import com.pat.presentation.ui.theme.Gray800
 import com.pat.presentation.ui.theme.GreenBack
 import com.pat.presentation.ui.theme.GreenText
 import com.pat.presentation.ui.theme.Primary50
@@ -79,12 +72,12 @@ import com.pat.presentation.ui.theme.RedText
 import com.pat.presentation.ui.theme.StarColor
 import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.ui.theme.White
+import com.pat.presentation.util.HOME
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostScreenView(
     navController: NavController,
-    onNavigateToHome: () -> Unit,
     viewModel: PostViewModel,
 ) {
 
@@ -97,7 +90,10 @@ fun PostScreenView(
         CustomDialog(
             okRequest = {
                 viewModel.clearImageData()
-                onNavigateToHome()
+                navController.popBackStack(
+                    route = HOME,
+                    inclusive = false
+                )
             }, state = declarationDialogState,
             message = "공고글 작성을 취소하시겠어요?",
             cancelMessage = "계속 작성",
@@ -137,7 +133,6 @@ fun PostScreenView(
 
             PostScreenBody(
                 navController = navController,
-                onNavigateToHome = onNavigateToHome,
                 viewModel = viewModel,
             )
         }
@@ -148,25 +143,24 @@ fun PostScreenView(
 fun PostScreenBody(
     navController: NavController,
     modifier: Modifier = Modifier,
-    onNavigateToHome: () -> Unit,
     viewModel: PostViewModel,
 ) {
-    val isRealTime = remember { mutableStateOf(false) }         // 사진 선택
+    val isRealTime = rememberSaveable { mutableStateOf(false) }         // 사진 선택
 
     val title = rememberSaveable { mutableStateOf("") }         // 팟 제목
     val maxPerson = rememberSaveable { mutableStateOf("") }     // 최대 인원
     val patDetail = rememberSaveable { mutableStateOf("") }     // 팟 소개
     val proofDetail = rememberSaveable { mutableStateOf("") }   // 인증 방법 설명
-    val startDate = remember { mutableStateOf("") }             // 시작 날짜
-    val endDate = remember { mutableStateOf("") }               // 종료 날짜
-    val startTime = remember { mutableStateOf("") }             // 시작 시간
-    val endTime = remember { mutableStateOf("") }               // 종료 시간
-    val category = remember { mutableStateOf("") }              // 카테고리
-    val locationSelect = remember { mutableStateOf("") }        // 주소 입력 방식
-    val locationSearchValue = remember { mutableStateOf("") }        // 주소 입력 방식
-    val onSearchScreen = remember { mutableStateOf(false) }
+    val startDate = rememberSaveable { mutableStateOf("") }             // 시작 날짜
+    val endDate = rememberSaveable { mutableStateOf("") }               // 종료 날짜
+    val startTime = rememberSaveable { mutableStateOf("") }             // 시작 시간
+    val endTime = rememberSaveable { mutableStateOf("") }               // 종료 시간
+    val category = rememberSaveable { mutableStateOf("") }              // 카테고리
+    val locationSelect = rememberSaveable { mutableStateOf("") }        // 주소 입력 방식
+    val locationSearchValue = rememberSaveable { mutableStateOf("") }        // 주소 입력 방식
+    val onSearchScreen = rememberSaveable { mutableStateOf(false) }
+    val dayList = rememberSaveable { mutableStateOf(listOf<String>()) }                   // 인증 빈도
 
-    val dayList = remember { mutableStateListOf<String>() }                   // 인증 빈도
 
     val bodyBitmap by viewModel.bodyBitmap.collectAsState() //팟 상세이미지들
     val correctBitmap by viewModel.correctBitmap.collectAsState() //올바른 이미지
@@ -440,7 +434,7 @@ fun PostScreenBody(
                 onClick = {
                     val outputStartTime = convertTimeFormat(startTime.value)
                     val outputEndTime = convertTimeFormat(endTime.value)
-                    Logger.t("MainTest").i("$outputStartTime, ${outputEndTime}")
+
                     viewModel.post(
                         patName = title.value,
                         maxPerson = maxPerson.value.toInt(),
@@ -450,12 +444,14 @@ fun PostScreenBody(
                         endDate = endDate.value,
                         startTime = outputStartTime,
                         endTime = outputEndTime,
-                        days = dayList.toList(),
+                        days = dayList.value,
                         category = category.value,
                         realtime = !isRealTime.value,
                     )
-//                    onNavigateToHome()
-                    navController.navigate(BottomNavItem.Home.screenRoute)
+                    navController.popBackStack(
+                        route = HOME,
+                        inclusive = false
+                    )
                 })
         }
     }
