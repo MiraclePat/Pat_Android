@@ -92,7 +92,7 @@ fun SettingAccount(modifier: Modifier = Modifier, viewState: MutableState<String
             sheetState = sheetState
         ) {
             Column(
-                modifier = modifier.fillMaxWidth(),
+                modifier = modifier.padding(bottom = 40.dp).fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(

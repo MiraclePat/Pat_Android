@@ -1,6 +1,7 @@
 package com.pat.data.source
 
 import com.pat.data.model.ListResponse
+import com.pat.data.model.pat.HomeBannerContentDTO
 import com.pat.data.model.pat.HomePatContentDTO
 import com.pat.data.model.pat.MapListResponse
 import com.pat.data.model.pat.MapPatContentDTO
@@ -13,6 +14,10 @@ import javax.inject.Inject
 class PatDataSource @Inject constructor(
     private val service: PatService,
 ) {
+    suspend fun getHomeBanner(): HomeBannerContentDTO {
+        return service.getHomeBanner()
+    }
+
     suspend fun getHomePats(
         lastId: Long?,
         size: Int?,
