@@ -18,11 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.orhanobut.logger.Logger
 import com.pat.domain.model.place.PlaceDetailInfo
 import com.pat.presentation.ui.common.CustomButtonView
 import com.pat.presentation.ui.pat.PatUpdateViewModel
-import com.pat.presentation.ui.post.PostViewModel
-import com.pat.presentation.ui.post.components.SearchPlaceTextField
 import com.pat.presentation.ui.theme.Gray300
 import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.Primary50
@@ -66,7 +65,6 @@ fun UpdateSelectLocationButtonList(
         }
     }
     Spacer(modifier.padding(top = 16.dp))
-
     when (locationState.value) {
         "주소 검색" -> {
             UpdateSearchPlaceTextField(placeholderText = "서초동 스타벅스",

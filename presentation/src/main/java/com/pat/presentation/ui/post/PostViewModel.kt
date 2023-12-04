@@ -203,7 +203,7 @@ class PostViewModel @Inject constructor(
                 days,
                 realtime
             )
-            Logger.t("patdetail").i("${detail}")
+
             val result = createPatUseCase(
                 CreatePatInfo(
                     storedBytes.repBytes,
@@ -254,9 +254,7 @@ class PostViewModel @Inject constructor(
             )
             if (result.isSuccess) {
                 val coordinate = result.getOrThrow()
-                Logger.t("coordinate").i("관악구청 ${coordinate.lat} ${coordinate.long}")
-
-                selectPlaceCoordinate = LatLng(coordinate.lat, coordinate.long)
+                selectPlaceCoordinate = LatLng(coordinate.lat,coordinate.long)
             } else {
                 //TODO 에러 처리 해당주소의 좌표를 찾을 수 없습니다 에러처리
             }

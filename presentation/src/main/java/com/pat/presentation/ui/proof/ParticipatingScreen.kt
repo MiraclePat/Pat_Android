@@ -97,12 +97,12 @@ fun ParticipatingScreenView(
                     ParticipatePat(
                         content = participatingContent,
                         onClick = {
-                            navController.navigate("participatingDetail/${participatingContent.patId}")
+                            navController.navigate("participatingDetail/${participatingContent.patId}/ ")
                         },
                         buttonText = buttonText(participatingContent.state),
                         color = if (participatingContent.state == "COMPLETED") Gray300 else PrimaryMain,
                         buttonClick = {
-                            // TODO 인증하기 바텀시트
+                              navController.navigate("participatingDetail/${participatingContent.patId}/true")
                         }
                     )
                 }
@@ -113,7 +113,7 @@ fun ParticipatingScreenView(
                 uiState.content?.forEach { participatingContent ->
                     ParticipatePat(
                         content = participatingContent,
-                        onClick = { navController.navigate("participatingDetail/${participatingContent.patId}") },
+                        onClick = { navController.navigate("participatingDetail/${participatingContent.patId}/ ") },
                         buttonText = "상세보기"
                     )
                 }
@@ -124,7 +124,7 @@ fun ParticipatingScreenView(
                 uiState.content?.forEach { participatingContent ->
                     ParticipatePat(
                         content = participatingContent,
-                        onClick = { navController.navigate("participatingDetail/${participatingContent.patId}") },
+                        onClick = { navController.navigate("participatingDetail/${participatingContent.patId}/ ") },
                         buttonText = "종료된 팟",
                         color = Gray300
                     )
@@ -136,11 +136,16 @@ fun ParticipatingScreenView(
                 uiState.content?.forEach { participatingContent ->
                     ParticipatePat(
                         content = participatingContent,
-                        onClick = { navController.navigate("participatingDetail/${participatingContent.patId}") },
+                        onClick = { navController.navigate("participatingDetail/${participatingContent.patId}/ ") },
                         buttonText = buttonText(participatingContent.state),
                         color = if (participatingContent.state == "COMPLETED") Gray300 else PrimaryMain,
                         buttonClick = {
-                            // TODO 인증하기 바텀시트
+                            if(participatingContent.state == "IN_PROGRESS"){
+                                navController.navigate("participatingDetail/${participatingContent.patId}/true")
+                            }else{
+                                navController.navigate("participatingDetail/${participatingContent.patId}/ ")
+
+                            }
                         }
                     )
                 }

@@ -18,8 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,7 +31,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,9 +45,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.orhanobut.logger.Logger
 import com.pat.domain.model.member.ParticipatingDetailContent
 import com.pat.domain.model.proof.ProofContent
 import com.pat.presentation.R
@@ -60,11 +55,9 @@ import com.pat.presentation.ui.common.FinalButton
 import com.pat.presentation.ui.common.IconWithTextView
 import com.pat.presentation.ui.common.SelectButton
 import com.pat.presentation.ui.common.SimpleTextView
-import com.pat.presentation.ui.common.convertDateViewFormat
-import com.pat.presentation.ui.common.convertTimeViewFormat
 import com.pat.presentation.ui.common.setUnderLine
+import com.pat.presentation.ui.navigations.CERTIFICATION
 import com.pat.presentation.ui.pat.DateText
-import com.pat.presentation.ui.pat.ProofImageView
 import com.pat.presentation.ui.theme.FailCircleColor
 import com.pat.presentation.ui.theme.FailTextColor
 import com.pat.presentation.ui.theme.Gray200
@@ -92,9 +85,16 @@ import kotlin.math.roundToInt
 @Composable
 fun ProofScreenView(
     modifier: Modifier = Modifier,
+    patId: Long,
     navController: NavController,
-    proofViewModel: ProofViewModel = hiltViewModel()
+    proofViewModel: ProofViewModel,
+    showBottomSheet: Boolean?= null
 ) {
+
+    if(patId != (-1).toLong()){
+        proofViewModel.getParticipatingDetail(patId)
+    }
+
     val uiState by proofViewModel.uiState.collectAsState()
     val proofState by proofViewModel.proofs.collectAsState()
     val scrollState = rememberScrollState()
@@ -110,7 +110,11 @@ fun ProofScreenView(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = {
+                        navController.popBackStack(
+                        route = CERTIFICATION,
+                        inclusive = false
+                    ) }) {
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_back_arrow),
                             contentDescription = "Go back"
@@ -130,7 +134,8 @@ fun ProofScreenView(
                     content = uiState.content!!,
                     viewModel = proofViewModel,
                     navController = navController,
-                    proofContents = proofState.content
+                    proofContents = proofState.content,
+                    showBottomSheet = showBottomSheet,
                 )
             }
         }
@@ -144,7 +149,8 @@ fun ProofScreen(
     viewModel: ProofViewModel,
     content: ParticipatingDetailContent,
     navController: NavController,
-    proofContents: List<ProofContent>?
+    proofContents: List<ProofContent>?,
+    showBottomSheet: Boolean? = false
 ) {
     var spreadState by remember { mutableStateOf(false) }
     var myProofState by remember { mutableStateOf(true) }
@@ -153,13 +159,11 @@ fun ProofScreen(
     val viewStartDate = content.startDate
     val viewEndDate = content.endDate
     val sheetState = rememberModalBottomSheetState()
-    var showBottomSheet by remember { mutableStateOf(false) }
+    var showBottomSheet by remember { mutableStateOf(showBottomSheet) }
     val proofBitmap by viewModel.proofBitmap.collectAsState() //인증사진
     val bottomSheetState by viewModel.bottomSheetState.collectAsState()
 
-    LaunchedEffect(content) {
-        Logger.t("MainTest").i("${content}")
-    }
+
     @Composable
     fun finalButton(text: String) {
         FinalButton(
@@ -462,7 +466,7 @@ fun ProofScreen(
             }
         }
 
-        if (showBottomSheet || bottomSheetState) {
+        if (showBottomSheet == true || bottomSheetState) {
             ModalBottomSheet(
                 onDismissRequest = {
                     showBottomSheet = false
@@ -496,11 +500,8 @@ fun ProofScreen(
                     SelectButton(
                         text = "이 사진으로 인증하기",
                         onClick = {
-                            Logger.t("MainTest").i("${content.isCompleted}")
-                            Logger.t("MainTest").i("${viewModel.proofImageBytes}")
-                            val proofImageByte = viewModel.proofImageBytes
-                            viewModel.proofPat(proofImageByte)
-                            showBottomSheet = false
+                            viewModel.proofPat()
+//                            showBottomSheet = false
                         },
                         backColor = if (proofBitmap == null) Gray300 else PrimaryMain,
                         textColor = if (proofBitmap == null) White else White,

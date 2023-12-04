@@ -1,4 +1,4 @@
-package com.pat.presentation.ui.pat
+package com.pat.presentation.ui.proof
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -52,19 +52,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.pat.presentation.R
 import com.pat.presentation.ui.CameraPreview
 import com.pat.presentation.ui.common.SelectButton
-import com.pat.presentation.ui.proof.ProofViewModel
 import com.pat.presentation.ui.theme.Gray300
 import com.pat.presentation.ui.theme.Gray500
 import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.Gray800
 import com.pat.presentation.ui.theme.PrimaryMain
 import com.pat.presentation.ui.theme.Typography
+import com.pat.presentation.util.Constants
+import com.pat.presentation.util.Constants.DEFAULT_PAT_ID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -207,7 +207,7 @@ fun ProofImageView(
 @Composable
 fun SettingPattingCamera(
     navController: NavController,
-    viewModel: ProofViewModel = hiltViewModel(),
+    viewModel: ProofViewModel,
 ) {
     val context: Context = LocalContext.current
     val controller = remember {
@@ -284,8 +284,7 @@ private fun takeProofPhoto(
             override fun onCaptureSuccess(image: ImageProxy) {
                 super.onCaptureSuccess(image)
                 onPhotoTaken(image)
-                navController.popBackStack()
-            }
+                navController.navigate("participatingDetail/${DEFAULT_PAT_ID}/ ")            }
 
             override fun onError(exception: ImageCaptureException) {
                 super.onError(exception)

@@ -1,9 +1,7 @@
 package com.pat.presentation.ui.pat.components
 
-import androidx.core.content.ContextCompat
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Matrix
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -43,7 +41,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,21 +54,20 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.orhanobut.logger.Logger
 import com.pat.presentation.R
-import com.pat.presentation.model.PatBitmap
 import com.pat.presentation.ui.CameraPreview
 import com.pat.presentation.ui.common.SelectButton
 import com.pat.presentation.ui.pat.PatUpdateViewModel
-import com.pat.presentation.ui.post.PostViewModel
 import com.pat.presentation.ui.theme.Gray100
 import com.pat.presentation.ui.theme.Gray500
 import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.Gray800
 import com.pat.presentation.ui.theme.PrimaryMain
 import com.pat.presentation.ui.theme.Typography
+import com.pat.presentation.util.Constants.DEFAULT_PAT_ID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -321,7 +317,7 @@ private fun updateTakePhoto(
             override fun onCaptureSuccess(image: ImageProxy) {
                 super.onCaptureSuccess(image)
                 onPhotoTaken(image, bitmapType, updateState, originalIdx)
-                navController.popBackStack()
+                navController.navigate("patUpdate/${DEFAULT_PAT_ID}")
             }
 
             override fun onError(exception: ImageCaptureException) {
