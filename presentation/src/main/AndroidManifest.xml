@@ -15,8 +15,7 @@
 
     <application
         android:theme="@style/Splash"
-        android:icon="@mipmap/ic_app_icon"
-        android:roundIcon="@mipmap/ic_app_icon_round">
+        android:icon="@drawable/ic_app_icon">
         <activity
             android:name=".ui.SplashActivity"
             android:exported="true"

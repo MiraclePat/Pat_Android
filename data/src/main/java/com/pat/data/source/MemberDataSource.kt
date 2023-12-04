@@ -1,13 +1,10 @@
 package com.pat.data.source
 
 import com.pat.data.model.ListResponse
+import com.pat.data.model.member.MyProfileContentDTO
 import com.pat.data.model.member.ParticipatingContentDTO
 import com.pat.data.model.member.ParticipatingDetailContentDTO
-import com.pat.data.model.pat.HomePatContentDTO
-import com.pat.data.model.pat.MapPatContentDTO
-import com.pat.data.model.pat.PatDetailContentDTO
 import com.pat.data.service.MemberService
-import com.pat.data.service.PatService
 import okhttp3.MultipartBody
 import retrofit2.Response
 import javax.inject.Inject
@@ -15,6 +12,21 @@ import javax.inject.Inject
 class MemberDataSource @Inject constructor(
     private val service: MemberService,
 ) {
+    suspend fun getMyProfile(): MyProfileContentDTO {
+        return service.getMyProfile()
+    }
+
+    suspend fun updateProfile(
+        image: MultipartBody.Part,
+        nickname: String
+    ): Response<Unit> {
+        return service.updateProfile(image, nickname)
+    }
+
+    suspend fun deleteMember(): Response<Unit> {
+        return service.deleteMember()
+    }
+
     suspend fun getParticipating(
         lastId: Long?,
         size: Int?,
@@ -31,7 +43,8 @@ class MemberDataSource @Inject constructor(
         return service.getOpenPats(lastId, size, sort)
     }
 
-    suspend fun getParticipatingDetail(patId: Long
+    suspend fun getParticipatingDetail(
+        patId: Long
     ): ParticipatingDetailContentDTO {
         return service.getParticipatingDetail(patId)
     }

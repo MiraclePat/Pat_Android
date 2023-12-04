@@ -220,8 +220,7 @@ fun SelectImage(
                         backColor = Color.White,
                         textColor = PrimaryMain
                     )
-                    Spacer(modifier = modifier.padding(10.dp))
-
+                    Spacer(modifier = modifier.padding(30.dp))
                 }
             }
         }

@@ -56,8 +56,8 @@ import com.pat.presentation.ui.common.IconWithTextView
 import com.pat.presentation.ui.common.SelectButton
 import com.pat.presentation.ui.common.SimpleTextView
 import com.pat.presentation.ui.common.setUnderLine
-import com.pat.presentation.ui.navigations.CERTIFICATION
 import com.pat.presentation.ui.pat.DateText
+import com.pat.presentation.ui.pat.ProofImageView
 import com.pat.presentation.ui.theme.FailCircleColor
 import com.pat.presentation.ui.theme.FailTextColor
 import com.pat.presentation.ui.theme.Gray200
@@ -78,6 +78,7 @@ import com.pat.presentation.ui.theme.SuccessCircleColor
 import com.pat.presentation.ui.theme.SuccessTextColor
 import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.ui.theme.White
+import com.pat.presentation.util.CERTIFICATION
 import com.skydoves.landscapist.glide.GlideImage
 import kotlin.math.roundToInt
 
@@ -450,7 +451,7 @@ fun ProofScreen(
             }
 
             "NO_CANCELABLE" -> {
-                finalButton("시작 하루 전이에요!")
+                finalButton("시작 하루 전엔 취소가 안돼요!")
             }
 
             "IN_PROGRESS" -> {
@@ -473,10 +474,9 @@ fun ProofScreen(
                     viewModel.clearBitmap()
                 },
                 sheetState = sheetState,
-                modifier = modifier.height(320.dp)
             ) {
                 Column(
-                    modifier = modifier.fillMaxWidth(),
+                    modifier = modifier.padding(bottom = 40.dp).fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
@@ -500,8 +500,9 @@ fun ProofScreen(
                     SelectButton(
                         text = "이 사진으로 인증하기",
                         onClick = {
-                            viewModel.proofPat()
-//                            showBottomSheet = false
+                            val proofImageByte = viewModel.proofImageBytes
+                            viewModel.proofPat(proofImageByte)
+                            showBottomSheet = false
                         },
                         backColor = if (proofBitmap == null) Gray300 else PrimaryMain,
                         textColor = if (proofBitmap == null) White else White,

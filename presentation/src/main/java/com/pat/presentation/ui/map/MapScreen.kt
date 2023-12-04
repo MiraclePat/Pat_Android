@@ -23,6 +23,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -83,6 +84,7 @@ fun MapScreenView(
         if (cameraPositionState.isMoving) {
             val northEastCoordinate = cameraPositionState.contentBounds?.northEast
             val southWestCoordinate = cameraPositionState.contentBounds?.southWest
+            Logger.t("navermap").i("${northEastCoordinate}, ${southWestCoordinate}")
             mapViewModel.getMapPats(northEastCoordinate, southWestCoordinate, category.value)
         }
     }
@@ -153,6 +155,8 @@ fun MapScreenView(
         ) {
             mapPats.forEach { content ->
                 val focused = remember { mutableStateOf(false) }
+                val icon =
+                    if (focused.value) mapSelectIcon(content.category) else mapIcon(content.category)
                 if (focused.value) {
                     MapBottomSheet(
                         showBottomSheet = showBottomSheet,
@@ -160,44 +164,23 @@ fun MapScreenView(
                         navController = navController,
                         content = content
                     )
-                    Marker(
-                        state = MarkerState(
-                            position = LatLng(
-                                content.latitude,
-                                content.longitude
-                            )
-                        ),
-                        onClick = { clickedMarker ->
-                            focused.value = !focused.value
-                            clickedMarker.icon =
-                                OverlayImage.fromResource(mapIcon(content.category))
-                            showBottomSheet.value = true
-                            true
-                        },
-                        icon = OverlayImage.fromResource(
-                            mapSelectIcon(content.category)
-                        )
-                    )
-                } else {
-                    Marker(
-                        state = MarkerState(
-                            position = LatLng(
-                                content.latitude,
-                                content.longitude
-                            )
-                        ),
-                        onClick = { clickedMarker ->
-                            focused.value = !focused.value
-                            clickedMarker.icon =
-                                OverlayImage.fromResource(mapSelectIcon(content.category))
-                            showBottomSheet.value = true
-                            true
-                        },
-                        icon = OverlayImage.fromResource(
-                            mapIcon(content.category)
-                        )
-                    )
                 }
+                Marker(
+                    state = MarkerState(
+                        position = LatLng(
+                            content.latitude,
+                            content.longitude
+                        )
+                    ),
+                    onClick = { clickedMarker ->
+                        focused.value = true
+                        showBottomSheet.value = true
+                        false
+                    },
+                    icon = OverlayImage.fromResource(
+                        icon
+                    )
+                )
             }
         }
     }
@@ -219,7 +202,7 @@ fun MapBottomSheet(
             containerColor = White,
             onDismissRequest = {
                 showBottomSheet.value = false
-                focused.value = !focused.value
+                focused.value = false
             },
         ) {
             Row(
@@ -228,7 +211,8 @@ fun MapBottomSheet(
                     .clickable {
                         navController.navigate("participatingDetail/${content.patId}")
                     },
-                verticalAlignment = Alignment.CenterVertically) {
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Column(modifier) {
                     Row() {
                         CategoryBox(

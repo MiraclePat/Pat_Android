@@ -123,6 +123,7 @@ class ProofViewModel @Inject constructor(
             val result = getMyProofUseCase(patId, ProofRequestInfo())
             if (result.isSuccess) {
                 val content = result.getOrThrow()
+                Logger.t("MainTest").i("content: ${content}")
                 _proofs.emit(ProofUiState(content = content))
             } else {
                 Logger.t("MainTest").i("patid: ${patId}")

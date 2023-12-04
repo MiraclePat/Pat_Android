@@ -1,9 +1,9 @@
 package com.pat.data.service
 
 import com.pat.data.model.ListResponse
+import com.pat.data.model.pat.HomeBannerContentDTO
 import com.pat.data.model.pat.HomePatContentDTO
 import com.pat.data.model.pat.MapListResponse
-import com.pat.data.model.pat.MapPatContentDTO
 import com.pat.data.model.pat.PatDetailContentDTO
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -17,6 +17,8 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface PatService {
+    @GET("/api/v1/pats/home/banner")
+    suspend fun getHomeBanner(): HomeBannerContentDTO
     @GET("/api/v1/pats/home")
     suspend fun getHomePats(
         @Query("lastId") lastId: Long?,

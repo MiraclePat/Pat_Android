@@ -27,6 +27,7 @@ fun SelectDayButtonList(state: MutableState<List<String>>) {
             onClick = {
                 val temp = state.value.toMutableList()
                 if (!temp.contains(day)) temp.add(day)
+                else temp.remove(day)
                 state.value = temp
             },
             isSelected = state.value.contains(day)

@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.reflect.KProperty0
 
 
 data class PostUiState(
@@ -174,34 +175,16 @@ class PostViewModel @Inject constructor(
 
 
     fun post(
-        patName: String,
-        patDetail: String,
-        maxPerson: Int,
-        category: String,
-        startTime: String,
-        endTime: String,
-        startDate: String,
-        endDate: String,
-        proofDetail: String,
-        days: List<String>,
-        realtime: Boolean,
+        patName: String, patDetail: String, maxPerson: Int, category: String,
+        startTime: String, endTime: String, startDate: String, endDate: String,
+        proofDetail: String, days: List<String>, realtime: Boolean,
     ) {
         viewModelScope.launch {
             val detail = CreatePatInfoDetail(
-                patName,
-                patDetail,
-                maxPerson,
-                selectPlaceCoordinate?.latitude ?: 0.0,
-                selectPlaceCoordinate?.longitude ?: 0.0,
-                selectPlace ?: "",
-                category,
-                startTime,
-                endTime,
-                startDate,
-                endDate,
-                proofDetail,
-                days,
-                realtime
+                patName, patDetail, maxPerson,
+                selectPlaceCoordinate?.latitude ?: 0.0, selectPlaceCoordinate?.longitude ?: 0.0,
+                selectPlace ?: "", category, startTime, endTime,
+                startDate, endDate, proofDetail, days, realtime
             )
 
             val result = createPatUseCase(
