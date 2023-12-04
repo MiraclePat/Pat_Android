@@ -74,7 +74,7 @@ fun NavigationGraph(navController: NavHostController) {
         composable(BottomNavItem.Home.screenRoute) {
             HomeScreenView(
                 navController = navController,
-                onNavigateToPost = { navController.navigate(POST) })
+            )
         }
         composable(BottomNavItem.Certification.screenRoute) {
             ParticipatingScreenView(navController = navController)

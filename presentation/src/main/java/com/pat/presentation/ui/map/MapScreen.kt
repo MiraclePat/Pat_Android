@@ -154,7 +154,9 @@ fun MapScreenView(
             cameraPositionState = cameraPositionState,
         ) {
             mapPats.forEach { content ->
-                val focused = rememberSaveable { mutableStateOf(false) }
+                val focused = remember { mutableStateOf(false) }
+                val icon =
+                    if (focused.value) mapSelectIcon(content.category) else mapIcon(content.category)
                 if (focused.value) {
                     MapBottomSheet(
                         showBottomSheet = showBottomSheet,
@@ -162,40 +164,23 @@ fun MapScreenView(
                         navController = navController,
                         content = content
                     )
-                    Marker(
-                        state = MarkerState(
-                            position = LatLng(
-                                content.latitude,
-                                content.longitude
-                            )
-                        ),
-                        onClick = { clickedMarker ->
-                            focused.value = false
-                            showBottomSheet.value = false
-                            false
-                        },
-                        icon = OverlayImage.fromResource(
-                            mapSelectIcon(content.category)
-                        )
-                    )
-                } else {
-                    Marker(
-                        state = MarkerState(
-                            position = LatLng(
-                                content.latitude,
-                                content.longitude
-                            )
-                        ),
-                        onClick = { clickedMarker ->
-                            focused.value = true
-                            showBottomSheet.value = true
-                            false
-                        },
-                        icon = OverlayImage.fromResource(
-                            mapIcon(content.category)
-                        )
-                    )
                 }
+                Marker(
+                    state = MarkerState(
+                        position = LatLng(
+                            content.latitude,
+                            content.longitude
+                        )
+                    ),
+                    onClick = { clickedMarker ->
+                        focused.value = true
+                        showBottomSheet.value = true
+                        false
+                    },
+                    icon = OverlayImage.fromResource(
+                        icon
+                    )
+                )
             }
         }
     }
@@ -226,7 +211,8 @@ fun MapBottomSheet(
                     .clickable {
                         navController.navigate("participatingDetail/${content.patId}")
                     },
-                verticalAlignment = Alignment.CenterVertically) {
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Column(modifier) {
                     Row() {
                         CategoryBox(

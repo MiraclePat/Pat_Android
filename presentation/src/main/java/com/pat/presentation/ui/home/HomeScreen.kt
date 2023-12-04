@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.orhanobut.logger.Logger
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.BarIcon
 import com.pat.presentation.ui.home.components.HomeCategory
@@ -25,10 +26,10 @@ import com.pat.presentation.ui.home.components.HomeSearchView
 import com.pat.presentation.ui.home.components.HomeTopBar
 import com.pat.presentation.ui.home.components.Pats
 import com.pat.presentation.ui.home.components.SearchTextField
+import com.pat.presentation.util.POST
 
 @Composable
 fun HomeScreenView(
-    onNavigateToPost: () -> Unit,
     navController: NavController,
 ) {
     val homeViewModel: HomeViewModel = hiltViewModel()
@@ -41,14 +42,9 @@ fun HomeScreenView(
     val categoryState = remember { mutableStateOf("전체") }
     val onSearchScreen = remember { mutableStateOf(false) }
 
-//    LaunchedEffect(Unit){
-//        homeViewModel.hotUiState.collectLatest {
-//            Logger.t("home").i("${it.content}")
-//        }
-//    }
-
     if (!onSearchScreen.value) {
         homeViewModel.getPats()
+        Logger.t("MainRepeat").i("홈")
         Scaffold(
             topBar = {
                 HomeTopBar(
@@ -62,7 +58,7 @@ fun HomeScreenView(
                     },
                     addButton = {
                         BarIcon(onclick = {
-                            onNavigateToPost()
+                            navController.navigate(POST)
                         }, source = R.drawable.ic_add)
                     },
                     alarmButton = { BarIcon(onclick = {}, source = R.drawable.ic_bell) })
