@@ -4,7 +4,6 @@ import com.pat.data.model.ListResponse
 import com.pat.data.model.pat.HomeBannerContentDTO
 import com.pat.data.model.pat.HomePatContentDTO
 import com.pat.data.model.pat.MapListResponse
-import com.pat.data.model.pat.MapPatContentDTO
 import com.pat.data.model.pat.PatDetailContentDTO
 import okhttp3.MultipartBody
 import retrofit2.Response

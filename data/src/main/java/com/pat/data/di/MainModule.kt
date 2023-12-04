@@ -83,8 +83,13 @@ class MainModule {
 
     @ActivityRetainedScoped
     @Provides
-    fun provideMemberRepository(dataSource: MemberDataSource): MemberRepository =
-        MemberRepositoryImpl(dataSource)
+    fun provideMemberRepository(
+        dataSource: MemberDataSource,
+        imageRepositoryImpl: ImageRepositoryImpl,
+        imageDataSource: ImageDataSource,
+        moshi: Moshi,
+    ): MemberRepository =
+        MemberRepositoryImpl(dataSource, imageRepositoryImpl, imageDataSource, moshi)
 
     @ActivityRetainedScoped
     @Provides
