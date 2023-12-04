@@ -28,6 +28,8 @@ import com.pat.presentation.ui.setting.components.SettingTitle
 import com.pat.presentation.ui.theme.Gray200
 import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.Typography
+import com.pat.presentation.util.ACCOUNT
+import com.pat.presentation.util.PASSWORD
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

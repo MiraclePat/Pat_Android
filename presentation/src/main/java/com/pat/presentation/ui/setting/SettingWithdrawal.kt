@@ -38,6 +38,9 @@ import com.pat.presentation.ui.theme.Gray800
 import com.pat.presentation.ui.theme.PrimaryMain
 import com.pat.presentation.ui.theme.SpanStyleType
 import com.pat.presentation.ui.theme.Typography
+import com.pat.presentation.util.ACCOUNT
+import com.pat.presentation.util.BODY
+import com.pat.presentation.util.WITHDRAWAL
 
 
 @OptIn(ExperimentalMaterial3Api::class)

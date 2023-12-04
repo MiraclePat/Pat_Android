@@ -33,7 +33,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.PatDetailContent
@@ -50,7 +49,6 @@ import com.pat.presentation.ui.common.WheelTimePickerView
 import com.pat.presentation.ui.common.convertDateFormat
 import com.pat.presentation.ui.common.convertTimeFormat
 import com.pat.presentation.ui.common.convertTimeViewFormat
-import com.pat.presentation.ui.navigations.HOME
 import com.pat.presentation.ui.pat.components.UpdateExampleImageView
 import com.pat.presentation.ui.pat.components.UpdateRepImageView
 import com.pat.presentation.ui.pat.components.UpdateSelectImageList
@@ -62,6 +60,7 @@ import com.pat.presentation.ui.theme.RedBack
 import com.pat.presentation.ui.theme.RedText
 import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.ui.theme.White
+import com.pat.presentation.util.HOME
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -176,10 +175,9 @@ fun PatUpdateScreen(
     val endTime =
         remember { mutableStateOf(convertTimeViewFormat(content.endTime)) }               // 종료 시간
     val category = remember { mutableStateOf(content.category) }              // 카테고리
-    val dayList = remember { mutableStateListOf<String>() }                   // 인증 빈도
-    content.dayList.forEach {
-        dayList.add(it)
-    }
+
+    val dayList = rememberSaveable { mutableStateOf(content.dayList) }                   // 인증 빈도
+ 
     val originalState = if(content.location != "") "주소 검색" else "위치정보 없음"
     val originalScreenState = content.location != ""
 
@@ -187,6 +185,7 @@ fun PatUpdateScreen(
     val locationSearchValue = rememberSaveable { mutableStateOf(content.location) }        // 주소 입력 방식
 
     val onSearchScreen = rememberSaveable { mutableStateOf(originalScreenState) }
+
 
     val bodyBitmap by viewModel.bodyBitmap.collectAsState() //팟 상세이미지들
     val correctBitmap by viewModel.correctBitmap.collectAsState() //올바른 이미지
@@ -397,7 +396,7 @@ fun PatUpdateScreen(
                     endDate = endDate.value,
                     startTime = outputStartTime,
                     endTime = outputEndTime,
-                    days = dayList.toList(),
+                    days = dayList.value,
                     category = category.value,
                     realtime = !isRealTime.value,
                 )
