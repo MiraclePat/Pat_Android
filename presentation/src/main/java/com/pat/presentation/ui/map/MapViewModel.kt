@@ -59,20 +59,22 @@ class MapViewModel @Inject constructor(
                     category
                 }
 
+            val mapRequstInfo =  MapPatRequestInfo(
+                size = null,
+                query = query,
+                category = categoryValue,
+                leftLongitude = southWestCoordinate?.longitude,
+                rightLongitude = northEastCoordinate?.longitude,
+                bottomLatitude = southWestCoordinate?.latitude,
+                topLatitude = northEastCoordinate?.latitude,
+            )
+            Logger.t("coordinate").i("maprequestInfo : "+ "${mapRequstInfo}")
             val result = getMapPatsUseCase(
-                 MapPatRequestInfo(
-                     size = null,
-                     query = query,
-                     category = categoryValue,
-                     leftLongitude = southWestCoordinate?.longitude,
-                     rightLongitude = northEastCoordinate?.longitude,
-                     topLatitude = northEastCoordinate?.latitude,
-                     bottomLatitude = southWestCoordinate?.latitude,
-                 )
+                mapRequstInfo
             )
             if (result.isSuccess) {
                 _mapPats.emit(result.getOrThrow())
-                Logger.t("navermap").i("${result.getOrThrow()}")
+                Logger.t("coordinate").i("${result.getOrThrow()}")
             } else {
                 Logger.t("navermap").i("${result.exceptionOrNull()}")
             }
