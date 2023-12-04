@@ -446,7 +446,7 @@ fun ProofScreen(
             }
 
             "NO_CANCELABLE" -> {
-                finalButton("시작 하루 전이에요!")
+                finalButton("시작 하루 전엔 취소가 안돼요!")
             }
 
             "IN_PROGRESS" -> {
@@ -495,8 +495,6 @@ fun ProofScreen(
                     SelectButton(
                         text = "이 사진으로 인증하기",
                         onClick = {
-                            Logger.t("ProofTest").i("${content.isCompleted}")
-                            Logger.t("ProofTest").i("${viewModel.proofImageBytes}")
                             val proofImageByte = viewModel.proofImageBytes
                             viewModel.proofPat(proofImageByte)
                             showBottomSheet = false
