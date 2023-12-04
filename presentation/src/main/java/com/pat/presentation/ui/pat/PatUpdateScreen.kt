@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -66,13 +67,14 @@ import com.pat.presentation.util.HOME
 @Composable
 fun PatUpdateView(
     modifier: Modifier = Modifier,
-    patId: Long = -1,
+    patId: Long,
     patUpdateViewModel: PatUpdateViewModel,
     navController: NavController,
 ) {
-    //patid 가 -1이 아닐경우에 호출
-    //카메라 뷰에서 이동
-    patUpdateViewModel.getPatDetail(patId)
+
+    if(patId != (-1).toLong()){
+        patUpdateViewModel.getPatDetail(patId)
+    }
     val uiState by patUpdateViewModel.uiState.collectAsState()
     val deleteDialogState = remember { mutableStateOf(false) }
     val updateDialogState = remember { mutableStateOf(false) }
@@ -173,11 +175,17 @@ fun PatUpdateScreen(
     val endTime =
         remember { mutableStateOf(convertTimeViewFormat(content.endTime)) }               // 종료 시간
     val category = remember { mutableStateOf(content.category) }              // 카테고리
-    val dayList = rememberSaveable { mutableStateOf(content.dayList) }                   // 인증 빈도
 
-    val locationSelect = remember { mutableStateOf("") }        // 주소 입력 방식
-    val locationSearchValue = remember { mutableStateOf(content.location) }        // 주소 입력 방식
-    val onSearchScreen = remember { mutableStateOf(false) }
+    val dayList = rememberSaveable { mutableStateOf(content.dayList) }                   // 인증 빈도
+ 
+    val originalState = if(content.location != "") "주소 검색" else "위치정보 없음"
+    val originalScreenState = content.location != ""
+
+    val locationState = rememberSaveable { mutableStateOf(originalState) }        // 주소 입력 방식
+    val locationSearchValue = rememberSaveable { mutableStateOf(content.location) }        // 주소 입력 방식
+
+    val onSearchScreen = rememberSaveable { mutableStateOf(originalScreenState) }
+
 
     val bodyBitmap by viewModel.bodyBitmap.collectAsState() //팟 상세이미지들
     val correctBitmap by viewModel.correctBitmap.collectAsState() //올바른 이미지
@@ -225,18 +233,19 @@ fun PatUpdateScreen(
 
         Text(text = "위치정보", style = Typography.titleLarge)
         Spacer(modifier = modifier.size(16.dp))
-        Row(
+        Column(
             modifier
                 .fillMaxWidth()
-                .height(36.dp)
+                .wrapContentHeight()
         ) {
             UpdateSelectLocationButtonList(
-                locationState = locationSelect,
+                locationState = locationState,
                 viewModel = viewModel,
                 searchValue = locationSearchValue,
                 onSearchScreen = onSearchScreen,
                 searchPlaceResult = searchPlaceResult,
-            )        }
+            )
+        }
         Spacer(modifier = modifier.size(36.dp))
 
         Text(text = "팟 인원 설정", style = Typography.titleLarge)

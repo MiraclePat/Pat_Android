@@ -47,9 +47,8 @@ class ProofViewModel @Inject constructor(
     private val getByteArrayByUriUseCase: GetByteArrayByUriUseCase,
     private val withdrawPatUseCase: WithdrawPatUseCase,
 ) : ViewModel() {
-    private val patId = savedStateHandle.get<Long?>(
-        key = "patId"
-    ) ?: -1
+
+    private var patId : Long = -1
 
     private val _bottomSheetState = MutableStateFlow<Boolean>(false)
     val bottomSheetState = _bottomSheetState.asStateFlow()
@@ -65,8 +64,9 @@ class ProofViewModel @Inject constructor(
     private val _proofs = MutableStateFlow(ProofUiState())
     val proofs: StateFlow<ProofUiState> = _proofs.asStateFlow()
 
-    init {
+    fun getParticipatingDetail(getPatId: Long){
         viewModelScope.launch {
+            patId = getPatId
             val result = getParticipatingDetailUseCase(patId)
             if (result.isSuccess) {
                 val content = result.getOrThrow()
@@ -74,8 +74,8 @@ class ProofViewModel @Inject constructor(
             } else {
                 Logger.t("MainTest").i("${uiState}")
             }
+            getMyProof()
         }
-        getMyProof()
     }
 
     fun onTakePhoto(image: ImageProxy) {
@@ -102,13 +102,18 @@ class ProofViewModel @Inject constructor(
         _bottomSheetState.value = false
     }
 
-    fun proofPat(proofImg: ByteArray) {
+    fun proofPat() {
         viewModelScope.launch {
-            val result = proofPatUseCase(patId, ProofPatInfo(proofImg))
+            Logger.t("proof").i("${patId}")
+            val result = proofPatUseCase(patId, ProofPatInfo(proofImageBytes))
             if (result.isSuccess) {
                 result.getOrThrow()
+                Logger.t("proof").i("성공")
+
+                _bottomSheetState.value = false
+
             } else {
-                Logger.t("MainTest").i("${result}")
+                Logger.t("proof").i("실패")
             }
         }
     }

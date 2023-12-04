@@ -104,11 +104,10 @@ class PatUpdateViewModel @Inject constructor(
         ByteArray(0), ByteArray(0)
     )
 
-    fun getPatDetail(padId: Long){
+    fun getPatDetail(getPatId: Long){
         viewModelScope.launch {
-            Logger.t("MainTest").i("patID ${patId}")
-            patId = padId
-            val result = getPatDetailUseCase(padId)
+            patId = getPatId
+            val result = getPatDetailUseCase(patId)
             if (result.isSuccess) {
                 val content = result.getOrThrow()
                 totalBody.clear()
@@ -121,6 +120,9 @@ class PatUpdateViewModel @Inject constructor(
                 //팟상세 정보 사진
                 content.bodyImg.forEach { uri ->
                     beforeBitmapByExistedUri(uri,"BODY")
+                }
+                if(content.location != "") {
+                    onSearch(content.location)
                 }
                 _uiState.emit(PatUpdateUiState(content = content))
             } else {
@@ -141,11 +143,9 @@ class PatUpdateViewModel @Inject constructor(
         }
     }
 
+    //사진 촬영시
     fun onTakePhoto(image: ImageProxy, bitmapType: String, updateState: String?, originalIdx: String?) {
         viewModelScope.launch {
-
-            Log.e("updateCamera", "카메라 촬영 들어옹ㅁ viewmodel")
-
 
             val rotatedBitmap = getRotatedBitmap(image)
             val scaledBitmap = getScaledBitmap(rotatedBitmap)
@@ -155,11 +155,7 @@ class PatUpdateViewModel @Inject constructor(
             when (bitmapType) {
                 PatBitmap.REP.toString() -> {
                     _repBitmap.value = newBitmap
-                    Log.e("updateCamera", "1${newBitmap}")
-
                     storedBytes.repBytes = bytes
-                    Log.e("updateCamera", "1${bytes}")
-
                 }
 
                 PatBitmap.CORRECT.toString() -> {
@@ -188,6 +184,7 @@ class PatUpdateViewModel @Inject constructor(
         }
     }
 
+    //서버에서 들어온 이미지 작업처리
     private fun beforeBitmapByExistedUri(uri: String, bitmapType: String) {
         viewModelScope.launch {
             val newBitmap = getBitmapByExistedUri(uri)
@@ -220,7 +217,7 @@ class PatUpdateViewModel @Inject constructor(
         }
 
 
-    //uri를 string으로 바꿈 넘겨줄때 uri.tostring()해야함
+    //갤러리 선택시
     fun getBitmapByUri(uri: String?, bitmapType: String, updateState: String?= null, originalIdx: Int?= null) {
         viewModelScope.launch {
             val bytes = getByteArrayByUriUseCase(uri.toString())
@@ -287,7 +284,6 @@ class PatUpdateViewModel @Inject constructor(
                 listOf("월요일","화요일"),
                 realtime
             )
-            Logger.t("updateInfo").i("${storedBytes.bodyBytes.toList()}")
             Logger.t("updateInfo").i("${detail}")
 
             val result = updatePatUseCase(

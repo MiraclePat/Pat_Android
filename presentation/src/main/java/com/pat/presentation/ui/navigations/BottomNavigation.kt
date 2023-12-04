@@ -1,5 +1,6 @@
 package com.pat.presentation.ui.navigations
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.BottomNavigation
@@ -27,13 +28,13 @@ import com.pat.presentation.ui.common.SettingCamera
 import com.pat.presentation.ui.home.HomeScreenView
 import com.pat.presentation.ui.map.MapScreenView
 import com.pat.presentation.ui.pat.PatDetailView
-import com.pat.presentation.ui.pat.SettingPattingCamera
 import com.pat.presentation.ui.pat.PatUpdateView
 import com.pat.presentation.ui.pat.PatUpdateViewModel
+import com.pat.presentation.ui.pat.SettingPattingCamera
 import com.pat.presentation.ui.pat.components.UpdateSettingCamera
 import com.pat.presentation.ui.post.PostScreenView
-import com.pat.presentation.ui.proof.ParticipatingScreenView
 import com.pat.presentation.ui.post.PostViewModel
+import com.pat.presentation.ui.proof.ParticipatingScreenView
 import com.pat.presentation.ui.proof.ProofScreenView
 import com.pat.presentation.ui.proof.ProofViewModel
 import com.pat.presentation.ui.setting.SettingScreenView
@@ -63,12 +64,12 @@ sealed class BottomNavItem(
         BottomNavItem(R.string.text_setting, R.drawable.na_user, R.drawable.na_user_fill, SETTING)
 }
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun NavigationGraph(navController: NavHostController) {
     val postViewModel: PostViewModel = hiltViewModel()
     val proofViewModel: ProofViewModel = hiltViewModel()
     val updateViewModel: PatUpdateViewModel = hiltViewModel()
-
 
     NavHost(navController = navController, startDestination = BottomNavItem.Home.screenRoute) {
         composable(BottomNavItem.Home.screenRoute) {
@@ -156,14 +157,24 @@ fun NavigationGraph(navController: NavHostController) {
             )
         }
         composable(
-            route = "participatingDetail/{patId}",
+            route = "participatingDetail/{patId}/{showBottomSheet}",
             arguments = listOf(
                 navArgument("patId") {
                     type = NavType.LongType
                     defaultValue = -1
                 }
-            )) {
-            ProofScreenView(navController = navController)
+            )) { backStackEntry ->
+            val patId = backStackEntry.arguments?.getLong("patId") ?: -1
+
+            val showBottomSheet =
+                backStackEntry.arguments?.getString("showBottomSheet")?.toBoolean() ?: false
+
+            ProofScreenView(
+                patId = patId,
+                navController = navController,
+                proofViewModel = proofViewModel,
+                showBottomSheet = showBottomSheet
+            )
         }
     }
 }
