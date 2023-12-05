@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.orhanobut.logger.Logger
 import com.pat.presentation.ui.theme.StarColor
 import com.pat.presentation.ui.theme.Typography
 

@@ -34,6 +34,7 @@ fun SearchResultList(
     placeText: MutableState<String>,
     postViewModel: PostViewModel,
     modifier: Modifier = Modifier,
+    placeSelected: MutableState<Boolean>
 ) {
     places.forEach{ place ->
         SearchPlace(
@@ -42,6 +43,7 @@ fun SearchResultList(
             onClick = {
                 placeText.value = place.title.toString()
                 postViewModel.selectPlace(place)
+                placeSelected.value = true
             },
             isSelected = placeText.value == place.title,
         )
