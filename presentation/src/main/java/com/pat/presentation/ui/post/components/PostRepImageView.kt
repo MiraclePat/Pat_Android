@@ -102,7 +102,7 @@ fun PostRepImageView(
                 horizontalArrangement = Arrangement.Center,
             ) {
                 Text(
-                    text = "썸네일 추가하기",
+                    text = "썸네일 추가하기(필수)",
                     style = Typography.labelMedium,
                     color = PrimaryMain,
                 )
