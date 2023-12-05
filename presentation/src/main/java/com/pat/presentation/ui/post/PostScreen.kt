@@ -1,6 +1,7 @@
 package com.pat.presentation.ui.post
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,17 +27,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.orhanobut.logger.Logger
 import com.pat.domain.model.place.PlaceDetailInfo
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBoxList
@@ -69,6 +76,8 @@ import com.pat.presentation.ui.theme.StarColor
 import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.ui.theme.White
 import com.pat.presentation.util.HOME
+import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -130,6 +139,7 @@ fun PostScreenView(
             PostScreenBody(
                 navController = navController,
                 viewModel = viewModel,
+                scrollState = scrollState
             )
         }
     }
@@ -140,6 +150,7 @@ fun PostScreenBody(
     navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: PostViewModel,
+    scrollState: ScrollState
 ) {
     val isRealTime = rememberSaveable { mutableStateOf(false) }         // 사진 선택
 
@@ -164,6 +175,7 @@ fun PostScreenBody(
     val repBitmap by viewModel.repBitmap.collectAsState() //썸네일
 
     val searchPlaceResult by viewModel.searchPlaceResult.collectAsState() //주소검색결과
+    var scrollToPosition by remember { mutableFloatStateOf(0F) }
 
     Column {
         PostRepImageView(
@@ -191,6 +203,7 @@ fun PostScreenBody(
                 Text(text = "*", style = Typography.titleLarge, color = StarColor)
             }
             Spacer(modifier = modifier.size(14.dp))
+
             CustomTextField(
                 placeholderText = "최대 15자",
                 state = title,
@@ -198,7 +211,12 @@ fun PostScreenBody(
             )
             Spacer(modifier = modifier.size(36.dp))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = modifier.onGloballyPositioned { coordinates ->
+                    scrollToPosition = coordinates.positionInRoot().y
+                },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(text = "팟 상세정보", style = Typography.titleLarge)
                 Spacer(modifier = modifier.size(6.dp))
                 Text(
@@ -234,6 +252,8 @@ fun PostScreenBody(
                     searchValue = locationSearchValue,
                     onSearchScreen = onSearchScreen,
                     searchPlaceResult = searchPlaceResult,
+                    scrollState = scrollState,
+                    scrollToPosition = scrollToPosition
                 )
             }
             Spacer(modifier = modifier.size(36.dp))
@@ -455,19 +475,19 @@ fun PostScreenBody(
 }
 
 
-
 @Composable
 fun SelectLocationButtonList(
     modifier: Modifier = Modifier,
     locationState: MutableState<String>,
-    onClick: () -> Unit = {},
     postViewModel: PostViewModel,
     searchValue: MutableState<String>,
     onSearchScreen: MutableState<Boolean>,
-    searchPlaceResult: List<PlaceDetailInfo>
+    searchPlaceResult: List<PlaceDetailInfo>,
+    scrollState: ScrollState,
+    scrollToPosition: Float
 ) {
-
     val locationButtonText = listOf<String>("주소 검색", "위치정보 없음")
+    val coroutineScope = rememberCoroutineScope()
 
     @Composable
     fun locationButtonView(modifier: Modifier, location: String) {
@@ -475,8 +495,14 @@ fun SelectLocationButtonList(
             modifier = modifier,
             text = location,
             onClick = {
-                onClick()
-                locationState.value = location
+                if (locationState.value != location) {
+                    locationState.value = location
+                    if (locationState.value == "주소 검색") {
+                        coroutineScope.launch {
+                            scrollState.scrollTo(scrollToPosition.roundToInt())
+                        }
+                    }
+                }
             },
             isSelected = locationState.value == location,
             shape = RoundedCornerShape(100.dp),
@@ -489,24 +515,27 @@ fun SelectLocationButtonList(
 
     Row(modifier.fillMaxWidth()) {
         locationButtonText.forEach { location ->
-            locationButtonView(modifier.weight(1f), location)
+            locationButtonView(
+                modifier = modifier.weight(1f), location
+            )
         }
     }
     Spacer(modifier.padding(top = 16.dp))
 
     when (locationState.value) {
         "주소 검색" -> {
-            SearchPlaceTextField(placeholderText = "서초동 스타벅스",
+            SearchPlaceTextField(
+                placeholderText = "서초동 스타벅스",
                 maxLength = 30,
                 state = searchValue,
                 onScreen = onSearchScreen,
                 viewModel = postViewModel,
                 maxLines = 1,
                 inputEnter = {
-                    //TODO NOT WORKING
                     postViewModel.onSearch(searchValue.value)
                 })
             Spacer(modifier.padding(bottom = 24.dp))
+
             Text(
                 text = "아래 검색결과 중에서 선택해주세요!",
                 style = Typography.labelMedium,

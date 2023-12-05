@@ -69,7 +69,7 @@ fun UpdateSearchPlaceTextField(
         .border(1.dp, borderColor, RoundedCornerShape(4.dp)),
         value = state.value,
         onValueChange = {
-            state.value = it
+            if (it.length <= maxLength) state.value = it
             onScreen.value = true
             viewModel?.onSearch(state.value)
         },

@@ -284,7 +284,7 @@ class PatUpdateViewModel @Inject constructor(
                 listOf("월요일","화요일"),
                 realtime
             )
-            Logger.t("updateInfo").i("${detail}")
+            Logger.t("updateInfo").i("${patId}, ${detail}")
 
             val result = updatePatUseCase(
                 patId,

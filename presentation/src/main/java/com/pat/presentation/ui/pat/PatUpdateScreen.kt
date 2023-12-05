@@ -72,7 +72,7 @@ fun PatUpdateView(
     navController: NavController,
 ) {
 
-    if(patId != (-1).toLong()){
+    if (patId != (-1).toLong()) {
         patUpdateViewModel.getPatDetail(patId)
     }
     val uiState by patUpdateViewModel.uiState.collectAsState()
@@ -161,8 +161,9 @@ fun PatUpdateScreen(
     viewModel: PatUpdateViewModel,
     navController: NavController,
 ) {
+    Logger.t("updateInfo").i("screen ${content}")
+
     val isRealTime = remember { mutableStateOf(false) }         // 사진 선택
-    val isGallery = remember { mutableStateOf(false) }          // 갤러리 선택
 
     val title = rememberSaveable { mutableStateOf(content.patName) }         // 팟 제목
     val maxPerson = rememberSaveable { mutableStateOf(content.maxPerson.toString()) }     // 최대 인원
@@ -177,12 +178,13 @@ fun PatUpdateScreen(
     val category = remember { mutableStateOf(content.category) }              // 카테고리
 
     val dayList = rememberSaveable { mutableStateOf(content.dayList) }                   // 인증 빈도
- 
-    val originalState = if(content.location != "") "주소 검색" else "위치정보 없음"
+
+    val originalState = if (content.location != "") "주소 검색" else "위치정보 없음"
     val originalScreenState = content.location != ""
 
     val locationState = rememberSaveable { mutableStateOf(originalState) }        // 주소 입력 방식
-    val locationSearchValue = rememberSaveable { mutableStateOf(content.location) }        // 주소 입력 방식
+    val locationSearchValue =
+        rememberSaveable { mutableStateOf(content.location) }        // 주소 입력 방식
 
     val onSearchScreen = rememberSaveable { mutableStateOf(originalScreenState) }
 
@@ -375,9 +377,9 @@ fun PatUpdateScreen(
         Spacer(modifier = modifier.size(14.dp))
 
         Row {
-            CheckBoxView(checked = isRealTime, text = "실시간 촬영")
+            CheckBoxView(text = "실시간 촬영")
             Spacer(modifier = modifier.size(12.dp))
-            CheckBoxView(checked = isGallery, text = "갤러리에서 사진 가져오기")
+            CheckBoxView(checked = isRealTime, text = "갤러리에서 사진 가져오기", isRealTime = true)
         }
         Spacer(modifier = modifier.size(55.dp))
 

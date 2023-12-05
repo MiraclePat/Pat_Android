@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -57,6 +58,7 @@ fun SearchPlaceTextField(
 ) {
     var isFocused by remember { mutableStateOf(false) }
     val borderColor = if (!isFocused) Gray200 else SystemBlue
+    val focusManager = LocalFocusManager.current
 
     BasicTextField(modifier = modifier
         .fillMaxWidth()
@@ -68,7 +70,7 @@ fun SearchPlaceTextField(
         .border(1.dp, borderColor, RoundedCornerShape(4.dp)),
         value = state.value,
         onValueChange = {
-            state.value = it
+            if (it.length <= maxLength) state.value = it
             onScreen.value = true
             viewModel?.onSearch(state.value)
         },
@@ -80,6 +82,7 @@ fun SearchPlaceTextField(
         keyboardActions = KeyboardActions(
             onDone = {
                 inputEnter()
+                focusManager.clearFocus()
             }
         ),
         maxLines = maxLines,
