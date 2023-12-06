@@ -56,7 +56,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import com.pat.presentation.R
 import com.pat.presentation.ui.CameraPreview
 import com.pat.presentation.ui.common.SelectButton
@@ -67,7 +66,7 @@ import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.Gray800
 import com.pat.presentation.ui.theme.PrimaryMain
 import com.pat.presentation.ui.theme.Typography
-import com.pat.presentation.util.Constants.DEFAULT_PAT_ID
+import com.skydoves.landscapist.glide.GlideImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,7 +87,7 @@ fun UpdateSelectImage(
     var isGallery by remember { mutableStateOf(false) }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     var updateState by remember { mutableStateOf("false") }
-    if(bitmap != null || selectedImageUri != null){
+    if (bitmap != null || selectedImageUri != null) {
         updateState = "true"
     }
 
@@ -107,7 +106,7 @@ fun UpdateSelectImage(
             }
         },
 
-    )
+        )
     Box(
         modifier
             .height(140.dp)
@@ -146,11 +145,9 @@ fun UpdateSelectImage(
             )
         }
         if (isGallery) {
-            AsyncImage(
-                model = selectedImageUri,
-                contentDescription = null,
+            GlideImage(
+                imageModel = { selectedImageUri },
                 modifier = Modifier.fillMaxWidth(),
-                contentScale = ContentScale.Crop
             )
         }
         if (showBottomSheet) {
@@ -314,7 +311,8 @@ private fun updateTakePhoto(
             override fun onCaptureSuccess(image: ImageProxy) {
                 super.onCaptureSuccess(image)
                 onPhotoTaken(image, bitmapType, updateState, originalIdx)
-                navController.navigate("patUpdate/${DEFAULT_PAT_ID}")
+//                navController.navigate("patUpdate/${DEFAULT_PAT_ID}")
+                navController.popBackStack()
             }
 
             override fun onError(exception: ImageCaptureException) {
@@ -356,7 +354,7 @@ fun UpdateSelectImageList(
                 bitmapType = bitmapType,
                 viewModel = viewModel,
                 hasSource = false,
-                originalIdx = idx-1
+                originalIdx = idx - 1
             )
             Spacer(modifier = modifier.padding(horizontal = 10.dp))
         }

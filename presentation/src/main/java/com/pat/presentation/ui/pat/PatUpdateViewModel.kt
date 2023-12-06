@@ -63,10 +63,7 @@ class PatUpdateViewModel @Inject constructor(
     private val getSearchPlaceUseCase: GetSearchPlaceUseCase,
     private val getSearchCoordinateUseCase: GetSearchCoordinateUseCase,
 ) : ViewModel() {
-//    private val patId = savedStateHandle.get<Long?>(
-//        key = "patId"
-//    ) ?: -1
-    private var patId : Long = -1
+    private var patId: Long = -1
     private val _uiState = MutableStateFlow(PatUpdateUiState())
     val uiState: StateFlow<PatUpdateUiState> = _uiState.asStateFlow()
 
@@ -95,8 +92,8 @@ class PatUpdateViewModel @Inject constructor(
     private val _bitmapList = MutableStateFlow<UpdateBytes?>(null)
     val bitmapList = _bitmapList.asStateFlow()
 
-    private var selectPlace : String? = null
-    private var selectPlaceCoordinate : LatLng? = null
+    private var selectPlace: String? = null
+    private var selectPlaceCoordinate: LatLng? = null
 
 
     private val storedBytes: UpdateBytes = UpdateBytes(
@@ -104,7 +101,7 @@ class PatUpdateViewModel @Inject constructor(
         ByteArray(0), ByteArray(0)
     )
 
-    fun getPatDetail(getPatId: Long){
+    fun getPatDetail(getPatId: Long) {
         viewModelScope.launch {
             patId = getPatId
             val result = getPatDetailUseCase(patId)
@@ -112,16 +109,18 @@ class PatUpdateViewModel @Inject constructor(
                 val content = result.getOrThrow()
                 totalBody.clear()
                 //썸네일
-                beforeBitmapByExistedUri(content.repImg,"REP")
+                beforeBitmapByExistedUri(content.repImg, "REP")
                 //옳은 사진
-                beforeBitmapByExistedUri(content.correctImg,"CORRECT")
+                beforeBitmapByExistedUri(content.correctImg, "CORRECT")
                 //틀린 사진
-                beforeBitmapByExistedUri(content.incorrectImg,"INCORRECT")
+                beforeBitmapByExistedUri(content.incorrectImg, "INCORRECT")
                 //팟상세 정보 사진
-                content.bodyImg.forEach { uri ->
-                    beforeBitmapByExistedUri(uri,"BODY")
+                if (_bodyBitmap.value.isEmpty()) {
+                    content.bodyImg.forEach { uri ->
+                        beforeBitmapByExistedUri(uri, "BODY")
+                    }
                 }
-                if(content.location != "") {
+                if (content.location != "") {
                     onSearch(content.location)
                 }
                 _uiState.emit(PatUpdateUiState(content = content))
@@ -144,7 +143,12 @@ class PatUpdateViewModel @Inject constructor(
     }
 
     //사진 촬영시
-    fun onTakePhoto(image: ImageProxy, bitmapType: String, updateState: String?, originalIdx: String?) {
+    fun onTakePhoto(
+        image: ImageProxy,
+        bitmapType: String,
+        updateState: String?,
+        originalIdx: String?
+    ) {
         viewModelScope.launch {
 
             val rotatedBitmap = getRotatedBitmap(image)
@@ -191,34 +195,45 @@ class PatUpdateViewModel @Inject constructor(
             val bytes = getCompressedExistedBytes(newBitmap)
             when (bitmapType) {
                 PatBitmap.REP.toString() -> {
-                    _repBitmap.value = newBitmap
-                    storedBytes.repBytes = bytes
+                    if (_repBitmap.value == null) {
+                        _repBitmap.value = newBitmap
+                        storedBytes.repBytes = bytes
+                    }
                 }
 
                 PatBitmap.CORRECT.toString() -> {
-                    _correctBitmap.value = newBitmap
-                    storedBytes.correctBytes = bytes
+                    if (_correctBitmap.value == null) {
+                        _correctBitmap.value = newBitmap
+                        storedBytes.correctBytes = bytes
+                    }
                 }
 
                 PatBitmap.INCORRECT.toString() -> {
-                    _incorrectBitmap.value = newBitmap
-                    storedBytes.incorrectBytes = bytes
+                    if (_incorrectBitmap.value == null) {
+                        _incorrectBitmap.value = newBitmap
+                        storedBytes.incorrectBytes = bytes
+                    }
                 }
 
                 PatBitmap.BODY.toString() -> {
                     if (newBitmap != null) {
                         totalBody.add(newBitmap)
                     }
-                        _bodyBitmap.value = totalBody
-                        storedBytes.bodyBytes.add(bytes)
-                    }
+                    _bodyBitmap.value = totalBody
+                    storedBytes.bodyBytes.add(bytes)
                 }
             }
         }
+    }
 
 
     //갤러리 선택시
-    fun getBitmapByUri(uri: String?, bitmapType: String, updateState: String?= null, originalIdx: Int?= null) {
+    fun getBitmapByUri(
+        uri: String?,
+        bitmapType: String,
+        updateState: String? = null,
+        originalIdx: Int? = null
+    ) {
         viewModelScope.launch {
             val bytes = getByteArrayByUriUseCase(uri.toString())
             val newBitmap = byteArrayToBitmap(bytes)
@@ -239,11 +254,11 @@ class PatUpdateViewModel @Inject constructor(
                 }
 
                 PatBitmap.BODY.toString() -> {
-                    if (updateState == "true" && totalBody.isNotEmpty() && originalIdx!= null) {
+                    if (updateState == "true" && totalBody.isNotEmpty() && originalIdx != null) {
                         totalBody[originalIdx] = newBitmap
                         storedBytes.bodyBytes[originalIdx] = bytes
                         _bodyBitmap.value = totalBody
-                    }else{
+                    } else {
                         totalBody.add(newBitmap)
                         _bodyBitmap.value = totalBody
                         storedBytes.bodyBytes.add(bytes)
@@ -272,19 +287,19 @@ class PatUpdateViewModel @Inject constructor(
                 patName,
                 patDetail,
                 maxPerson,
-                selectPlaceCoordinate?.latitude?:0.0,
-                selectPlaceCoordinate?.longitude?:0.0,
-                selectPlace?: "",
+                selectPlaceCoordinate?.latitude ?: 0.0,
+                selectPlaceCoordinate?.longitude ?: 0.0,
+                selectPlace ?: "",
                 category,
                 startTime,
                 endTime,
                 startDate,
                 endDate,
                 proofDetail,
-                listOf("월요일","화요일"),
+                listOf("월요일", "화요일"),
                 realtime
             )
-            Logger.t("updateInfo").i("${detail}")
+            Logger.t("updateInfo").i("${patId}, ${detail}")
 
             val result = updatePatUseCase(
                 patId,
@@ -303,6 +318,7 @@ class PatUpdateViewModel @Inject constructor(
             }
         }
     }
+
     fun onSearch(query: String) {
         searchJob.cancel()
         _searchPlaceResult.value = emptyList()
@@ -313,7 +329,7 @@ class PatUpdateViewModel @Inject constructor(
         searchJob = viewModelScope.launch {
             val result = getSearchPlaceUseCase(
                 PlaceSearchRequestInfo(
-                    query,MAX_PLACE_SIZE
+                    query, MAX_PLACE_SIZE
                 )
             )
             if (result.isSuccess) {
@@ -335,7 +351,7 @@ class PatUpdateViewModel @Inject constructor(
             )
             if (result.isSuccess) {
                 val coordinate = result.getOrThrow()
-                selectPlaceCoordinate = LatLng(coordinate.lat,coordinate.long)
+                selectPlaceCoordinate = LatLng(coordinate.lat, coordinate.long)
             } else {
                 //TODO 에러 처리 해당주소의 좌표를 찾을 수 없습니다 에러처리
             }
@@ -343,17 +359,16 @@ class PatUpdateViewModel @Inject constructor(
     }
 
 
-
-    fun selectPlace(place: PlaceDetailInfo?=null){
-        if(place != null){
+    fun selectPlace(place: PlaceDetailInfo? = null) {
+        if (place != null) {
             selectPlace = place.title
             searchCoordinate(place)
-        }else{
+        } else {
             selectPlace = ""
         }
     }
 
-    fun clearImageData(){
+    fun clearImageData() {
         _repBitmap.value = null
         storedBytes.repBytes = ByteArray(0)
         _correctBitmap.value = null
@@ -365,7 +380,7 @@ class PatUpdateViewModel @Inject constructor(
         storedBytes.bodyBytes = mutableListOf()
     }
 
-    companion object{
+    companion object {
         const val MAX_PLACE_SIZE = 5
     }
 }

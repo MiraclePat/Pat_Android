@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -93,7 +94,7 @@ fun PostRepImageView(
         if (bitmap == null) {
             Row(
                 modifier = modifier
-                    .width(141.dp)
+                    .width(170.dp)
                     .height(36.dp)
                     .clip(RoundedCornerShape(4.dp))
                     .border(1.dp, color = PrimaryMain, RoundedCornerShape(4.dp))
@@ -102,7 +103,7 @@ fun PostRepImageView(
                 horizontalArrangement = Arrangement.Center,
             ) {
                 Text(
-                    text = "썸네일 추가하기",
+                    text = "썸네일 추가하기(필수)",
                     style = Typography.labelMedium,
                     color = PrimaryMain,
                 )
@@ -110,7 +111,8 @@ fun PostRepImageView(
                 Icon(
                     modifier = modifier.size(16.dp),
                     painter = painterResource(id = R.drawable.ic_add),
-                    contentDescription = "썸네일 추가하기"
+                    contentDescription = "썸네일 추가하기",
+                    tint = PrimaryMain
                 )
             }
         }

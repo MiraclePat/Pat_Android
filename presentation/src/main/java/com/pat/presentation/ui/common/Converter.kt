@@ -1,6 +1,5 @@
 package com.pat.presentation.ui.common
 
-import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -36,11 +35,12 @@ val convertTimeFormat: (String) -> (String) = { inputTimeString ->
 val convertDateViewFormat: (String) -> (String) = { inputTimeString ->
     val tempList = inputTimeString.split("-")
     if (tempList.size != 3) {
-        // TODO 예외 처리
+        inputTimeString
+    } else {
+        val month = tempList[1]
+        val day = tempList[2]
+        "${month}월 ${day}일"
     }
-    val month = tempList[1]
-    val day = tempList[2]
-    "${month}월 ${day}일"
 }
 
 val convertTimeViewFormat: (String) -> (String) = { inputTimeString ->
@@ -57,3 +57,13 @@ val convertTimeViewFormat: (String) -> (String) = { inputTimeString ->
     am + " ${hour}시"
 }
 
+val checkDateFormat: (String) -> (String) = { inputDateString ->
+    val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    val date = if (inputDateString.isNotEmpty() && inputDateString.contains('월')) {
+        val inputFormat = SimpleDateFormat("MM월 dd일", Locale.getDefault())
+        inputFormat.parse(inputDateString)!!
+    } else {
+        inputDateString
+    }
+    if (!inputDateString.contains('월')) inputDateString else outputFormat.format(date)
+}

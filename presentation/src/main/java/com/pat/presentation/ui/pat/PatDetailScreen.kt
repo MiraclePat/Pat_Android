@@ -53,6 +53,7 @@ import com.pat.presentation.ui.common.Divider
 import com.pat.presentation.ui.common.FinalButton
 import com.pat.presentation.ui.common.IconWithTextView
 import com.pat.presentation.ui.common.SimpleTextView
+import com.pat.presentation.ui.common.convertDateViewFormat
 import com.pat.presentation.ui.common.convertTimeViewFormat
 import com.pat.presentation.ui.theme.Gray200
 import com.pat.presentation.ui.theme.Gray300
@@ -79,10 +80,6 @@ fun PatDetailView(
 ) {
     val uiState by patDetailViewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
-
-    LaunchedEffect(uiState.content) {
-        Logger.t("MainTest").i("${uiState.content}")
-    }
 
     Scaffold(
         modifier = modifier
@@ -251,8 +248,8 @@ fun PostDetailScreen(
         Text("시작일 - 종료일", style = Typography.titleLarge, color = Gray800)
         Spacer(modifier.size(14.dp))
         DateText(
-            startDate = content.startDate,
-            endDate = content.endDate,
+            startDate = convertDateViewFormat(content.startDate),
+            endDate = convertDateViewFormat(content.endDate),
             iconResource = R.drawable.ic_calendar
         )
         Spacer(modifier.size(28.dp))

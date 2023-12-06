@@ -118,16 +118,9 @@ dependencies {
     // hilt
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
-    // coil
-    implementation("io.coil-kt:coil-compose:2.4.0")
 
     // glide
-    implementation 'com.github.bumptech.glide:glide:4.16.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
-    androidTestImplementation platform('androidx.compose:compose-bom:2023.03.00')
-    ksp 'com.github.bumptech.glide:ksp:4.15.1'
     implementation 'com.github.skydoves:landscapist-glide:2.2.12'
-    ksp "android.arch.lifecycle:compiler:1.1.1"
 
     // TimePicker
     implementation 'com.github.ozcanalasalvar.picker:datepicker:2.0.7'
@@ -149,7 +142,6 @@ dependencies {
     // naver map
     implementation 'io.github.fornewid:naver-map-compose:1.5.1'
     implementation 'io.github.fornewid:naver-map-location:21.0.1'
-    implementation 'com.google.android.gms:play-services-location:21.0.1'
 
     // splash
     implementation "androidx.core:core-splashscreen:1.0.1"

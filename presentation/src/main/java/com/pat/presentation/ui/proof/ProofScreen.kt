@@ -1,5 +1,6 @@
 package com.pat.presentation.ui.proof
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -56,8 +57,8 @@ import com.pat.presentation.ui.common.IconWithTextView
 import com.pat.presentation.ui.common.SelectButton
 import com.pat.presentation.ui.common.SimpleTextView
 import com.pat.presentation.ui.common.setUnderLine
+import com.pat.presentation.ui.navigations.BottomNavItem
 import com.pat.presentation.ui.pat.DateText
-import com.pat.presentation.ui.pat.ProofImageView
 import com.pat.presentation.ui.theme.FailCircleColor
 import com.pat.presentation.ui.theme.FailTextColor
 import com.pat.presentation.ui.theme.Gray200
@@ -89,11 +90,18 @@ fun ProofScreenView(
     patId: Long,
     navController: NavController,
     proofViewModel: ProofViewModel,
-    showBottomSheet: Boolean?= null
+    showBottomSheet: Boolean? = null
 ) {
 
-    if(patId != (-1).toLong()){
+    if (patId != (-1).toLong()) {
         proofViewModel.getParticipatingDetail(patId)
+    }
+
+    BackHandler {
+        navController.popBackStack(
+            route = BottomNavItem.Certification.screenRoute,
+            inclusive = false,
+        )
     }
 
     val uiState by proofViewModel.uiState.collectAsState()
@@ -113,9 +121,10 @@ fun ProofScreenView(
                 navigationIcon = {
                     IconButton(onClick = {
                         navController.popBackStack(
-                        route = CERTIFICATION,
-                        inclusive = false
-                    ) }) {
+                            route = CERTIFICATION,
+                            inclusive = false
+                        )
+                    }) {
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_back_arrow),
                             contentDescription = "Go back"
@@ -476,7 +485,9 @@ fun ProofScreen(
                 sheetState = sheetState,
             ) {
                 Column(
-                    modifier = modifier.padding(bottom = 40.dp).fillMaxWidth(),
+                    modifier = modifier
+                        .padding(bottom = 40.dp)
+                        .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
@@ -500,9 +511,7 @@ fun ProofScreen(
                     SelectButton(
                         text = "이 사진으로 인증하기",
                         onClick = {
-                            val proofImageByte = viewModel.proofImageBytes
-                            viewModel.proofPat(proofImageByte)
-                            showBottomSheet = false
+                            viewModel.proofPat()
                         },
                         backColor = if (proofBitmap == null) Gray300 else PrimaryMain,
                         textColor = if (proofBitmap == null) White else White,
