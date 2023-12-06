@@ -154,7 +154,6 @@ fun PostScreenBody(
     scrollState: ScrollState
 ) {
     val isRealTime = rememberSaveable { mutableStateOf(false) }         // 사진 선택
-
     val title = rememberSaveable { mutableStateOf("") }         // 팟 제목
     val maxPerson = rememberSaveable { mutableStateOf("") }     // 최대 인원
     val patDetail = rememberSaveable { mutableStateOf("") }     // 팟 소개
@@ -169,7 +168,6 @@ fun PostScreenBody(
     val onSearchScreen = rememberSaveable { mutableStateOf(false) }
     val placeSelected = rememberSaveable { mutableStateOf(false) }
     val dayList = rememberSaveable { mutableStateOf(listOf<String>()) }                   // 인증 빈도
-
 
     val bodyBitmap by viewModel.bodyBitmap.collectAsState() //팟 상세이미지들
     val correctBitmap by viewModel.correctBitmap.collectAsState() //올바른 이미지
@@ -189,6 +187,14 @@ fun PostScreenBody(
         maxPerson.value.isNotEmpty() && maxPerson.value.toInt() in MIN_PERSON..MAX_PERSON
     val checkDate = startDate.value.isNotEmpty() && endDate.value.isNotEmpty() &&
             compareDates(startDate.value, endDate.value)
+    Logger.t("updateTest").i(
+        "startDate : ${startDate.value}, ${endDate.value}, ${
+            compareDates(
+                startDate.value,
+                endDate.value
+            )
+        } "
+    )
     val checkTime = startTime.value.isNotEmpty() && endTime.value.isNotEmpty()
             && compareTimes( // 시작 시간 < 종료 시간 -> true
         convertTimeFormat(startTime.value),
@@ -205,249 +211,207 @@ fun PostScreenBody(
 
 
 
-    Column {
-        PostRepImageView(
-            navController = navController,
-            bitmap = repBitmap,
-            viewModel = viewModel
-        )
-        Spacer(modifier = modifier.size(20.dp))
+    PostRepImageView(navController = navController, bitmap = repBitmap, viewModel = viewModel)
+    Spacer(modifier = modifier.size(20.dp))
 
-        Column(modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
-            PostTitleBox(title = "카테고리 선택", approve = checkCategory) {
-                Row {
-                    CategoryBoxList(state = category)
-                }
+    Column(modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
+        PostTitleBox(title = "카테고리 선택", approve = checkCategory) {
+            Row {
+                CategoryBoxList(state = category)
             }
+        }
 
-            PostTitleBox(title = "팟 제목", approve = checkTitle) {
-                CustomTextField(
-                    placeholderText = "최대 15자",
-                    state = title, maxLength = 15
+        PostTitleBox(title = "팟 제목", approve = checkTitle) {
+            CustomTextField(
+                placeholderText = "최대 15자",
+                state = title, maxLength = 15
+            )
+        }
+
+        PostTitleBox(
+            modifier = modifier.onGloballyPositioned { coordinates ->
+                scrollToPosition = coordinates.positionInRoot().y
+            },
+            title = "팟 상세정보", subTitle = "최대 5장 가능, 사진1부터 차례대로 표시돼요.",
+            essential = false
+        ) {
+            SelectImageList(
+                navController = navController,
+                bitmapList = bodyBitmap, bitmapType = "BODY", viewModel = viewModel
+            )
+        }
+
+        PostTitleBox(title = "위치정보", approve = checkLocation) {
+            Column(
+                modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+            ) {
+                SelectLocationButtonList(
+                    locationState = locationSelect,
+                    postViewModel = viewModel,
+                    searchValue = locationSearchValue,
+                    onSearchScreen = onSearchScreen,
+                    searchPlaceResult = searchPlaceResult,
+                    scrollState = scrollState,
+                    scrollToPosition = scrollToPosition,
+                    placeSelected = placeSelected
                 )
             }
+        }
 
-            PostTitleBox(
-                modifier = modifier.onGloballyPositioned { coordinates ->
-                    scrollToPosition = coordinates.positionInRoot().y
-                },
-                title = "팟 상세정보", subTitle = "최대 5장 가능, 사진1부터 차례대로 표시돼요.",
-                essential = false
-            ) {
-                SelectImageList(
+        PostTitleBox(title = "팟 인원 설정", approve = checkPerson) {
+            CustomTextField(
+                placeholderText = "숫자만 입력해주세요. (최대 10,000명 가능)",
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                state = maxPerson, maxLength = 5,
+            )
+        }
+
+        PostTitleBox(title = "시작일-종료일", approve = checkDate) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                val startPressed = remember { mutableStateOf(false) }
+                CustomPicker(
+                    text = "시작일 선택", dateState = startDate,
+                    formatter = convertDateFormat, widthSize = 96.dp,
+                    content = {
+                        DateTimePickerView(
+                            onDateSelected = { startDate.value = it },
+                            onDismiss = { startPressed.value = !startPressed.value },
+                        )
+                    },
+                    clickState = startPressed
+                )
+                Text(
+                    "부터 시작",
+                    modifier.padding(start = 8.dp, end = 10.dp),
+                    style = Typography.bodySmall
+                )
+                val endPressed = remember { mutableStateOf(false) }
+                CustomPicker(
+                    text = "종료일 선택", dateState = endDate,
+                    formatter = convertDateFormat, widthSize = 96.dp,
+                    content = {
+                        DateTimePickerView(
+                            onDateSelected = { endDate.value = it },
+                            onDismiss = { endPressed.value = !endPressed.value },
+                        )
+                    },
+                    clickState = endPressed
+                )
+                Text("에 종료", modifier.padding(start = 8.dp), style = Typography.bodySmall)
+            }
+        }
+
+        PostTitleBox(title = "인증 가능 시간", approve = checkTime) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                val startPressed = remember { mutableStateOf(false) }
+                CustomPicker(
+                    text = "시작시간", dateState = startTime,
+                    content = {
+                        WheelTimePickerView(onDismiss = {
+                            startPressed.value = !startPressed.value
+                        }, timeState = startTime)
+                    },
+                    clickState = startPressed
+                )
+                Text(
+                    "부터",
+                    modifier.padding(start = 8.dp, end = 10.dp),
+                    style = Typography.bodySmall
+                )
+                val endPressed = remember { mutableStateOf(false) }
+                CustomPicker(
+                    text = "종료시간", dateState = endTime,
+                    content = {
+                        WheelTimePickerView(onDismiss = {
+                            endPressed.value = !endPressed.value
+                        }, timeState = endTime)
+                    },
+                    clickState = endPressed
+                )
+                Text("까지", modifier.padding(start = 8.dp), style = Typography.bodySmall)
+            }
+        }
+
+        PostTitleBox(title = "팟 소개", approve = checkDetail) {
+            CustomTextField(
+                placeholderText = "최소 15자, 최대 500자",
+                state = patDetail, maxLength = 500,
+            )
+        }
+
+        PostTitleBox(title = "인증 빈도", approve = checkDay) {
+            Row() {
+                SelectDayButtonList(state = dayList)
+            }
+        }
+
+        PostTitleBox(title = "인증방법 설명", approve = checkProof) {
+            CustomTextField(
+                placeholderText = "최소 5자, 최대 30자",
+                maxLength = 30, state = proofDetail
+            )
+        }
+
+        PostTitleBox(title = "인증방법 예시", approve = checkCorrect) {
+            Row() {
+                ExampleImageView(
                     navController = navController,
-                    bitmapList = bodyBitmap,
-                    bitmapType = "BODY",
+                    text = "올바른 예시", backColor = GreenBack, textColor = GreenText,
+                    bitmap = correctBitmap, bitmapType = "CORRECT",
+                    viewModel = viewModel
+                )
+                Spacer(modifier = modifier.size(10.dp))
+                ExampleImageView(
+                    navController = navController,
+                    text = "잘못된 예시", backColor = RedBack, textColor = RedText,
+                    bitmap = incorrectBitmap, bitmapType = "INCORRECT",
                     viewModel = viewModel
                 )
             }
+        }
 
-            PostTitleBox(title = "위치정보", approve = checkLocation) {
-                Column(
-                    modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                ) {
-                    SelectLocationButtonList(
-                        locationState = locationSelect,
-                        postViewModel = viewModel,
-                        searchValue = locationSearchValue,
-                        onSearchScreen = onSearchScreen,
-                        searchPlaceResult = searchPlaceResult,
-                        scrollState = scrollState,
-                        scrollToPosition = scrollToPosition,
-                        placeSelected = placeSelected
+        PostTitleBox(title = "인증 수단", subTitle = "실시간 촬영은 필수에요.", approve = true) {
+            Row {
+                CheckBoxView(text = "실시간 촬영")
+                Spacer(modifier = modifier.size(12.dp))
+                CheckBoxView(checked = isRealTime, text = "갤러리에서 사진 가져오기", isRealTime = true)
+            }
+        }
+
+        if (checkList.all { it }) {
+            FinalButton(text = "확정",
+                backColor = PrimaryMain,
+                textColor = White,
+                onClick = {
+                    val outputStartTime = convertTimeFormat(startTime.value)
+                    val outputEndTime = convertTimeFormat(endTime.value)
+
+                    viewModel.post(
+                        patName = title.value,
+                        maxPerson = maxPerson.value.toInt(),
+                        patDetail = patDetail.value,
+                        proofDetail = proofDetail.value,
+                        startDate = startDate.value,
+                        endDate = endDate.value,
+                        startTime = outputStartTime,
+                        endTime = outputEndTime,
+                        days = dayList.value,
+                        category = category.value,
+                        realtime = !isRealTime.value,
                     )
-                }
-            }
-
-            PostTitleBox(
-                title = "팟 인원 설정",
-                approve = checkPerson
-            ) {
-                CustomTextField(
-                    placeholderText = "숫자만 입력해주세요. (최대 10,000명 가능)",
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    state = maxPerson,
-                    maxLength = 5,
-                )
-            }
-
-            PostTitleBox(
-                title = "시작일-종료일",
-                approve = checkDate
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    val startPressed = remember { mutableStateOf(false) }
-                    CustomPicker(
-                        text = "시작일 선택",
-                        dateState = startDate,
-                        formatter = convertDateFormat,
-                        widthSize = 96.dp,
-                        content = {
-                            DateTimePickerView(
-                                onDateSelected = { startDate.value = it },
-                                onDismiss = { startPressed.value = !startPressed.value },
-                            )
-                        },
-                        clickState = startPressed
+                    viewModel.clearImageData()
+                    navController.popBackStack(
+                        route = HOME,
+                        inclusive = false
                     )
-                    Text(
-                        "부터 시작",
-                        modifier.padding(start = 8.dp, end = 10.dp),
-                        style = Typography.bodySmall
-                    )
-                    val endPressed = remember { mutableStateOf(false) }
-                    CustomPicker(
-                        text = "종료일 선택",
-                        dateState = endDate,
-                        formatter = convertDateFormat,
-                        widthSize = 96.dp,
-                        content = {
-                            DateTimePickerView(
-                                onDateSelected = { endDate.value = it },
-                                onDismiss = { endPressed.value = !endPressed.value },
-                            )
-                        },
-                        clickState = endPressed
-                    )
-                    Text("에 종료", modifier.padding(start = 8.dp), style = Typography.bodySmall)
-                }
-            }
-
-            PostTitleBox(
-                title = "인증 가능 시간",
-                approve = checkTime
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    val startPressed = remember { mutableStateOf(false) }
-                    CustomPicker(
-                        text = "시작시간",
-                        dateState = startTime,
-                        content = {
-                            WheelTimePickerView(onDismiss = {
-                                startPressed.value = !startPressed.value
-                            }, timeState = startTime)
-                        },
-                        clickState = startPressed
-                    )
-                    Text(
-                        "부터",
-                        modifier.padding(start = 8.dp, end = 10.dp),
-                        style = Typography.bodySmall
-                    )
-                    val endPressed = remember { mutableStateOf(false) }
-                    CustomPicker(
-                        text = "종료시간",
-                        dateState = endTime,
-                        content = {
-                            WheelTimePickerView(onDismiss = {
-                                endPressed.value = !endPressed.value
-                            }, timeState = endTime)
-                        },
-                        clickState = endPressed
-                    )
-                    Text("까지", modifier.padding(start = 8.dp), style = Typography.bodySmall)
-                }
-            }
-
-            PostTitleBox(
-                title = "팟 소개",
-                approve = checkDetail
-            ) {
-                CustomTextField(
-                    placeholderText = "최소 15자, 최대 500자",
-                    state = patDetail,
-                    maxLength = 500,
-                )
-            }
-
-            PostTitleBox(title = "인증 빈도", approve = checkDay) {
-                Row() {
-                    SelectDayButtonList(state = dayList)
-                }
-            }
-
-            PostTitleBox(
-                title = "인증방법 설명",
-                approve = checkProof
-            ) {
-                CustomTextField(
-                    placeholderText = "최소 5자, 최대 30자",
-                    maxLength = 30,
-                    state = proofDetail
-                )
-            }
-
-            PostTitleBox(
-                title = "인증방법 예시",
-                approve = checkCorrect
-            ) {
-                Row() {
-                    ExampleImageView(
-                        navController = navController,
-                        text = "올바른 예시",
-                        backColor = GreenBack,
-                        textColor = GreenText,
-                        bitmap = correctBitmap,
-                        bitmapType = "CORRECT",
-                        viewModel = viewModel
-                    )
-                    Spacer(modifier = modifier.size(10.dp))
-                    ExampleImageView(
-                        navController = navController,
-                        text = "잘못된 예시",
-                        backColor = RedBack,
-                        textColor = RedText,
-                        bitmap = incorrectBitmap,
-                        bitmapType = "INCORRECT",
-                        viewModel = viewModel
-                    )
-                }
-            }
-
-            PostTitleBox(title = "인증 수단", subTitle = "실시간 촬영은 필수에요.", approve = true) {
-                Row {
-                    CheckBoxView(text = "실시간 촬영")
-                    Spacer(modifier = modifier.size(12.dp))
-                    CheckBoxView(checked = isRealTime, text = "갤러리에서 사진 가져오기", isRealTime = true)
-                }
-
-            }
-            if (checkList.all { it }) {
-                FinalButton(text = "확정",
-                    backColor = PrimaryMain,
-                    textColor = White,
-                    onClick = {
-                        val outputStartTime = convertTimeFormat(startTime.value)
-                        val outputEndTime = convertTimeFormat(endTime.value)
-
-                        viewModel.post(
-                            patName = title.value,
-                            maxPerson = maxPerson.value.toInt(),
-                            patDetail = patDetail.value,
-                            proofDetail = proofDetail.value,
-                            startDate = startDate.value,
-                            endDate = endDate.value,
-                            startTime = outputStartTime,
-                            endTime = outputEndTime,
-                            days = dayList.value,
-                            category = category.value,
-                            realtime = !isRealTime.value,
-                        )
-                        viewModel.clearImageData()
-                        navController.popBackStack(
-                            route = HOME,
-                            inclusive = false
-                        )
-                    })
-            } else {
-                FinalButton(text = "필수 항목을 모두 채워주세요",
-                    backColor = Gray300,
-                    textColor = White,
-                    stokeColor = Gray300,
-                    onClick = {})
-            }
+                })
+        } else {
+            FinalButton(
+                text = "필수 항목을 모두 채워주세요",
+                backColor = Gray300, textColor = White, stokeColor = Gray300
+            )
         }
     }
 }
@@ -510,6 +474,7 @@ fun SelectLocationButtonList(
                 onScreen = onSearchScreen,
                 viewModel = postViewModel,
                 maxLines = 1,
+                placeSelected = placeSelected,
                 inputEnter = {
                     postViewModel.onSearch(searchValue.value)
                 })

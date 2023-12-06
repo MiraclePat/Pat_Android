@@ -1,5 +1,6 @@
 package com.pat.presentation.ui.pat.components
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,19 +29,23 @@ import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.Primary50
 import com.pat.presentation.ui.theme.PrimaryMain
 import com.pat.presentation.ui.theme.Typography
+import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 @Composable
 fun UpdateSelectLocationButtonList(
     modifier: Modifier = Modifier,
     locationState: MutableState<String>,
-    onClick: () -> Unit = {},
     viewModel: PatUpdateViewModel,
     searchValue: MutableState<String>,
     onSearchScreen: MutableState<Boolean>,
-    searchPlaceResult: List<PlaceDetailInfo>
+    searchPlaceResult: List<PlaceDetailInfo>,
+    scrollState: ScrollState,
+    scrollToPosition: Float,
+    placeSelected: MutableState<Boolean>
 ) {
-
     val locationButtonText = listOf<String>("주소 검색", "위치정보 없음")
+    val coroutineScope = rememberCoroutineScope()
 
     @Composable
     fun locationButtonView(modifier: Modifier, location: String) {
@@ -47,8 +53,14 @@ fun UpdateSelectLocationButtonList(
             modifier = modifier,
             text = location,
             onClick = {
-                onClick()
-                locationState.value = location
+                if (locationState.value != location) {
+                    locationState.value = location
+                    if (locationState.value == "주소 검색") {
+                        coroutineScope.launch {
+                            scrollState.scrollTo(scrollToPosition.roundToInt())
+                        }
+                    }
+                }
             },
             isSelected = locationState.value == location,
             shape = RoundedCornerShape(100.dp),
@@ -73,8 +85,8 @@ fun UpdateSelectLocationButtonList(
                 onScreen = onSearchScreen,
                 viewModel = viewModel,
                 maxLines = 1,
+                placeSelected = placeSelected,
                 inputEnter = {
-                    //TODO NOT WORKING
                     viewModel.onSearch(searchValue.value)
                 })
             Spacer(modifier.padding(bottom = 24.dp))
@@ -89,7 +101,8 @@ fun UpdateSelectLocationButtonList(
                 UpdateSearchResultList(
                     places = searchPlaceResult,
                     placeText = searchValue,
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    placeSelected = placeSelected
                 )
             }
         }

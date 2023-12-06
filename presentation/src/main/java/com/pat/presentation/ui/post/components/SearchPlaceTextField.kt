@@ -47,14 +47,15 @@ fun SearchPlaceTextField(
     maxLength: Int,
     maxLines: Int = Int.MAX_VALUE,
     inputEnter: () -> Unit = {},
-    onScreen : MutableState<Boolean> = rememberSaveable {
+    onScreen: MutableState<Boolean> = rememberSaveable {
         mutableStateOf(false)
     },
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     state: MutableState<String> = rememberSaveable {
         mutableStateOf("")
     },
-    viewModel: PostViewModel?= null,
+    viewModel: PostViewModel? = null,
+    placeSelected: MutableState<Boolean>
 ) {
     var isFocused by remember { mutableStateOf(false) }
     val borderColor = if (!isFocused) Gray200 else SystemBlue
@@ -72,6 +73,7 @@ fun SearchPlaceTextField(
         onValueChange = {
             if (it.length <= maxLength) state.value = it
             onScreen.value = true
+            placeSelected.value = false
             viewModel?.onSearch(state.value)
         },
         cursorBrush = SolidColor(SystemBlue),

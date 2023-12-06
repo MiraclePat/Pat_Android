@@ -36,6 +36,7 @@ fun UpdateSearchResultList(
     placeText: MutableState<String>,
     viewModel: PatUpdateViewModel,
     modifier: Modifier = Modifier,
+    placeSelected: MutableState<Boolean>
 ) {
     places.forEach{ place ->
         SearchPlace(
@@ -44,6 +45,7 @@ fun UpdateSearchResultList(
             onClick = {
                 placeText.value = place.title.toString()
                 viewModel.selectPlace(place)
+                placeSelected.value = true
             },
             isSelected = placeText.value == place.title,
         )
