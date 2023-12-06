@@ -216,9 +216,6 @@ class PatUpdateViewModel @Inject constructor(
                 }
 
                 PatBitmap.BODY.toString() -> {
-                    Logger.t("updateTest").i("bodybitmp : ${_bodyBitmap.value}")
-                    Logger.t("updateTest").i("newBitmap : ${newBitmap}")
-                    Logger.t("updateTest").i("bytes : ${bytes}")
                     if (newBitmap != null) {
                         totalBody.add(newBitmap)
                     }

@@ -44,7 +44,6 @@ fun HomeScreenView(
 
     if (!onSearchScreen.value) {
         homeViewModel.getPats()
-        Logger.t("MainRepeat").i("홈")
         Scaffold(
             topBar = {
                 HomeTopBar(

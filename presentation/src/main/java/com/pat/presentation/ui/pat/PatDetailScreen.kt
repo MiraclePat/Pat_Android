@@ -81,10 +81,6 @@ fun PatDetailView(
     val uiState by patDetailViewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
 
-    LaunchedEffect(uiState.content) {
-        Logger.t("MainTest").i("${uiState.content}")
-    }
-
     Scaffold(
         modifier = modifier
             .fillMaxSize(),

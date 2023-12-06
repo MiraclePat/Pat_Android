@@ -84,7 +84,6 @@ fun MapScreenView(
         if (cameraPositionState.isMoving) {
             val northEastCoordinate = cameraPositionState.contentBounds?.northEast
             val southWestCoordinate = cameraPositionState.contentBounds?.southWest
-            Logger.t("navermap").i("${northEastCoordinate}, ${southWestCoordinate}")
             mapViewModel.getMapPats(northEastCoordinate, southWestCoordinate, category.value)
         }
     }

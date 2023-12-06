@@ -187,14 +187,7 @@ fun PostScreenBody(
         maxPerson.value.isNotEmpty() && maxPerson.value.toInt() in MIN_PERSON..MAX_PERSON
     val checkDate = startDate.value.isNotEmpty() && endDate.value.isNotEmpty() &&
             compareDates(startDate.value, endDate.value)
-    Logger.t("updateTest").i(
-        "startDate : ${startDate.value}, ${endDate.value}, ${
-            compareDates(
-                startDate.value,
-                endDate.value
-            )
-        } "
-    )
+
     val checkTime = startTime.value.isNotEmpty() && endTime.value.isNotEmpty()
             && compareTimes( // 시작 시간 < 종료 시간 -> true
         convertTimeFormat(startTime.value),
