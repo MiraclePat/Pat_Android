@@ -75,7 +75,7 @@ fun CategoryButtonList(
             text = category,
             onClick = {
                 state.value = category
-                homeViewModel.requestByCategory(category)
+//                homeViewModel.requestByCategory(category)
             },
             isSelected = state.value == category
         )

@@ -17,7 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.orhanobut.logger.Logger
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.BarIcon
 import com.pat.presentation.ui.home.components.HomeCategory
@@ -33,9 +33,6 @@ fun HomeScreenView(
     navController: NavController,
 ) {
     val homeViewModel: HomeViewModel = hiltViewModel()
-
-    val hotUiState by homeViewModel.hotUiState.collectAsState()
-    val recentUiState by homeViewModel.recentUiState.collectAsState()
     val homeBanner by homeViewModel.homeBanner.collectAsState()
     val scrollState = rememberScrollState()
     val searchValue = remember { mutableStateOf("") }
@@ -43,7 +40,6 @@ fun HomeScreenView(
     val onSearchScreen = remember { mutableStateOf(false) }
 
     if (!onSearchScreen.value) {
-        homeViewModel.getPats()
         Scaffold(
             topBar = {
                 HomeTopBar(
@@ -68,17 +64,20 @@ fun HomeScreenView(
                     .padding(innerPadding)
                     .verticalScroll(scrollState),
             ) {
+                val hotPats = homeViewModel.getHotPats(categoryState.value).collectAsLazyPagingItems()
+                val recentPats = homeViewModel.getRecentPats(categoryState.value).collectAsLazyPagingItems()
+
                 HomeMyPat(content = homeBanner.content, navController = navController)
                 HomeCategory(state = categoryState)
                 Pats(
                     navController,
-                    uiState = hotUiState,
+                    uiState = hotPats,
                     text = stringResource(id = R.string.home_hot_pat_title),
                 )
                 Spacer(Modifier.size(20.dp))
                 Pats(
                     navController,
-                    uiState = recentUiState,
+                    uiState = recentPats,
                     text = stringResource(id = R.string.home_recent_pat_title),
                 )
             }

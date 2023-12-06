@@ -3,6 +3,10 @@ package com.pat.presentation.ui.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.HomeBannerContent
 import com.pat.domain.model.pat.HomePatContent
@@ -10,6 +14,7 @@ import com.pat.domain.model.pat.HomePatRequestInfo
 import com.pat.domain.usecase.pat.GetHomeBannerUseCase
 import com.pat.domain.usecase.pat.GetHomePatsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -39,6 +44,7 @@ class HomeViewModel @Inject constructor(
     val searchUiState: StateFlow<HomeUiState> = _searchUiState.asStateFlow()
     private val _homeBanner = MutableStateFlow(BannerUiState())
     val homeBanner: StateFlow<BannerUiState> = _homeBanner.asStateFlow()
+    private val size = 10
 
 
     init {
@@ -53,47 +59,51 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun getPats() {
-        viewModelScope.launch {
-            val hotResult = getHomePatsUseCase(HomePatRequestInfo(sort = "HOT"))
-            if (hotResult.isSuccess) {
-                val content = hotResult.getOrThrow()
-                _hotUiState.emit(HomeUiState(content = content))
-            } else {
-                Logger.t("MainTest").i("홈 pat 에러")
+    fun getHotPats(category: String?): Flow<PagingData<HomePatContent>> {
+        return Pager(
+            config = PagingConfig(pageSize = size),
+            pagingSourceFactory = {
+                HomePaging(
+                    getHomePatsUseCase,
+                    HomePatRequestInfo(sort = "HOT", size = size, category = category)
+                )
             }
-
-            val recentResult =
-                getHomePatsUseCase(HomePatRequestInfo(sort = "LATEST"))
-            if (recentResult.isSuccess) {
-                val content = recentResult.getOrThrow()
-                _recentUiState.emit(HomeUiState(content = content))
-            } else {
-                Logger.t("MainTest").i("홈 pat 에러")
-            }
-        }
+        ).flow.cachedIn(viewModelScope)
     }
 
-    fun requestByCategory(category: String) {
-        viewModelScope.launch {
-            val hotResult =
-                getHomePatsUseCase(HomePatRequestInfo(category = category, sort = "HOT"))
-            if (hotResult.isSuccess) {
-                val content = hotResult.getOrThrow()
-                _hotUiState.emit(HomeUiState(content = content))
-            } else {
-                Logger.t("MainTest").i("홈 팟 카테고리 에러")
+    fun getRecentPats(category: String): Flow<PagingData<HomePatContent>> {
+        return Pager(
+            config = PagingConfig(pageSize = size),
+            pagingSourceFactory = {
+                HomePaging(
+                    getHomePatsUseCase,
+                    HomePatRequestInfo(sort = "LATEST", size = size, category = category)
+                )
             }
-            val recentResult =
-                getHomePatsUseCase(HomePatRequestInfo(category = category, sort = "LATEST"))
-            if (recentResult.isSuccess) {
-                val content = recentResult.getOrThrow()
-                _recentUiState.emit(HomeUiState(content = content))
-            } else {
-                Logger.t("MainTest").i("홈 팟 카테고리 에러")
-            }
-        }
+        ).flow.cachedIn(viewModelScope)
     }
+
+
+    //    fun requestByCategory(category: String) {
+//        viewModelScope.launch {
+//            val hotResult =
+//                getHomePatsUseCase(HomePatRequestInfo(category = category, sort = "HOT"))
+//            if (hotResult.isSuccess) {
+//                val content = hotResult.getOrThrow()
+//                _hotUiState.emit(HomeUiState(content = content))
+//            } else {
+//                Logger.t("MainTest").i("홈 팟 카테고리 에러")
+//            }
+//            val recentResult =
+//                getHomePatsUseCase(HomePatRequestInfo(category = category, sort = "LATEST"))
+//            if (recentResult.isSuccess) {
+//                val content = recentResult.getOrThrow()
+//                _recentUiState.emit(HomeUiState(content = content))
+//            } else {
+//                Logger.t("MainTest").i("홈 팟 카테고리 에러")
+//            }
+//        }
+//    }
 
     fun searchPat(query: String) {
         viewModelScope.launch {

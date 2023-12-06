@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -19,10 +21,12 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.paging.compose.LazyPagingItems
+import com.orhanobut.logger.Logger
+import com.pat.domain.model.pat.HomePatContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
 import com.pat.presentation.ui.common.SimpleTextView
-import com.pat.presentation.ui.home.HomeUiState
 import com.pat.presentation.ui.theme.Gray700
 import com.pat.presentation.ui.theme.Typography
 import com.skydoves.landscapist.glide.GlideImage
@@ -31,32 +35,33 @@ import com.skydoves.landscapist.glide.GlideImage
 fun Pats(
     navController: NavController,
     modifier: Modifier = Modifier,
-    uiState: HomeUiState,
+    uiState: LazyPagingItems<HomePatContent>,
     text: String,
 ) {
-    val content = uiState.content
-
     Column(modifier.padding(vertical = 20.dp, horizontal = 16.dp)) {
         Text(
             text = text,
             style = Typography.titleLarge
         )
         Spacer(Modifier.size(12.dp))
-        val scrollState = rememberScrollState()
-        Row(modifier.horizontalScroll(scrollState)) {
-            content?.forEach { pat ->
-                HomePats(
-                    title = pat.patName,
-                    category = pat.category,
-                    nowPerson = pat.nowPerson,
-                    maxPerson = pat.maxPerson,
-                    startDate = pat.startDate,
-                    imgUri = pat.repImg,
-                    location = pat.location.ifEmpty { "어디서나 가능" },
-                    onClick = {
-                        navController.navigate("patDetail/${pat.patId}") }
-                )
-                Spacer(Modifier.size(10.dp))
+        LazyRow() {
+            items(uiState.itemCount) { idx ->
+                val pat = uiState[idx]
+                if (pat != null) {
+                    HomePats(
+                        title = pat.patName,
+                        category = pat.category,
+                        nowPerson = pat.nowPerson,
+                        maxPerson = pat.maxPerson,
+                        startDate = pat.startDate,
+                        imgUri = pat.repImg,
+                        location = pat.location.ifEmpty { "어디서나 가능" },
+                        onClick = {
+                            navController.navigate("patDetail/${pat.patId}")
+                        }
+                    )
+                    Spacer(Modifier.size(10.dp))
+                }
             }
         }
     }

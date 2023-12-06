@@ -35,8 +35,6 @@ class PatRepositoryImpl @Inject constructor(
             patDataSource.getHomeBanner()
         }
         return if (result.isSuccess) {
-            Logger.t("MainTest").i("${result.getOrThrow()}")
-
             Result.success(result.getOrThrow())
         } else {
             Logger.t("MainTest").i("${result.exception().message}")
