@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +29,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.pat.domain.model.member.MyProfileContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.Divider
 import com.pat.presentation.ui.common.setUnderLine
@@ -42,10 +44,15 @@ import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.util.ACCOUNT
 import com.pat.presentation.util.ALARM
 import com.pat.presentation.util.ANNOUNCE
+import com.skydoves.landscapist.glide.GlideImage
 
 
 @Composable
-fun SettingScreenBody(modifier: Modifier = Modifier, viewState: MutableState<String>) {
+fun SettingScreenBody(
+    modifier: Modifier = Modifier,
+    viewState: MutableState<String>,
+    content: MyProfileContent?
+) {
     val tempLoginState = true
 
     @Composable
@@ -80,7 +87,11 @@ fun SettingScreenBody(modifier: Modifier = Modifier, viewState: MutableState<Str
                     .clip(CircleShape)
                     .border(1.dp, Gray100, CircleShape),
             ) {
-                // TODO Glide Image Url
+                GlideImage(
+                    modifier = modifier
+                        .size(140.dp, 140.dp)
+                        .clip(RoundedCornerShape(12.dp)),
+                    imageModel = { content?.profileImg })
             }
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_white_add),
@@ -94,7 +105,7 @@ fun SettingScreenBody(modifier: Modifier = Modifier, viewState: MutableState<Str
         Spacer(modifier = modifier.size(12.dp))
         if (tempLoginState) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("유저 닉네임", style = Typography.titleLarge, color = Gray800)
+                Text(content?.nickname.toString(), style = Typography.titleLarge, color = Gray800)
                 Icon(
                     modifier = modifier.padding(start = 2.dp),
                     imageVector = ImageVector.vectorResource(R.drawable.ic_pencil),
@@ -118,14 +129,14 @@ fun SettingScreenBody(modifier: Modifier = Modifier, viewState: MutableState<Str
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            patCount(modifier = modifier.weight(1f), text = "완료한 팟", count = 3)
+            patCount(modifier = modifier.weight(1f), text = "완료한 팟", count = content?.finPats?:0)
             Box(
                 modifier
                     .fillMaxHeight()
                     .width(2.dp)
                     .background(Primary100)
             )
-            patCount(modifier = modifier.weight(1f), text = "개설한 팟", count = 2)
+            patCount(modifier = modifier.weight(1f), text = "개설한 팟", count = content?.openPats?:0)
         }
         Divider(modifier = modifier.padding(top = 24.dp))
         SettingBox(text = ACCOUNT, onClick = { viewState.value = ACCOUNT })
