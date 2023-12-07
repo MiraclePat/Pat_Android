@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +27,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.FinalButton
 import com.pat.presentation.ui.theme.Gray700
@@ -33,9 +35,38 @@ import com.pat.presentation.ui.theme.KaKaoColor
 import com.pat.presentation.ui.theme.PrimaryMain
 import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.ui.theme.White
+import dagger.hilt.android.AndroidEntryPoint
 
 @Composable
-fun LoginScreenView(modifier: Modifier = Modifier, loginState: MutableState<Boolean>) {
+fun LoginScreenView(
+    modifier: Modifier = Modifier,
+    loginState: MutableState<Boolean>,
+    viewModel: LoginViewModel = hiltViewModel()
+) {
+
+
+    LaunchedEffect(Unit) {
+
+        viewModel.event.collect {
+            when (it) {
+                is Event.LoginSuccess -> {
+                    loginState.value = true
+                }
+                is Event.LoginFailed -> {
+                    //TODO 로그인 실패 메세지 보내기
+                }
+                is Event.RegistrationSuccess ->{
+                    viewModel.onLoginWithKakao()
+                }
+                is Event.RegistrationFailed -> {
+
+                }
+
+                else -> {}
+            }
+        }
+    }
+
     Column(modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         Image(
             modifier = modifier
@@ -53,7 +84,7 @@ fun LoginScreenView(modifier: Modifier = Modifier, loginState: MutableState<Bool
                 .clip(RoundedCornerShape(4.dp))
                 .background(KaKaoColor)
                 .clickable {
-                           // TODO 카카오 로그인
+                   viewModel.onLoginWithKakao()
                 },
         ) {
             Box(modifier.fillMaxHeight(), contentAlignment = Alignment.Center) {
@@ -66,7 +97,7 @@ fun LoginScreenView(modifier: Modifier = Modifier, loginState: MutableState<Bool
             }
             Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
-                    text = "카카오 로그인", style = Typography.titleLarge,
+                    text = "카카오로 시작하기", style = Typography.titleLarge,
                     fontSize = 15.sp, color = Gray700
                 )
             }

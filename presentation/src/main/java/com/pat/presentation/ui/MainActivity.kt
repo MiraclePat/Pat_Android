@@ -36,8 +36,6 @@ class MainActivity : ComponentActivity() {
             )
         }
 
-        KakaoSdk.init(this, BuildConfig.kakao_api_key)
-
         setContent {
             val navController = rememberNavController()
             val isLogin = remember { mutableStateOf(false) }

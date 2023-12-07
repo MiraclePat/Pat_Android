@@ -47,7 +47,7 @@ class MainModule {
 
     @ActivityRetainedScoped
     @Provides
-    fun providePatService(@NormalNetworkObject retrofit: Retrofit): PatService =
+    fun providePatService(@AuthNetworkObject retrofit: Retrofit): PatService =
         retrofit.create(PatService::class.java)
 
     @ActivityRetainedScoped
@@ -78,7 +78,7 @@ class MainModule {
 
     @ActivityRetainedScoped
     @Provides
-    fun provideProofService(@NormalNetworkObject retrofit: Retrofit): ProofService =
+    fun provideProofService(@AuthNetworkObject retrofit: Retrofit): ProofService =
         retrofit.create(ProofService::class.java)
 
     @ActivityRetainedScoped
@@ -98,6 +98,6 @@ class MainModule {
 
     @ActivityRetainedScoped
     @Provides
-    fun provideMemberService(@NormalNetworkObject retrofit: Retrofit): MemberService =
+    fun provideMemberService(@AuthNetworkObject retrofit: Retrofit): MemberService =
         retrofit.create(MemberService::class.java)
 }

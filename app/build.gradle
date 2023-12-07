@@ -19,9 +19,14 @@ android {
 
         buildConfigField "String", "CLIENT_ID", properties["CLIENT_ID"]
         buildConfigField "String", "CLIENT_SECRET", properties["CLIENT_SECRET"]
-        buildConfigField "String", "KAKAO_API_KEY", properties["kakao_api_key"]
+        buildConfigField "String", "kakao_api_key", properties["kakao_api_key"]
+        def kakao_api_key = properties.getProperty('kakao_api_key')
+
+        manifestPlaceholders = [kakao_api_key:kakao_api_key]
+
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
     }
 
     buildTypes {
@@ -60,6 +65,7 @@ dependencies {
     implementation 'com.google.dagger:hilt-android:2.48.1'
     kapt 'com.google.dagger:hilt-android-compiler:2.45'
 
+    implementation "com.kakao.sdk:v2-user:2.14.0"
 
     implementation 'com.orhanobut:logger:2.2.0'
     implementation("io.coil-kt:coil-compose:2.4.0")
