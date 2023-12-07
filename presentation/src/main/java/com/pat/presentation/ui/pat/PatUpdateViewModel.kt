@@ -1,7 +1,6 @@
 package com.pat.presentation.ui.pat
 
 import android.graphics.Bitmap
-import android.net.Uri
 import android.util.Log
 import androidx.camera.core.ImageProxy
 import androidx.lifecycle.SavedStateHandle
@@ -11,22 +10,16 @@ import com.naver.maps.geometry.LatLng
 import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.CreatePatInfo
 import com.pat.domain.model.pat.CreatePatInfoDetail
-import com.pat.domain.model.pat.HomePatContent
-import com.pat.domain.model.pat.HomePatRequestInfo
 import com.pat.domain.model.pat.PatDetailContent
 import com.pat.domain.model.place.PlaceDetailInfo
 import com.pat.domain.model.place.PlaceSearchRequestInfo
 import com.pat.domain.usecase.image.GetByteArrayByUriUseCase
 import com.pat.domain.usecase.pat.DeletePatUseCase
-import com.pat.domain.usecase.pat.GetHomePatsUseCase
 import com.pat.domain.usecase.pat.GetPatDetailUseCase
-import com.pat.domain.usecase.pat.ParticipatePatUseCase
 import com.pat.domain.usecase.pat.UpdatePatUseCase
 import com.pat.domain.usecase.place.GetSearchCoordinateUseCase
 import com.pat.domain.usecase.place.GetSearchPlaceUseCase
 import com.pat.presentation.model.PatBitmap
-import com.pat.presentation.ui.home.HomeUiState
-import com.pat.presentation.ui.post.PostBytes
 import com.pat.presentation.util.image.byteArrayToBitmap
 import com.pat.presentation.util.image.getBitmapByExistedUri
 import com.pat.presentation.util.image.getCompressedBytes

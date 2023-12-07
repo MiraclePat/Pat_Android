@@ -5,10 +5,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -50,8 +52,8 @@ fun HomeMyPat(
             Spacer(modifier.size(20.dp))
             Image(
                 modifier = modifier
-                    .requiredHeight(65.dp)
-                    .requiredWidth(124.dp),
+                    .height(65.dp)
+                    .width(124.dp),
                 painter = painterResource(id = R.drawable.ic_character_01),
                 contentDescription = null
             )
@@ -93,8 +95,8 @@ fun HomeMyPat(
             Spacer(modifier.size(20.dp))
             Image(
                 modifier = modifier
-                    .requiredHeight(64.dp)
-                    .requiredWidth(192.dp),
+                    .height(64.dp)
+                    .width(192.dp),
                 painter = painterResource(id = R.drawable.ic_character_04),
                 contentDescription = null
             )

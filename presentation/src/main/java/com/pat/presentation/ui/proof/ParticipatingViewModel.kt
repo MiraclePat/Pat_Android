@@ -2,13 +2,20 @@ package com.pat.presentation.ui.proof
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.orhanobut.logger.Logger
 import com.pat.domain.model.member.OpenPatRequestInfo
 import com.pat.domain.model.member.ParticipatingContent
 import com.pat.domain.model.member.ParticipatingRequestInfo
+import com.pat.domain.model.pat.HomePatRequestInfo
 import com.pat.domain.usecase.member.GetOpenPatUseCase
 import com.pat.domain.usecase.member.GetParticipatingUseCase
+import com.pat.presentation.ui.home.HomePaging
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,59 +32,43 @@ class ParticipatingViewModel @Inject constructor(
     private val getParticipatingUseCase: GetParticipatingUseCase,
     private val getOpenPatUseCase: GetOpenPatUseCase,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(PattingUiState())
-    val uiState: StateFlow<PattingUiState> = _uiState.asStateFlow()
+    private val size = 10
 
     init {
-        getInProgress()
+        getPatInfo()
     }
 
-    fun getInProgress() {
-        viewModelScope.launch {
-            val result = getParticipatingUseCase(ParticipatingRequestInfo(state = "IN_PROGRESS"))
-            if (result.isSuccess) {
-                val content = result.getOrThrow()
-                _uiState.emit(PattingUiState(content = content))
-            } else {
-                Logger.t("PattingTest").i("${uiState}")
+    fun getPatInfo(
+        state: String? = null
+    ): Flow<PagingData<ParticipatingContent>> {
+        return Pager(
+            config = PagingConfig(pageSize = size),
+            pagingSourceFactory = {
+                ParticipatingPaging(
+                    getParticipatingUseCase,
+                    ParticipatingRequestInfo(
+                        state = state,
+                        size = size
+                    )
+                )
             }
-        }
+        ).flow.cachedIn(viewModelScope)
     }
 
-    fun getScheduled() {
-        viewModelScope.launch {
-            val result = getParticipatingUseCase(ParticipatingRequestInfo(state = "SCHEDULED"))
-            if (result.isSuccess) {
-                val content = result.getOrThrow()
-                _uiState.emit(PattingUiState(content = content))
-            } else {
-                Logger.t("PattingTest").i("${uiState}")
+    fun getOpenPats(
+        state: String? = null
+    ): Flow<PagingData<ParticipatingContent>> {
+        return Pager(
+            config = PagingConfig(pageSize = size),
+            pagingSourceFactory = {
+                OpenPatPaging(
+                    getOpenPatUseCase,
+                    OpenPatRequestInfo(
+                        state = state,
+                        size = size
+                    )
+                )
             }
-        }
-    }
-
-
-    fun getCompleted() {
-        viewModelScope.launch {
-            val result = getParticipatingUseCase(ParticipatingRequestInfo(state = "COMPLETED"))
-            if (result.isSuccess) {
-                val content = result.getOrThrow()
-                _uiState.emit(PattingUiState(content = content))
-            } else {
-                Logger.t("PattingTest").i("${uiState}")
-            }
-        }
-    }
-
-    fun getOpenPats() {
-        viewModelScope.launch {
-            val result = getOpenPatUseCase(OpenPatRequestInfo())
-            if (result.isSuccess) {
-                val content = result.getOrThrow()
-                _uiState.emit(PattingUiState(content = content))
-            } else {
-                Logger.t("PattingTest").i("open")
-            }
-        }
+        ).flow.cachedIn(viewModelScope)
     }
 }

@@ -87,7 +87,7 @@ class MemberRepositoryImpl @Inject constructor(
             memberDataSource.getOpenPats(
                 openPatRequestInfo.lastId,
                 openPatRequestInfo.size,
-                openPatRequestInfo.sort
+                openPatRequestInfo.state
             )
         }
         return if (result.isSuccess) {

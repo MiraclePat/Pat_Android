@@ -1,15 +1,13 @@
 package com.pat.presentation.ui.home.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,10 +17,11 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
 import com.pat.presentation.ui.common.SimpleTextView
-import com.pat.presentation.ui.home.HomeUiState
+import com.pat.presentation.ui.home.HomeViewModel
 import com.pat.presentation.ui.theme.Gray700
 import com.pat.presentation.ui.theme.Typography
 import com.skydoves.landscapist.glide.GlideImage
@@ -31,10 +30,12 @@ import com.skydoves.landscapist.glide.GlideImage
 fun Pats(
     navController: NavController,
     modifier: Modifier = Modifier,
-    uiState: HomeUiState,
+    sort: String,
+    category: String,
     text: String,
+    homeViewModel: HomeViewModel
 ) {
-    val content = uiState.content
+    val uiState = homeViewModel.getPats(category = category, sort = sort).collectAsLazyPagingItems()
 
     Column(modifier.padding(vertical = 20.dp, horizontal = 16.dp)) {
         Text(
@@ -42,21 +43,24 @@ fun Pats(
             style = Typography.titleLarge
         )
         Spacer(Modifier.size(12.dp))
-        val scrollState = rememberScrollState()
-        Row(modifier.horizontalScroll(scrollState)) {
-            content?.forEach { pat ->
-                HomePats(
-                    title = pat.patName,
-                    category = pat.category,
-                    nowPerson = pat.nowPerson,
-                    maxPerson = pat.maxPerson,
-                    startDate = pat.startDate,
-                    imgUri = pat.repImg,
-                    location = pat.location.ifEmpty { "어디서나 가능" },
-                    onClick = {
-                        navController.navigate("patDetail/${pat.patId}") }
-                )
-                Spacer(Modifier.size(10.dp))
+        LazyRow {
+            items(uiState.itemCount) { idx ->
+                val pat = uiState[idx]
+                if (pat != null) {
+                    HomePats(
+                        title = pat.patName,
+                        category = pat.category,
+                        nowPerson = pat.nowPerson,
+                        maxPerson = pat.maxPerson,
+                        startDate = pat.startDate,
+                        imgUri = pat.repImg,
+                        location = pat.location.ifEmpty { "어디서나 가능" },
+                        onClick = {
+                            navController.navigate("patDetail/${pat.patId}")
+                        }
+                    )
+                    Spacer(Modifier.size(10.dp))
+                }
             }
         }
     }
@@ -112,11 +116,13 @@ fun HomePats(
         Text(text = styledText, style = Typography.labelMedium)
         Spacer(modifier.size(6.dp))
         SimpleTextView(text = location, vectorResource = R.drawable.ic_map, iconColor = Gray700)
+        Spacer(modifier.size(6.dp))
         SimpleTextView(
             text = startDate,
             vectorResource = R.drawable.ic_calendar,
             iconColor = Gray700
         )
+        Spacer(modifier.size(6.dp))
         SimpleTextView(
             text = "$nowPerson / $maxPerson",
             vectorResource = R.drawable.ic_user,

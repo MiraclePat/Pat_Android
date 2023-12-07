@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -35,6 +36,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.orhanobut.logger.Logger
 import com.pat.domain.model.member.ParticipatingContent
 import com.pat.presentation.R
@@ -57,9 +60,7 @@ fun ParticipatingScreenView(
     navController: NavController,
 ) {
     val patStatusList = listOf("참여중인 팟", "참여예정 팟", "완료한 팟", "개설한 팟")
-    val patState = remember { mutableStateOf(patStatusList.first()) }
-    val scrollState = rememberScrollState()
-    val uiState by participatingViewModel.uiState.collectAsState()
+    val patStateText = remember { mutableStateOf(patStatusList.first()) }
 
 
     Column(
@@ -67,7 +68,6 @@ fun ParticipatingScreenView(
             .fillMaxWidth()
             .fillMaxHeight()
             .padding(top = 33.dp, end = 16.dp, start = 16.dp)
-            .verticalScroll(scrollState)
     ) {
         Row(
             modifier
@@ -77,7 +77,7 @@ fun ParticipatingScreenView(
             verticalAlignment = Alignment.CenterVertically
         ) {
             patStatusList.forEach { patStatus ->
-                PatStatus(patState = patState, text = patStatus)
+                PatStatus(patState = patStateText, text = patStatus)
             }
         }
         Spacer(modifier = modifier.padding(bottom = 28.dp))
@@ -90,62 +90,35 @@ fun ParticipatingScreenView(
                 else -> "예외 발생"
             }
         }
-        when (patState.value) {
-            "참여중인 팟" -> {
-                participatingViewModel.getInProgress()
-                uiState.content?.forEach { participatingContent ->
+
+        val patState = when (patStateText.value) {
+            "참여예정 팟" -> "SCHEDULED"
+            "참여중인 팟" -> "IN_PROGRESS"
+            "완료한 팟" -> "COMPLETED"
+            else -> "예외 발생"
+        }
+
+        val uiState: LazyPagingItems<ParticipatingContent> = if (patStateText.value == "개설한 팟") {
+            participatingViewModel.getOpenPats().collectAsLazyPagingItems()
+        } else {
+            participatingViewModel.getPatInfo(state = patState).collectAsLazyPagingItems()
+        }
+        LazyColumn() {
+            items(uiState.itemCount) { idx ->
+                val pat = uiState[idx]
+                if (pat != null) {
                     ParticipatePat(
-                        content = participatingContent,
+                        content = pat,
                         onClick = {
-                            navController.navigate("participatingDetail/${participatingContent.patId}/ ")
+                            navController.navigate("participatingDetail/${pat.patId}/ ")
                         },
-                        buttonText = buttonText(participatingContent.state),
-                        color = if (participatingContent.state == "COMPLETED") Gray300 else PrimaryMain,
+                        buttonText = buttonText(patState),
+                        color = if (patState == "COMPLETED") Gray300 else PrimaryMain,
                         buttonClick = {
-                              navController.navigate("participatingDetail/${participatingContent.patId}/true")
-                        }
-                    )
-                }
-            }
-
-            "참여예정 팟" -> {
-                participatingViewModel.getScheduled()
-                uiState.content?.forEach { participatingContent ->
-                    ParticipatePat(
-                        content = participatingContent,
-                        onClick = { navController.navigate("participatingDetail/${participatingContent.patId}/ ") },
-                        buttonText = "상세보기"
-                    )
-                }
-            }
-
-            "완료한 팟" -> {
-                participatingViewModel.getCompleted()
-                uiState.content?.forEach { participatingContent ->
-                    ParticipatePat(
-                        content = participatingContent,
-                        onClick = { navController.navigate("participatingDetail/${participatingContent.patId}/ ") },
-                        buttonText = "종료된 팟",
-                        color = Gray300
-                    )
-                }
-            }
-
-            "개설한 팟" -> {
-                participatingViewModel.getOpenPats()
-                uiState.content?.forEach { participatingContent ->
-                    ParticipatePat(
-                        content = participatingContent,
-                        onClick = { navController.navigate("participatingDetail/${participatingContent.patId}/ ") },
-                        buttonText = buttonText(participatingContent.state),
-                        color = if (participatingContent.state == "COMPLETED") Gray300 else PrimaryMain,
-                        buttonClick = {
-                            if(participatingContent.state == "IN_PROGRESS"){
-                                navController.navigate("participatingDetail/${participatingContent.patId}/true")
-                            }else{
-                                navController.navigate("participatingDetail/${participatingContent.patId}/ ")
-
-                            }
+                            if (patState == "IN_PROGRESS")
+                                navController.navigate("participatingDetail/${pat.patId}/true")
+                            else
+                                navController.navigate("participatingDetail/${pat.patId}/ ")
                         }
                     )
                 }
