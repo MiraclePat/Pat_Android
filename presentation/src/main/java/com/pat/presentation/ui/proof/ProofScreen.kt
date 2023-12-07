@@ -57,7 +57,6 @@ import com.pat.presentation.ui.common.SelectButton
 import com.pat.presentation.ui.common.SimpleTextView
 import com.pat.presentation.ui.common.setUnderLine
 import com.pat.presentation.ui.pat.DateText
-import com.pat.presentation.ui.pat.ProofImageView
 import com.pat.presentation.ui.theme.FailCircleColor
 import com.pat.presentation.ui.theme.FailTextColor
 import com.pat.presentation.ui.theme.Gray200
@@ -500,9 +499,7 @@ fun ProofScreen(
                     SelectButton(
                         text = "이 사진으로 인증하기",
                         onClick = {
-                            val proofImageByte = viewModel.proofImageBytes
-                            viewModel.proofPat(proofImageByte)
-                            showBottomSheet = false
+                            viewModel.proofPat()
                         },
                         backColor = if (proofBitmap == null) Gray300 else PrimaryMain,
                         textColor = if (proofBitmap == null) White else White,

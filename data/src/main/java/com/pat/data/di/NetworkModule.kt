@@ -2,6 +2,8 @@ package com.pat.data.di
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.pat.data.BuildConfig
+import com.pat.data.interceptor.AuthInterceptor
+import com.pat.data.source.AuthDataSource
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
@@ -24,6 +26,10 @@ private const val BASE_URL_NAVER_GEOCODE_API = "https://naveropenapi.apigw.ntrus
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class NormalNetworkObject
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class AuthNetworkObject
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
@@ -148,6 +154,46 @@ object NetworkModule {
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
     }
+
+    @AuthNetworkObject
+    @Singleton
+    @Provides
+    fun provideAuthOkHttpClient(
+        authInterceptor: AuthInterceptor,
+    ): OkHttpClient =
+        if (BuildConfig.DEBUG) {
+            val loggingInterceptor = HttpLoggingInterceptor().apply {
+                setLevel(HttpLoggingInterceptor.Level.BODY)
+            }
+            OkHttpClient.Builder()
+                .addInterceptor(authInterceptor)
+                .addInterceptor(loggingInterceptor)
+                .build()
+        } else {
+            OkHttpClient.Builder()
+                .addInterceptor(authInterceptor)
+                .build()
+        }
+
+    @AuthNetworkObject
+    @Singleton
+    @Provides
+    fun provideAuthRetrofit(
+        @AuthNetworkObject okHttpClient: OkHttpClient,
+        moshi: Moshi,
+    ): Retrofit {
+        return Retrofit.Builder()
+            .client(okHttpClient)
+            .baseUrl(BASE_URL)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+    }
+
+    @Singleton
+    @Provides
+    fun providesAuthInterceptor(
+        dataSource: AuthDataSource,
+    ): AuthInterceptor = AuthInterceptor(dataSource)
 
     @Singleton
     @Provides

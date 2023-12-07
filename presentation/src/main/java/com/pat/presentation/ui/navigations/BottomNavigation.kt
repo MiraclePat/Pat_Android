@@ -30,13 +30,13 @@ import com.pat.presentation.ui.map.MapScreenView
 import com.pat.presentation.ui.pat.PatDetailView
 import com.pat.presentation.ui.pat.PatUpdateView
 import com.pat.presentation.ui.pat.PatUpdateViewModel
-import com.pat.presentation.ui.pat.SettingPattingCamera
 import com.pat.presentation.ui.pat.components.UpdateSettingCamera
 import com.pat.presentation.ui.post.PostScreenView
 import com.pat.presentation.ui.post.PostViewModel
 import com.pat.presentation.ui.proof.ParticipatingScreenView
 import com.pat.presentation.ui.proof.ProofScreenView
 import com.pat.presentation.ui.proof.ProofViewModel
+import com.pat.presentation.ui.proof.SettingPattingCamera
 import com.pat.presentation.ui.setting.SettingScreenView
 import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.PrimaryMain
