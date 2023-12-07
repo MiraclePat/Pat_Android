@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.HomePatContent
 import com.pat.presentation.ui.home.HomeViewModel
@@ -42,11 +43,10 @@ fun HomeSearchView(
     searchValue: MutableState<String>,
     onSearchScreen: MutableState<Boolean>,
     navController: NavController,
-    homeViewModel: HomeViewModel = hiltViewModel()
+    homeViewModel: HomeViewModel
 ) {
-    val uiState by homeViewModel.searchUiState.collectAsState()
     val backPressedState by remember { mutableStateOf(true) }
-    val content = uiState.content
+    val content = homeViewModel.getPats(query = searchValue.value).collectAsLazyPagingItems()
     var searchTextView by remember { mutableStateOf(searchValue) }
 
     BackHandler(enabled = backPressedState) {
@@ -59,7 +59,6 @@ fun HomeSearchView(
             SearchTopBar(
                 searchValue = searchValue,
                 inputEnter = {
-                    homeViewModel.searchPat(searchValue.value)
                     searchTextView = searchValue
                 },
                 onSearchScreen = onSearchScreen
@@ -67,7 +66,7 @@ fun HomeSearchView(
         },
     ) { innerPadding ->
 
-        if (content.isNullOrEmpty()) {
+        if (content.itemCount == 0) {
             Column(
                 modifier = modifier
                     .padding(innerPadding)
@@ -106,30 +105,32 @@ fun HomeSearchView(
                     Text("'${searchTextView.value}' 결과입니다.", style = Typography.titleLarge)
                     Spacer(modifier = modifier.weight(1f)) // 임의 값
                     Text(
-                        "총 ${content.size}개 검색결과.",
+                        "총 ${content.itemCount}개 검색결과.",
                         style = Typography.labelSmall,
                         color = Gray800
                     )
                 }
                 LazyVerticalGrid(
-                    modifier = modifier.padding(top = 20.dp, start = 30.dp, end = 30.dp),
+                    modifier = modifier.padding(top = 20.dp, start = 30.dp, end = 30.dp, bottom = 24.dp),
                     columns = GridCells.Fixed(2),
                     horizontalArrangement = Arrangement.Center,
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    items(content) { pat ->
-                        HomePats(
-                            modifier = modifier.weight(1f),
-                            title = pat.patName,
-                            category = pat.category,
-                            nowPerson = pat.nowPerson,
-                            maxPerson = pat.maxPerson,
-                            startDate = pat.startDate,
-                            imgUri = pat.repImg,
-                            location = pat.location ?: "어디서나 가능",
-                            onClick = {
-                                navController.navigate("patDetail/${pat.patId}") }
-                        )
+                    items(content.itemCount) { idx ->
+                        val pat = content[idx]
+                        if (pat != null) {
+                            HomePats(
+                                title = pat.patName,
+                                category = pat.category,
+                                nowPerson = pat.nowPerson,
+                                maxPerson = pat.maxPerson,
+                                startDate = pat.startDate,
+                                imgUri = pat.repImg,
+                                location = pat.location.ifEmpty { "어디서나 가능" },
+                                onClick = {
+                                    navController.navigate("patDetail/${pat.patId}") }
+                            )
+                        }
                     }
                 }
             }

@@ -1,21 +1,21 @@
-package com.pat.presentation.ui.home
+package com.pat.presentation.ui.proof
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.pat.domain.model.pat.HomePatContent
-import com.pat.domain.model.pat.HomePatRequestInfo
-import com.pat.domain.usecase.pat.GetHomePatsUseCase
+import com.pat.domain.model.member.OpenPatRequestInfo
+import com.pat.domain.model.member.ParticipatingContent
+import com.pat.domain.usecase.member.GetOpenPatUseCase
 
-class HomePaging(
-    private val getHomePatsUseCase: GetHomePatsUseCase,
-    private val homePatRequestInfo: HomePatRequestInfo
+class OpenPatPaging(
+    private val getOpenPatUseCase: GetOpenPatUseCase,
+    private val openRequestInfo: OpenPatRequestInfo
 ) :
-    PagingSource<Int, HomePatContent>() {
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, HomePatContent> {
+    PagingSource<Int, ParticipatingContent>() {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ParticipatingContent> {
         return try {
             val next = params.key
-            val response = getHomePatsUseCase(
-                homePatRequestInfo.copy(
+            val response = getOpenPatUseCase(
+                openRequestInfo.copy(
                     lastId = next?.toLong()
                 )
             ).getOrThrow()
@@ -29,7 +29,7 @@ class HomePaging(
         }
     }
 
-    override fun getRefreshKey(state: PagingState<Int, HomePatContent>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, ParticipatingContent>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             val anchorPage = state.closestPageToPosition(anchorPosition)
             anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)

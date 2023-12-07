@@ -1,7 +1,10 @@
 package com.pat.presentation.ui.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -26,10 +29,13 @@ import com.pat.presentation.ui.home.components.HomeSearchView
 import com.pat.presentation.ui.home.components.HomeTopBar
 import com.pat.presentation.ui.home.components.Pats
 import com.pat.presentation.ui.home.components.SearchTextField
+import com.pat.presentation.ui.theme.Gray800
+import com.pat.presentation.ui.theme.GreenBack
 import com.pat.presentation.util.POST
 
 @Composable
 fun HomeScreenView(
+    modifier: Modifier = Modifier,
     navController: NavController,
 ) {
     val homeViewModel: HomeViewModel = hiltViewModel()
@@ -47,7 +53,6 @@ fun HomeScreenView(
                         SearchTextField(
                             state = searchValue,
                             inputEnter = {
-                                homeViewModel.searchPat(searchValue.value)
                                 onSearchScreen.value = true
                             })
                     },
@@ -60,25 +65,29 @@ fun HomeScreenView(
             },
         ) { innerPadding ->
             Column(
-                modifier = Modifier
+                modifier = modifier
+                    .fillMaxSize()
                     .padding(innerPadding)
                     .verticalScroll(scrollState),
             ) {
-                val hotPats = homeViewModel.getHotPats(categoryState.value).collectAsLazyPagingItems()
-                val recentPats = homeViewModel.getRecentPats(categoryState.value).collectAsLazyPagingItems()
-
                 HomeMyPat(content = homeBanner.content, navController = navController)
                 HomeCategory(state = categoryState)
                 Pats(
-                    navController,
-                    uiState = hotPats,
+                    modifier = modifier,
+                    navController = navController,
+                    sort = "HOT",
+                    category = categoryState.value,
                     text = stringResource(id = R.string.home_hot_pat_title),
+                    homeViewModel = homeViewModel
                 )
                 Spacer(Modifier.size(20.dp))
                 Pats(
-                    navController,
-                    uiState = recentPats,
+                    modifier = modifier,
+                    navController = navController,
+                    sort = "LATEST",
+                    category = categoryState.value,
                     text = stringResource(id = R.string.home_recent_pat_title),
+                    homeViewModel = homeViewModel
                 )
             }
         }
@@ -87,6 +96,7 @@ fun HomeScreenView(
             searchValue = searchValue,
             onSearchScreen = onSearchScreen,
             navController = navController,
+            homeViewModel = homeViewModel
         )
     }
 }

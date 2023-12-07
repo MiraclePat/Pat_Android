@@ -1,17 +1,13 @@
 package com.pat.presentation.ui.home.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,12 +17,11 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.paging.compose.LazyPagingItems
-import com.orhanobut.logger.Logger
-import com.pat.domain.model.pat.HomePatContent
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
 import com.pat.presentation.ui.common.SimpleTextView
+import com.pat.presentation.ui.home.HomeViewModel
 import com.pat.presentation.ui.theme.Gray700
 import com.pat.presentation.ui.theme.Typography
 import com.skydoves.landscapist.glide.GlideImage
@@ -35,16 +30,20 @@ import com.skydoves.landscapist.glide.GlideImage
 fun Pats(
     navController: NavController,
     modifier: Modifier = Modifier,
-    uiState: LazyPagingItems<HomePatContent>,
+    sort: String,
+    category: String,
     text: String,
+    homeViewModel: HomeViewModel
 ) {
+    val uiState = homeViewModel.getPats(category = category, sort = sort).collectAsLazyPagingItems()
+
     Column(modifier.padding(vertical = 20.dp, horizontal = 16.dp)) {
         Text(
             text = text,
             style = Typography.titleLarge
         )
         Spacer(Modifier.size(12.dp))
-        LazyRow() {
+        LazyRow {
             items(uiState.itemCount) { idx ->
                 val pat = uiState[idx]
                 if (pat != null) {
@@ -117,11 +116,13 @@ fun HomePats(
         Text(text = styledText, style = Typography.labelMedium)
         Spacer(modifier.size(6.dp))
         SimpleTextView(text = location, vectorResource = R.drawable.ic_map, iconColor = Gray700)
+        Spacer(modifier.size(6.dp))
         SimpleTextView(
             text = startDate,
             vectorResource = R.drawable.ic_calendar,
             iconColor = Gray700
         )
+        Spacer(modifier.size(6.dp))
         SimpleTextView(
             text = "$nowPerson / $maxPerson",
             vectorResource = R.drawable.ic_user,
