@@ -6,10 +6,11 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.pat.domain.model.member.OpenPatRequestInfo
-import com.pat.domain.model.member.ParticipatingContent
 import com.pat.domain.model.member.ParticipatingRequestInfo
 import com.pat.domain.usecase.member.GetOpenPatUseCase
 import com.pat.domain.usecase.member.GetParticipatingUseCase
+import com.pat.presentation.ui.proof.paging.OpenPatPaging
+import com.pat.presentation.ui.proof.paging.ParticipatingPaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow

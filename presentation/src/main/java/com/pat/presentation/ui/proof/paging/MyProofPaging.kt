@@ -1,12 +1,13 @@
-package com.pat.presentation.ui.proof
+package com.pat.presentation.ui.proof.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.orhanobut.logger.Logger
 import com.pat.domain.model.proof.ProofContent
 import com.pat.domain.model.proof.ProofRequestInfo
 import com.pat.domain.usecase.proof.GetMyProofUseCase
 
-class ProofPaging(
+class MyProofPaging(
     private val patId: Long,
     private val getMyProofUseCase: GetMyProofUseCase,
     private val proofRequestInfo: ProofRequestInfo
@@ -14,6 +15,8 @@ class ProofPaging(
     PagingSource<Int, ProofContent>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ProofContent> {
         return try {
+            Logger.t("proofTest").i("patId : $patId")
+
             val next = params.key
             val response = getMyProofUseCase(
                 patId, proofRequestInfo.copy(

@@ -1,21 +1,21 @@
-package com.pat.presentation.ui.proof
+package com.pat.presentation.ui.proof.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.pat.domain.model.member.OpenPatRequestInfo
 import com.pat.domain.model.member.ParticipatingContent
-import com.pat.domain.model.member.ParticipatingRequestInfo
-import com.pat.domain.usecase.member.GetParticipatingUseCase
+import com.pat.domain.usecase.member.GetOpenPatUseCase
 
-class ParticipatingPaging(
-    private val getParticipatingUseCase: GetParticipatingUseCase,
-    private val participatingRequestInfo: ParticipatingRequestInfo
+class OpenPatPaging(
+    private val getOpenPatUseCase: GetOpenPatUseCase,
+    private val openRequestInfo: OpenPatRequestInfo
 ) :
     PagingSource<Int, ParticipatingContent>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ParticipatingContent> {
         return try {
             val next = params.key
-            val response = getParticipatingUseCase(
-                participatingRequestInfo.copy(
+            val response = getOpenPatUseCase(
+                openRequestInfo.copy(
                     lastId = next?.toLong()
                 )
             ).getOrThrow()

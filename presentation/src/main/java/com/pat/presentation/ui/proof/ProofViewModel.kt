@@ -11,7 +11,6 @@ import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.orhanobut.logger.Logger
 import com.pat.domain.model.member.ParticipatingDetailContent
-import com.pat.domain.model.member.ParticipatingRequestInfo
 import com.pat.domain.model.proof.ProofPatInfo
 import com.pat.domain.model.proof.ProofContent
 import com.pat.domain.model.proof.ProofRequestInfo
@@ -21,6 +20,8 @@ import com.pat.domain.usecase.pat.WithdrawPatUseCase
 import com.pat.domain.usecase.proof.GetMyProofUseCase
 import com.pat.domain.usecase.proof.GetSomeoneProofUseCase
 import com.pat.domain.usecase.proof.ProofPatUseCase
+import com.pat.presentation.ui.proof.paging.MyProofPaging
+import com.pat.presentation.ui.proof.paging.SomeoneProofPaging
 import com.pat.presentation.util.image.byteArrayToBitmap
 import com.pat.presentation.util.image.getCompressedBytes
 import com.pat.presentation.util.image.getRotatedBitmap
@@ -37,10 +38,6 @@ import javax.inject.Inject
 
 data class ParticipatingUiState(
     val content: ParticipatingDetailContent? = null
-)
-
-data class ProofUiState(
-    val content: List<ProofContent>? = null
 )
 
 @HiltViewModel
@@ -67,15 +64,15 @@ class ProofViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ParticipatingUiState())
     val uiState: StateFlow<ParticipatingUiState> = _uiState.asStateFlow()
 
-    private val _proofs = MutableStateFlow(ProofUiState())
-    val proofs: StateFlow<ProofUiState> = _proofs.asStateFlow()
+    private val pagingId = MutableStateFlow(-1L)
 
-    val myProof =
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val myProof = pagingId.flatMapLatest { id ->
         Pager(
             config = PagingConfig(pageSize = size),
             pagingSourceFactory = {
-                ProofPaging(
-                    patId,
+                MyProofPaging(
+                    id,
                     getMyProofUseCase,
                     ProofRequestInfo(
                         size = size
@@ -84,11 +81,32 @@ class ProofViewModel @Inject constructor(
 
             }
         ).flow.cachedIn(viewModelScope)
+    }
+
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val someoneProof = pagingId.flatMapLatest { id ->
+        Pager(
+            config = PagingConfig(pageSize = size),
+            pagingSourceFactory = {
+                SomeoneProofPaging(
+                    id,
+                    getSomeoneProofUseCase,
+                    ProofRequestInfo(
+                        size = size
+                    )
+                )
+
+            }
+        ).flow.cachedIn(viewModelScope)
+    }
+
 
 
     fun getParticipatingDetail(getPatId: Long) {
         viewModelScope.launch {
             patId = getPatId
+            pagingId.emit(patId)
             val result = getParticipatingDetailUseCase(patId)
             if (result.isSuccess) {
                 val content = result.getOrThrow()
@@ -96,7 +114,6 @@ class ProofViewModel @Inject constructor(
             } else {
                 Logger.t("MainTest").i("${uiState}")
             }
-            getMyProof(patId)
         }
     }
 
@@ -133,30 +150,6 @@ class ProofViewModel @Inject constructor(
                 getParticipatingDetail(_uiState.value.content!!.patId)
             } else {
                 Logger.t("proof").i("실패")
-            }
-        }
-    }
-
-    fun getMyProof(patId: Long) {
-        viewModelScope.launch {
-            val result = getMyProofUseCase(patId, ProofRequestInfo())
-            if (result.isSuccess) {
-                val content = result.getOrThrow()
-                _proofs.emit(ProofUiState(content = content))
-            } else {
-                Logger.t("MainTest").i("patid: ${patId}")
-            }
-        }
-    }
-
-    fun getSomeoneProof(patId: Long) {
-        viewModelScope.launch {
-            val result = getSomeoneProofUseCase(patId, ProofRequestInfo())
-            if (result.isSuccess) {
-                val content = result.getOrThrow()
-                _proofs.emit(ProofUiState(content = content))
-            } else {
-                Logger.t("MainTest").i("${proofs}")
             }
         }
     }

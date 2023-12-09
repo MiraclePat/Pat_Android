@@ -24,6 +24,7 @@ import com.pat.domain.model.pat.HomePatContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
 import com.pat.presentation.ui.common.SimpleTextView
+import com.pat.presentation.ui.common.reduceText
 import com.pat.presentation.ui.theme.Gray700
 import com.pat.presentation.ui.theme.Typography
 import com.skydoves.landscapist.glide.GlideImage
@@ -46,7 +47,6 @@ fun Pats(
         LazyRow {
             items(uiState.itemCount) { idx ->
                 uiState[idx]?.let { pat ->
-                    Logger.t("MainTest").i("uistate : ${pat.category}")
                     HomePats(
                         title = pat.patName,
                         category = pat.category,
@@ -78,39 +78,8 @@ fun HomePats(
     maxPerson: Int,
     category: String,
 ) {
-    val styledTitle = buildAnnotatedString {
-        if (title.length > 9) {
-            withStyle(
-                style = Typography.labelMedium.toSpanStyle()
-            ) {
-                append(title.substring(0, 9))
-            }
-            withStyle(style = Typography.labelMedium.toSpanStyle()) {
-                append("...")
-            }
-        } else {
-            withStyle(style = Typography.labelMedium.toSpanStyle()) {
-                append(title)
-            }
-        }
-    }
-
-    val styledLocation = buildAnnotatedString {
-        if (location.length > 9) {
-            withStyle(
-                style = Typography.labelMedium.toSpanStyle()
-            ) {
-                append(location.substring(0, 9))
-            }
-            withStyle(style = Typography.labelMedium.toSpanStyle()) {
-                append("...")
-            }
-        } else {
-            withStyle(style = Typography.labelMedium.toSpanStyle()) {
-                append(location)
-            }
-        }
-    }
+    val styledTitle = reduceText(title, 9)
+    val styledLocation = reduceText(location, 9)
 
     Column(
         modifier

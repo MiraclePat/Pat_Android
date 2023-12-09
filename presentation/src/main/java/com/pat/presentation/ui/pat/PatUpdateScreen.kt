@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -21,11 +20,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -41,7 +38,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.PatDetailContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBoxList
@@ -50,14 +46,10 @@ import com.pat.presentation.ui.common.CustomDialog
 import com.pat.presentation.ui.common.CustomPicker
 import com.pat.presentation.ui.common.CustomTextField
 import com.pat.presentation.ui.common.DateTimePickerView
-import com.pat.presentation.ui.common.ExampleImageView
 import com.pat.presentation.ui.common.FinalButton
 import com.pat.presentation.ui.common.SelectDayButtonList
-import com.pat.presentation.ui.common.SelectImageList
 import com.pat.presentation.ui.common.WheelTimePickerView
-import com.pat.presentation.ui.common.checkDateFormat
 import com.pat.presentation.ui.common.convertDateFormat
-import com.pat.presentation.ui.common.convertDateViewFormat
 import com.pat.presentation.ui.common.convertTimeFormat
 import com.pat.presentation.ui.common.convertTimeViewFormat
 import com.pat.presentation.ui.pat.components.UpdateExampleImageView
@@ -72,7 +64,6 @@ import com.pat.presentation.ui.post.MIN_DETAIL
 import com.pat.presentation.ui.post.MIN_PERSON
 import com.pat.presentation.ui.post.MIN_PROOF
 import com.pat.presentation.ui.post.MIN_TITLE
-import com.pat.presentation.ui.post.SelectLocationButtonList
 import com.pat.presentation.ui.post.compareDates
 import com.pat.presentation.ui.post.compareTimes
 import com.pat.presentation.ui.post.components.PostTitleBox

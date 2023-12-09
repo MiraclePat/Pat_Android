@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -47,7 +48,9 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.orhanobut.logger.Logger
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.pat.domain.model.member.ParticipatingDetailContent
 import com.pat.domain.model.proof.ProofContent
 import com.pat.presentation.R
@@ -55,8 +58,10 @@ import com.pat.presentation.ui.common.CategoryBox
 import com.pat.presentation.ui.common.DayButtonList
 import com.pat.presentation.ui.common.FinalButton
 import com.pat.presentation.ui.common.IconWithTextView
+import com.pat.presentation.ui.common.LoadingProgressBar
 import com.pat.presentation.ui.common.SelectButton
 import com.pat.presentation.ui.common.SimpleTextView
+import com.pat.presentation.ui.common.reduceText
 import com.pat.presentation.ui.common.setUnderLine
 import com.pat.presentation.ui.navigations.BottomNavItem
 import com.pat.presentation.ui.pat.DateText
@@ -106,7 +111,6 @@ fun ProofScreenView(
     }
 
     val uiState by proofViewModel.uiState.collectAsState()
-    val proofState by proofViewModel.proofs.collectAsState()
     val scrollState = rememberScrollState()
     Scaffold(
         modifier = modifier
@@ -145,7 +149,6 @@ fun ProofScreenView(
                     content = uiState.content!!,
                     viewModel = proofViewModel,
                     navController = navController,
-                    proofContents = proofState.content,
                     showBottomSheet = showBottomSheet,
                 )
 
@@ -161,9 +164,10 @@ fun ProofScreen(
     viewModel: ProofViewModel,
     content: ParticipatingDetailContent,
     navController: NavController,
-    proofContents: List<ProofContent>?,
     showBottomSheet: Boolean? = false
 ) {
+    val myProof = viewModel.myProof.collectAsLazyPagingItems()
+    val someoneProof = viewModel.someoneProof.collectAsLazyPagingItems()
     var spreadState by remember { mutableStateOf(false) }
     var myProofState by remember { mutableStateOf(true) }
     val viewStartTime = content.startTime
@@ -240,8 +244,9 @@ fun ProofScreen(
                 .padding(horizontal = 12.dp, vertical = 14.dp)
         ) {
             Row() {
+                val styledLocation = reduceText(content.location.ifEmpty { "어디서나 가능" }, 9)
                 SimpleTextView(
-                    text = content.location.ifEmpty { "어디서나 가능" },
+                    text = styledLocation.toString(),
                     vectorResource = R.drawable.ic_map,
                     spacePadding = 6.dp,
                     style = Typography.labelSmall.copy(
@@ -419,7 +424,6 @@ fun ProofScreen(
         Row(modifier = modifier.padding(top = 24.dp)) {
             Box(modifier.clickable {
                 myProofState = true
-                viewModel.getMyProof(content.patId)
             }) {
                 Text(
                     modifier = if (myProofState) setUnderLine else modifier,
@@ -432,7 +436,6 @@ fun ProofScreen(
             Spacer(modifier = modifier.padding(end = 14.dp))
             Box(modifier.clickable {
                 myProofState = false
-                viewModel.getSomeoneProof(content.patId)
             }) {
                 Text(
                     modifier = if (!myProofState) setUnderLine else modifier,
@@ -448,14 +451,14 @@ fun ProofScreen(
                 success = content.myProof,
                 fail = content.myFailProof,
                 all = content.maxProof,
-                imgUriList = proofContents
+                imgUriList = myProof
             )
         } else {
             ProofStatus(
                 success = content.allProof,
                 fail = content.allFailProof,
                 all = content.allMaxProof,
-                imgUriList = proofContents,
+                imgUriList = someoneProof,
                 isAll = "전체"
             )
         }
@@ -545,7 +548,7 @@ fun ProofStatus(
     fail: Int,
     all: Int,
     isAll: String = "",
-    imgUriList: List<ProofContent>?
+    imgUriList: LazyPagingItems<ProofContent>
 ) {
     val title = if (isAll == "") "나의 인증사진" else "참여자들의 인증사진"
     Row() {
@@ -566,7 +569,7 @@ fun ProofStatus(
     Text(title, style = Typography.titleLarge, color = Gray800)
 
     // TODO 연동 시 lazyRow로 수정
-    if (imgUriList.isNullOrEmpty()) {
+    if (imgUriList.itemCount == 0) {
         Box(
             modifier
                 .padding(top = 12.dp)
@@ -575,19 +578,21 @@ fun ProofStatus(
             Text("인증 내역이 없어요!", style = Typography.titleLarge, color = Gray800)
         }
     } else {
-        val scrollState = rememberScrollState()
-        Row(
-            modifier
-                .padding(top = 12.dp)
-                .horizontalScroll(scrollState)
-        ) {
-            imgUriList.forEach { img ->
-                GlideImage(
-                    modifier = modifier
-                        .size(130.dp, 140.dp)
-                        .clip(RoundedCornerShape(12.dp)),
-                    imageModel = { img.proofImg })
-                Spacer(modifier = modifier.padding(end = 10.dp))
+        if (imgUriList.loadState.append is LoadState.Loading || imgUriList.loadState.refresh is LoadState.Loading || imgUriList.loadState.prepend is LoadState.Loading) {
+            LoadingProgressBar(modifier.size(130.dp, 140.dp))
+        } else {
+            LazyRow(modifier.padding(top = 12.dp)) {
+                items(imgUriList.itemCount) { idx ->
+                    imgUriList[idx]?.let { img ->
+                        GlideImage(
+                            modifier = modifier
+                                .size(130.dp, 140.dp)
+                                .clip(RoundedCornerShape(12.dp)),
+                            imageModel = { img.proofImg })
+                        Spacer(modifier = modifier.padding(end = 10.dp))
+
+                    }
+                }
             }
         }
     }
