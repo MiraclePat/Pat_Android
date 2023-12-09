@@ -47,6 +47,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.orhanobut.logger.Logger
 import com.pat.domain.model.member.ParticipatingDetailContent
 import com.pat.domain.model.proof.ProofContent
 import com.pat.presentation.R
@@ -139,7 +140,7 @@ fun ProofScreenView(
                 .padding(innerPadding)
                 .verticalScroll(scrollState),
         ) {
-            if (uiState.content != null) {
+            uiState.content?.let {
                 ProofScreen(
                     content = uiState.content!!,
                     viewModel = proofViewModel,
@@ -147,6 +148,7 @@ fun ProofScreenView(
                     proofContents = proofState.content,
                     showBottomSheet = showBottomSheet,
                 )
+
             }
         }
     }
@@ -172,6 +174,10 @@ fun ProofScreen(
     var showBottomSheet by remember { mutableStateOf(showBottomSheet) }
     val proofBitmap by viewModel.proofBitmap.collectAsState() //인증사진
     val bottomSheetState by viewModel.bottomSheetState.collectAsState()
+
+    val proofAble = checkProofTime(viewStartTime, viewEndTime) && content.dayList.contains(
+        getDayOfWeek()
+    )
 
 
     @Composable
@@ -317,7 +323,7 @@ fun ProofScreen(
                 Text("위치 정보", style = Typography.titleLarge, color = Gray800)
                 Spacer(modifier.padding(bottom = 14.dp))
                 IconWithTextView(
-                    content.location,
+                    content.location.ifEmpty { "어디서나 가능" },
                     iconResource = R.drawable.ic_map
                 )
                 Spacer(modifier.padding(bottom = 28.dp))
@@ -411,10 +417,9 @@ fun ProofScreen(
                 .background(Gray50)
         )
         Row(modifier = modifier.padding(top = 24.dp)) {
-
             Box(modifier.clickable {
                 myProofState = true
-                viewModel.getMyProof()
+                viewModel.getMyProof(content.patId)
             }) {
                 Text(
                     modifier = if (myProofState) setUnderLine else modifier,
@@ -427,7 +432,7 @@ fun ProofScreen(
             Spacer(modifier = modifier.padding(end = 14.dp))
             Box(modifier.clickable {
                 myProofState = false
-                viewModel.getSomeoneProof()
+                viewModel.getSomeoneProof(content.patId)
             }) {
                 Text(
                     modifier = if (!myProofState) setUnderLine else modifier,
@@ -467,7 +472,11 @@ fun ProofScreen(
                 if (content.isCompleted) {
                     finalButton("인증완료!")
                 } else {
-                    FinalButton(text = "인증하기", onClick = { showBottomSheet = true })
+                    if (!proofAble) {
+                        finalButton("인증하기(시간과 요일 확인해주세요)")
+                    } else {
+                        FinalButton(text = "인증하기", onClick = { showBottomSheet = true })
+                    }
                 }
             }
 
@@ -511,7 +520,8 @@ fun ProofScreen(
                     SelectButton(
                         text = "이 사진으로 인증하기",
                         onClick = {
-                            viewModel.proofPat()
+                            showBottomSheet = false
+                            viewModel.proofPat(content.patId)
                         },
                         backColor = if (proofBitmap == null) Gray300 else PrimaryMain,
                         textColor = if (proofBitmap == null) White else White,

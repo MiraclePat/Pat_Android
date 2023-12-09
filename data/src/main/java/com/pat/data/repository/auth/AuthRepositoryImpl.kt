@@ -9,6 +9,7 @@ import com.pat.data.model.auth.FirebaseTokenDTO
 import com.pat.data.model.auth.KakaoCode
 import com.pat.data.model.auth.KakaoToken
 import com.pat.data.source.AuthDataSource
+import com.pat.data.util.exception
 import com.pat.domain.model.auth.FirebaseToken
 import com.pat.domain.model.exception.NeedUserRegistrationException
 import com.pat.domain.model.exception.TokenNotFoundException
@@ -65,11 +66,15 @@ class AuthRepositoryImpl @Inject constructor(
             loginWithKakaoAccount()
         }
         if (kakaoLoginResult.isFailure) {
+            Logger.t("login").i("카카오로그인 실패 ${kakaoLoginResult.exception().message }")
+
             return Result.failure(kakaoLoginResult.exceptionOrNull() ?: Exception())
         }
 
         val serverLoginResult = loginToServer()
         if (serverLoginResult.isFailure) {
+            Logger.t("login").i("서버로그인 실패 ${serverLoginResult.exception().message }")
+
             return Result.failure(serverLoginResult.exceptionOrNull() ?: Exception())
         }
 
@@ -78,6 +83,8 @@ class AuthRepositoryImpl @Inject constructor(
         return if (firebaseLoginResult.isSuccess) {
             Result.success(Unit)
         } else {
+            Logger.t("login").i("파이어베이스 실패${firebaseLoginResult.exception().message }")
+
             Result.failure(firebaseLoginResult.exceptionOrNull() ?: Exception())
         }
     }
@@ -129,6 +136,8 @@ class AuthRepositoryImpl @Inject constructor(
             if (result.isSuccess) {
                 Result.success(result.getOrThrow())
             } else {
+                Logger.t("login").i("서버2로그인 실패 ${result.exception().message}")
+
                 Result.failure(handleServerLoginError(result.exceptionOrNull()!!))
             }
         } ?: Result.failure(UserNotFoundException())

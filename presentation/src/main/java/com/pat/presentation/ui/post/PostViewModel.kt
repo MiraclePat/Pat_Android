@@ -186,13 +186,10 @@ class PostViewModel @Inject constructor(
                 selectPlace ?: "", category, startTime, endTime,
                 startDate, endDate, proofDetail, days, realtime
             )
-
             val result = createPatUseCase(
                 CreatePatInfo(
-                    storedBytes.repBytes,
-                    storedBytes.correctBytes,
-                    storedBytes.incorrectBytes,
-                    storedBytes.bodyBytes.toList(),
+                    storedBytes.repBytes, storedBytes.correctBytes,
+                    storedBytes.incorrectBytes, storedBytes.bodyBytes.toList(),
                     detail
                 )
             )
@@ -237,7 +234,7 @@ class PostViewModel @Inject constructor(
             )
             if (result.isSuccess) {
                 val coordinate = result.getOrThrow()
-                selectPlaceCoordinate = LatLng(coordinate.lat,coordinate.long)
+                selectPlaceCoordinate = LatLng(coordinate.lat, coordinate.long)
             } else {
                 //TODO 에러 처리 해당주소의 좌표를 찾을 수 없습니다 에러처리
             }

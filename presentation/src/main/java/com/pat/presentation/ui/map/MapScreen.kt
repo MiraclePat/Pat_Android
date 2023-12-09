@@ -208,7 +208,7 @@ fun MapBottomSheet(
                 modifier
                     .padding(start = 22.dp, end = 22.dp, top = 10.dp, bottom = 40.dp)
                     .clickable {
-                        navController.navigate("participatingDetail/${content.patId}")
+                        navController.navigate("patDetail/${content.patId}")
                     },
                 verticalAlignment = Alignment.CenterVertically
             ) {

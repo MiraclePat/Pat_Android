@@ -6,8 +6,12 @@ import androidx.camera.core.ImageProxy
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import com.orhanobut.logger.Logger
 import com.pat.domain.model.member.ParticipatingDetailContent
+import com.pat.domain.model.member.ParticipatingRequestInfo
 import com.pat.domain.model.proof.ProofPatInfo
 import com.pat.domain.model.proof.ProofContent
 import com.pat.domain.model.proof.ProofRequestInfo
@@ -22,9 +26,11 @@ import com.pat.presentation.util.image.getCompressedBytes
 import com.pat.presentation.util.image.getRotatedBitmap
 import com.pat.presentation.util.image.getScaledBitmap
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -47,8 +53,8 @@ class ProofViewModel @Inject constructor(
     private val getByteArrayByUriUseCase: GetByteArrayByUriUseCase,
     private val withdrawPatUseCase: WithdrawPatUseCase,
 ) : ViewModel() {
-
     private var patId: Long = -1
+    private val size = 10
 
     private val _bottomSheetState = MutableStateFlow<Boolean>(false)
     val bottomSheetState = _bottomSheetState.asStateFlow()
@@ -64,6 +70,22 @@ class ProofViewModel @Inject constructor(
     private val _proofs = MutableStateFlow(ProofUiState())
     val proofs: StateFlow<ProofUiState> = _proofs.asStateFlow()
 
+    val myProof =
+        Pager(
+            config = PagingConfig(pageSize = size),
+            pagingSourceFactory = {
+                ProofPaging(
+                    patId,
+                    getMyProofUseCase,
+                    ProofRequestInfo(
+                        size = size
+                    )
+                )
+
+            }
+        ).flow.cachedIn(viewModelScope)
+
+
     fun getParticipatingDetail(getPatId: Long) {
         viewModelScope.launch {
             patId = getPatId
@@ -74,7 +96,7 @@ class ProofViewModel @Inject constructor(
             } else {
                 Logger.t("MainTest").i("${uiState}")
             }
-            getMyProof()
+            getMyProof(patId)
         }
     }
 
@@ -102,7 +124,7 @@ class ProofViewModel @Inject constructor(
         _bottomSheetState.value = false
     }
 
-    fun proofPat() {
+    fun proofPat(patId: Long) {
         viewModelScope.launch {
             val result = proofPatUseCase(patId, ProofPatInfo(proofImageBytes))
             if (result.isSuccess) {
@@ -115,7 +137,7 @@ class ProofViewModel @Inject constructor(
         }
     }
 
-    fun getMyProof() {
+    fun getMyProof(patId: Long) {
         viewModelScope.launch {
             val result = getMyProofUseCase(patId, ProofRequestInfo())
             if (result.isSuccess) {
@@ -127,7 +149,7 @@ class ProofViewModel @Inject constructor(
         }
     }
 
-    fun getSomeoneProof() {
+    fun getSomeoneProof(patId: Long) {
         viewModelScope.launch {
             val result = getSomeoneProofUseCase(patId, ProofRequestInfo())
             if (result.isSuccess) {
@@ -144,6 +166,7 @@ class ProofViewModel @Inject constructor(
             val result = withdrawPatUseCase(patId)
             if (result.isSuccess) {
                 result.getOrThrow()
+                Logger.t("MainTest").i("취소 성공")
             } else {
                 Logger.t("MainTest").i("취소 실패")
             }

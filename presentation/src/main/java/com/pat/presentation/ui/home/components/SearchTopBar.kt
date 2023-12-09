@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.BarIcon
+import com.pat.presentation.ui.home.HomeViewModel
 import com.pat.presentation.ui.theme.Gray800
 
 @Composable
@@ -20,7 +21,8 @@ fun SearchTopBar(
     modifier: Modifier = Modifier,
     searchValue: MutableState<String>,
     inputEnter: () -> Unit,
-    onSearchScreen: MutableState<Boolean>
+    onSearchScreen: MutableState<Boolean>,
+    homeViewModel: HomeViewModel
 ) {
     Row(
         modifier = modifier
@@ -36,6 +38,6 @@ fun SearchTopBar(
             })
         Spacer(modifier = modifier.padding(start = 24.dp))
         Spacer(modifier = modifier.weight(1.0f))
-        SearchTextField(state = searchValue, inputEnter = inputEnter, text = searchValue.value)
+        SearchTextField(state = searchValue, inputEnter = inputEnter, text = searchValue.value, homeViewModel = homeViewModel)
     }
 }

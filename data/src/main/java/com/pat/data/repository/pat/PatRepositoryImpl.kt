@@ -131,6 +131,7 @@ class PatRepositoryImpl @Inject constructor(
         return if (response.isSuccessful) {
             Result.success(Unit)
         } else {
+            Logger.t("MainTest").i("${response.errorBody()}")
             Result.failure(UnKnownException())
         }
     }

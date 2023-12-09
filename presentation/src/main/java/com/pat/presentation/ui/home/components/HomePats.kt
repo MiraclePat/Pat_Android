@@ -11,17 +11,19 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.LazyPagingItems
+import com.orhanobut.logger.Logger
+import com.pat.domain.model.pat.HomePatContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
 import com.pat.presentation.ui.common.SimpleTextView
-import com.pat.presentation.ui.home.HomeViewModel
 import com.pat.presentation.ui.theme.Gray700
 import com.pat.presentation.ui.theme.Typography
 import com.skydoves.landscapist.glide.GlideImage
@@ -30,12 +32,10 @@ import com.skydoves.landscapist.glide.GlideImage
 fun Pats(
     navController: NavController,
     modifier: Modifier = Modifier,
-    sort: String,
-    category: String,
     text: String,
-    homeViewModel: HomeViewModel
+    uiState: LazyPagingItems<HomePatContent>
 ) {
-    val uiState = homeViewModel.getPats(category = category, sort = sort).collectAsLazyPagingItems()
+    LaunchedEffect(uiState) {} // 제거하면 리컴포지션이 안됨
 
     Column(modifier.padding(vertical = 20.dp, horizontal = 16.dp)) {
         Text(
@@ -45,8 +45,8 @@ fun Pats(
         Spacer(Modifier.size(12.dp))
         LazyRow {
             items(uiState.itemCount) { idx ->
-                val pat = uiState[idx]
-                if (pat != null) {
+                uiState[idx]?.let { pat ->
+                    Logger.t("MainTest").i("uistate : ${pat.category}")
                     HomePats(
                         title = pat.patName,
                         category = pat.category,
@@ -78,7 +78,7 @@ fun HomePats(
     maxPerson: Int,
     category: String,
 ) {
-    val styledText = buildAnnotatedString {
+    val styledTitle = buildAnnotatedString {
         if (title.length > 9) {
             withStyle(
                 style = Typography.labelMedium.toSpanStyle()
@@ -91,6 +91,23 @@ fun HomePats(
         } else {
             withStyle(style = Typography.labelMedium.toSpanStyle()) {
                 append(title)
+            }
+        }
+    }
+
+    val styledLocation = buildAnnotatedString {
+        if (location.length > 9) {
+            withStyle(
+                style = Typography.labelMedium.toSpanStyle()
+            ) {
+                append(location.substring(0, 9))
+            }
+            withStyle(style = Typography.labelMedium.toSpanStyle()) {
+                append("...")
+            }
+        } else {
+            withStyle(style = Typography.labelMedium.toSpanStyle()) {
+                append(location)
             }
         }
     }
@@ -113,9 +130,13 @@ fun HomePats(
         }
         Spacer(modifier.size(10.dp))
 
-        Text(text = styledText, style = Typography.labelMedium)
+        Text(text = styledTitle, style = Typography.labelMedium)
         Spacer(modifier.size(6.dp))
-        SimpleTextView(text = location, vectorResource = R.drawable.ic_map, iconColor = Gray700)
+        SimpleTextView(
+            text = styledLocation.text,
+            vectorResource = R.drawable.ic_map,
+            iconColor = Gray700
+        )
         Spacer(modifier.size(6.dp))
         SimpleTextView(
             text = startDate,

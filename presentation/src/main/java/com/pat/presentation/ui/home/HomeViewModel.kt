@@ -4,19 +4,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.HomeBannerContent
-import com.pat.domain.model.pat.HomePatContent
 import com.pat.domain.model.pat.HomePatRequestInfo
 import com.pat.domain.usecase.pat.GetHomeBannerUseCase
 import com.pat.domain.usecase.pat.GetHomePatsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,9 +29,55 @@ class HomeViewModel @Inject constructor(
     private val getHomePatsUseCase: GetHomePatsUseCase,
     private val getHomeBannerUseCase: GetHomeBannerUseCase,
 ) : ViewModel() {
+    private val size = 10
+
     private val _homeBanner = MutableStateFlow(BannerUiState())
     val homeBanner: StateFlow<BannerUiState> = _homeBanner.asStateFlow()
-    private val size = 10
+
+    private val _category = MutableStateFlow("전체")
+    val category: StateFlow<String> = _category.asStateFlow()
+
+    private val _query = MutableStateFlow("")
+    val query: StateFlow<String> = _query.asStateFlow()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val hotPats = _category.flatMapLatest { category ->
+        Pager(
+            config = PagingConfig(pageSize = size),
+            pagingSourceFactory = {
+                HomePaging(
+                    getHomePatsUseCase,
+                    setPats(category = category, sort = "HOT")
+                )
+            }
+        ).flow.cachedIn(viewModelScope)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val recentPats = _category.flatMapLatest { category ->
+        Pager(
+            config = PagingConfig(pageSize = size),
+            pagingSourceFactory = {
+                HomePaging(
+                    getHomePatsUseCase,
+                    setPats(category = category, sort = "LATEST")
+                )
+            }
+        ).flow.cachedIn(viewModelScope)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val searchPats = _query.flatMapLatest { query ->
+        Pager(
+            config = PagingConfig(pageSize = size),
+            pagingSourceFactory = {
+                HomePaging(
+                    getHomePatsUseCase,
+                    setPats(query = query)
+                )
+            }
+        ).flow.cachedIn(viewModelScope)
+    }
 
 
     init {
@@ -40,6 +85,7 @@ class HomeViewModel @Inject constructor(
             val homeBannerResult = getHomeBannerUseCase()
             if (homeBannerResult.isSuccess) {
                 val content = homeBannerResult.getOrThrow()
+                Logger.t("MainTest").i("홈 pat ㅅ")
                 _homeBanner.emit(BannerUiState(content))
             } else {
                 Logger.t("MainTest").i("홈 pat 에러")
@@ -47,24 +93,27 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun getPats(
+    private fun setPats(
         sort: String? = null,
         category: String? = null,
         query: String? = null
-    ): Flow<PagingData<HomePatContent>> {
-        return Pager(
-            config = PagingConfig(pageSize = size),
-            pagingSourceFactory = {
-                HomePaging(
-                    getHomePatsUseCase,
-                    HomePatRequestInfo(
-                        sort = sort,
-                        size = size,
-                        category = category,
-                        query = query
-                    )
-                )
-            }
-        ).flow.cachedIn(viewModelScope)
+    ): HomePatRequestInfo {
+        return HomePatRequestInfo(
+            sort = sort,
+            category = category,
+            query = query
+        )
+    }
+
+    fun setCategory(inputCategory: String) {
+        viewModelScope.launch {
+            _category.emit(inputCategory)
+        }
+    }
+
+    fun setQuery(inputQuery: String) {
+        viewModelScope.launch {
+            _query.emit(inputQuery)
+        }
     }
 }
