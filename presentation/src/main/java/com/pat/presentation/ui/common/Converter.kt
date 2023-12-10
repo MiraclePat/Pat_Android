@@ -1,5 +1,9 @@
 package com.pat.presentation.ui.common
 
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
+import com.pat.presentation.ui.theme.Typography
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -57,13 +61,21 @@ val convertTimeViewFormat: (String) -> (String) = { inputTimeString ->
     am + " ${hour}시"
 }
 
-val checkDateFormat: (String) -> (String) = { inputDateString ->
-    val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    val date = if (inputDateString.isNotEmpty() && inputDateString.contains('월')) {
-        val inputFormat = SimpleDateFormat("MM월 dd일", Locale.getDefault())
-        inputFormat.parse(inputDateString)!!
-    } else {
-        inputDateString
+val reduceText: (String, Int) -> AnnotatedString = { text, length ->
+    buildAnnotatedString {
+        if (text.length > length) {
+            withStyle(
+                style = Typography.labelMedium.toSpanStyle()
+            ) {
+                append(text.substring(0, length))
+            }
+            withStyle(style = Typography.labelMedium.toSpanStyle()) {
+                append("...")
+            }
+        } else {
+            withStyle(style = Typography.labelMedium.toSpanStyle()) {
+                append(text)
+            }
+        }
     }
-    if (!inputDateString.contains('월')) inputDateString else outputFormat.format(date)
 }

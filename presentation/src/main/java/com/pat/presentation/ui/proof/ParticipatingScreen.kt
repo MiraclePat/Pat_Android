@@ -36,12 +36,14 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.orhanobut.logger.Logger
 import com.pat.domain.model.member.ParticipatingContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
+import com.pat.presentation.ui.common.LoadingProgressBar
 import com.pat.presentation.ui.common.SimpleTextView
 import com.pat.presentation.ui.common.setUnderLine
 import com.pat.presentation.ui.theme.Gray200
@@ -58,10 +60,10 @@ fun ParticipatingScreenView(
     modifier: Modifier = Modifier,
     participatingViewModel: ParticipatingViewModel = hiltViewModel(),
     navController: NavController,
+    initState: String?
 ) {
     val patStatusList = listOf("참여중인 팟", "참여예정 팟", "완료한 팟", "개설한 팟")
-    val patStateText = remember { mutableStateOf(patStatusList.first()) }
-
+    val patStateText = remember { mutableStateOf(initState ?: patStatusList.first()) }
 
     Column(
         modifier
@@ -77,60 +79,69 @@ fun ParticipatingScreenView(
             verticalAlignment = Alignment.CenterVertically
         ) {
             patStatusList.forEach { patStatus ->
-                PatStatus(patState = patStateText, text = patStatus)
+                PatStatus(
+                    patState = patStateText,
+                    text = patStatus,
+                    participatingViewModel = participatingViewModel
+                )
             }
         }
         Spacer(modifier = modifier.padding(bottom = 28.dp))
 
+
+        // 추후 ENUM으로 Refcator
         val buttonText: (String) -> (String) = { state ->
             when (state) {
                 "SCHEDULED" -> "상세보기"
                 "IN_PROGRESS" -> "인증하기"
-                "COMPLETED" -> "인증완료"
-                else -> "예외 발생"
+                "COMPLETED" -> "종료된 팟"
+                else -> "상세보기"
             }
-        }
-
-        val patState = when (patStateText.value) {
-            "참여예정 팟" -> "SCHEDULED"
-            "참여중인 팟" -> "IN_PROGRESS"
-            "완료한 팟" -> "COMPLETED"
-            else -> "예외 발생"
         }
 
         val uiState: LazyPagingItems<ParticipatingContent> = if (patStateText.value == "개설한 팟") {
-            participatingViewModel.getOpenPats().collectAsLazyPagingItems()
+            participatingViewModel.openedPats.collectAsLazyPagingItems()
         } else {
-            participatingViewModel.getPatInfo(state = patState).collectAsLazyPagingItems()
+            participatingViewModel.pats.collectAsLazyPagingItems()
         }
-        LazyColumn() {
-            items(uiState.itemCount) { idx ->
-                val pat = uiState[idx]
-                if (pat != null) {
-                    ParticipatePat(
-                        content = pat,
-                        onClick = {
-                            navController.navigate("participatingDetail/${pat.patId}/ ")
-                        },
-                        buttonText = buttonText(patState),
-                        color = if (patState == "COMPLETED") Gray300 else PrimaryMain,
-                        buttonClick = {
-                            if (patState == "IN_PROGRESS")
-                                navController.navigate("participatingDetail/${pat.patId}/true")
-                            else
+
+        if (uiState.loadState.append is LoadState.Loading || uiState.loadState.refresh is LoadState.Loading || uiState.loadState.prepend is LoadState.Loading) {
+            LoadingProgressBar()
+        } else {
+            LazyColumn {
+                items(uiState.itemCount) { idx ->
+                    uiState[idx]?.let { pat ->
+                        ParticipatePat(
+                            content = pat,
+                            onClick = {
                                 navController.navigate("participatingDetail/${pat.patId}/ ")
-                        }
-                    )
+                            },
+                            buttonText = if (pat.isCompleted) "인증 완료" else buttonText(pat.state),
+                            color = if (pat.isCompleted || pat.state == "COMPLETED") Gray300 else PrimaryMain,
+                            buttonClick = {
+                                if (!pat.isCompleted && pat.state == "IN_PROGRESS")
+                                    navController.navigate("participatingDetail/${pat.patId}/true")
+                                else
+                                    navController.navigate("participatingDetail/${pat.patId}/ ")
+                            }
+                        )
+                    }
                 }
             }
         }
+
+
     }
 }
 
 @Composable
-fun PatStatus(modifier: Modifier = Modifier, patState: MutableState<String>, text: String) {
+fun PatStatus(
+    modifier: Modifier = Modifier, patState: MutableState<String>, text: String,
+    participatingViewModel: ParticipatingViewModel
+) {
     Box(modifier.clickable {
         patState.value = text
+        participatingViewModel.setState(patState.value)
     }) {
         Text(
             modifier = if (patState.value == text) setUnderLine else modifier,

@@ -102,7 +102,6 @@ class MemberRepositoryImpl @Inject constructor(
             memberDataSource.getParticipatingDetail(patId)
         }
         return if (result.isSuccess) {
-            Logger.t("MainTest").i("${result.getOrThrow()}")
             Result.success(result.getOrThrow())
         } else {
             Logger.t("MainTest").i("${result.exception().message}")

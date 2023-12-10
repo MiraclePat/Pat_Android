@@ -23,6 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.pat.presentation.ui.home.HomeViewModel
 import com.pat.presentation.ui.theme.Gray100
 import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.Gray500
@@ -60,7 +62,8 @@ fun SearchTextField(
     modifier: Modifier = Modifier,
     state: MutableState<String>,
     inputEnter: () -> Unit,
-    text: String = "어떤 팟을 찾고계신가요?"
+    text: String = "어떤 팟을 찾고계신가요?",
+    homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     BasicTextField(
         modifier = modifier
@@ -70,6 +73,7 @@ fun SearchTextField(
         value = state.value,
         onValueChange = {
             state.value = it
+            homeViewModel.setQuery(state.value)
         },
         singleLine = true,
         cursorBrush = SolidColor(Gray400),

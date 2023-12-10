@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -57,7 +56,6 @@ import com.pat.presentation.ui.common.convertDateViewFormat
 import com.pat.presentation.ui.common.convertTimeViewFormat
 import com.pat.presentation.ui.theme.Gray200
 import com.pat.presentation.ui.theme.Gray300
-import com.pat.presentation.ui.theme.Gray50
 import com.pat.presentation.ui.theme.Gray500
 import com.pat.presentation.ui.theme.Gray700
 import com.pat.presentation.ui.theme.Gray800
@@ -102,16 +100,18 @@ fun PatDetailView(
                     }
                 },
                 actions = {
-                    IconButton(modifier = modifier
-                        .padding(end = 12.dp)
-                        .size(24.dp), onClick = {
-                        navController.navigate("patUpdate/${uiState.content?.patId}")
-                    }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_write),
-                            contentDescription = "Write",
-                            tint = Gray800
-                        )
+                    if (uiState.content?.isWriter == true) {
+                        IconButton(modifier = modifier
+                            .padding(end = 12.dp)
+                            .size(24.dp), onClick = {
+                            navController.navigate("patUpdate/${uiState.content?.patId}")
+                        }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_write),
+                                contentDescription = "Write",
+                                tint = Gray800
+                            )
+                        }
                     }
                 },
             )
@@ -123,7 +123,7 @@ fun PatDetailView(
                 .verticalScroll(scrollState),
         ) {
             if (uiState.content != null) {
-                PostDetailScreen(
+                PatDetailScreen(
                     navController = navController,
                     content = uiState.content!!,
                     patDetailViewModel = patDetailViewModel
@@ -134,12 +134,29 @@ fun PatDetailView(
 }
 
 @Composable
-fun PostDetailScreen(
+fun PatDetailScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
     content: PatDetailContent,
     patDetailViewModel: PatDetailViewModel,
 ) {
+    LaunchedEffect(patDetailViewModel) {
+        patDetailViewModel.event.collect {
+            when (it) {
+                is ParticipateEvent.ParticipateSuccess -> {
+                    navController.popBackStack()
+                }
+
+                is ParticipateEvent.ParticipateFailed -> {
+
+                }
+
+                else -> {}
+            }
+        }
+    }
+
+
     GlideImage(
         modifier = modifier
             .fillMaxWidth()
@@ -164,8 +181,8 @@ fun PostDetailScreen(
         Spacer(modifier.height(16.dp))
         PatSimpleInfo(
             location = content.location.ifEmpty { "어디서나 가능" },
-            startDate = content.startDate,
-            endDate = content.endDate,
+            startDate = convertDateViewFormat(content.startDate),
+            endDate = convertDateViewFormat(content.endDate),
             nowPerson = content.nowPerson,
             maxPerson = content.maxPerson
         )
@@ -317,51 +334,55 @@ fun PostDetailScreen(
             Spacer(modifier.size(44.dp))
 
         }
+
         if (content.isJoiner) {
             when (content.state) {
                 "CANCELABLE" -> {
-                    FinalButton(text = "팟 취소하기 (시작 하루 전까지 취소 가능)",
+                    FinalButton(
+                        text = "팟 취소하기 (시작 하루 전까지 취소 가능)",
                         backColor = PrimaryMain,
                         textColor = White,
-                        onClick = { }
+                        onClick = {
+                            patDetailViewModel.withdrawPat(content.patId)
+                        }
                     )
                 }
 
                 "NO_CANCELABLE" -> {
-                    FinalButton(text = "취소가 불가능해요! (시작 하루 전까지 취소 가능)",
+                    FinalButton(
+                        text = "취소가 불가능해요! (시작 하루 전까지 취소 가능)",
                         backColor = Gray300,
                         textColor = White,
                         stokeColor = Gray300,
-                        onClick = { }
                     )
                 }
 
                 "IN_PROGRESS" -> {
-                    FinalButton(text = "인증이 이미 진행중인 팟이에요!",
+                    FinalButton(
+                        text = "인증이 이미 진행중인 팟이에요!",
                         backColor = Gray300,
                         textColor = White,
                         stokeColor = Gray300,
-                        onClick = { }
                     )
                 }
 
                 "COMPLETED" -> {
-                    FinalButton(text = "종료된 팟이에요!",
+                    FinalButton(
+                        text = "종료된 팟이에요!",
                         backColor = Gray300,
                         textColor = White,
                         stokeColor = Gray300,
-                        onClick = { }
                     )
                 }
             }
         } else { // 참여자가 아니면
             if (content.state == "COMPLETED ") {
-                FinalButton(text = "종료된 팟이에요!",
+                FinalButton(
+                    text = "종료된 팟이에요!",
                     backColor = Gray300,
                     textColor = White,
-                    onClick = { }
                 )
-            } else {
+            } else { // 종료 상태가 아니면
                 FinalButton(text = "팟 참여하기",
                     backColor = PrimaryMain,
                     textColor = White,
@@ -438,7 +459,7 @@ fun PatSimpleInfo(
         )
         Spacer(modifier.height(8.dp))
         SimpleTextView(
-            text = "현재 $nowPerson / $maxPerson",
+            text = "현재 ${nowPerson}명 / ${maxPerson}명",
             vectorResource = R.drawable.ic_user,
             spacePadding = 6.dp,
             iconSize = 16.dp,
@@ -476,10 +497,10 @@ fun DateText(
             Spacer(modifier = modifier.width(8.dp))
             Row() {
                 Text(text = "시작", color = PrimaryMain)
-                Text(text = "${startDate}")
+                Text(text = "$startDate")
                 Spacer(modifier = modifier.width(12.dp))
                 Text(text = "종료", color = PrimaryMain)
-                Text(text = "${endDate}")
+                Text(text = "$endDate")
             }
         }
     }

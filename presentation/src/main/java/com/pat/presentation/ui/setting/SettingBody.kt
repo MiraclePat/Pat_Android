@@ -29,10 +29,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.orhanobut.logger.Logger
 import com.pat.domain.model.member.MyProfileContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.Divider
 import com.pat.presentation.ui.common.setUnderLine
+import com.pat.presentation.ui.navigations.BottomNavItem
 import com.pat.presentation.ui.setting.components.SettingBox
 import com.pat.presentation.ui.theme.Gray100
 import com.pat.presentation.ui.theme.Gray500
@@ -44,6 +47,7 @@ import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.util.ACCOUNT
 import com.pat.presentation.util.ALARM
 import com.pat.presentation.util.ANNOUNCE
+import com.pat.presentation.util.CERTIFICATION
 import com.skydoves.landscapist.glide.GlideImage
 
 
@@ -51,14 +55,23 @@ import com.skydoves.landscapist.glide.GlideImage
 fun SettingScreenBody(
     modifier: Modifier = Modifier,
     viewState: MutableState<String>,
-    content: MyProfileContent?
+    content: MyProfileContent?,
+    navController: NavController
 ) {
     val tempLoginState = true
 
     @Composable
     fun patCount(modifier: Modifier = Modifier, text: String, count: Int) {
         Column(
-            modifier,
+            modifier.clickable {
+                navController.navigate(CERTIFICATION + "?state=${text}") {
+                    navController.graph.startDestinationRoute?.let {
+                        popUpTo(it) { saveState = true }
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            },
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -129,14 +142,14 @@ fun SettingScreenBody(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            patCount(modifier = modifier.weight(1f), text = "완료한 팟", count = content?.finPats?:0)
+            patCount(modifier = modifier.weight(1f), text = "완료한 팟", count = content?.finPats ?: 0)
             Box(
                 modifier
                     .fillMaxHeight()
                     .width(2.dp)
                     .background(Primary100)
             )
-            patCount(modifier = modifier.weight(1f), text = "개설한 팟", count = content?.openPats?:0)
+            patCount(modifier = modifier.weight(1f), text = "개설한 팟", count = content?.openPats ?: 0)
         }
         Divider(modifier = modifier.padding(top = 24.dp))
         SettingBox(text = ACCOUNT, onClick = { viewState.value = ACCOUNT })

@@ -56,7 +56,7 @@ sealed class BottomNavItem(
             R.string.text_certification,
             R.drawable.na_circle_check,
             R.drawable.na_circle_check_fill,
-            CERTIFICATION
+            "$CERTIFICATION?state={state}"
         )
 
     object Map : BottomNavItem(R.string.text_map, R.drawable.na_map, R.drawable.na_map_fill, MAP)
@@ -77,14 +77,25 @@ fun NavigationGraph(navController: NavHostController) {
                 navController = navController,
             )
         }
-        composable(BottomNavItem.Certification.screenRoute) {
-            ParticipatingScreenView(navController = navController)
+        composable(
+            route = BottomNavItem.Certification.screenRoute,
+            arguments = listOf(
+                navArgument("state") {
+                    type = NavType.StringType
+                    defaultValue = "참여중인 팟"
+                },
+            ),
+        ) { it ->
+            ParticipatingScreenView(
+                navController = navController,
+                initState = it.arguments?.getString("state")
+            )
         }
         composable(BottomNavItem.Map.screenRoute) {
             MapScreenView(navController = navController)
         }
         composable(BottomNavItem.Setting.screenRoute) {
-            SettingScreenView()
+            SettingScreenView(navController = navController)
         }
         composable(POST) {
             PostScreenView(

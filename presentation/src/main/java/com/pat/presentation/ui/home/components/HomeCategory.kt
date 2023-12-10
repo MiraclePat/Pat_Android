@@ -3,8 +3,6 @@ package com.pat.presentation.ui.home.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,23 +15,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.pat.presentation.ui.home.HomeScreenView
 import com.pat.presentation.ui.home.HomeViewModel
 import com.pat.presentation.ui.theme.Gray500
 import com.pat.presentation.ui.theme.Primary50
@@ -43,7 +32,7 @@ import com.pat.presentation.ui.theme.White
 
 
 @Composable
-fun HomeCategory(modifier: Modifier = Modifier, state: MutableState<String>) {
+fun HomeCategory(modifier: Modifier = Modifier, state: MutableState<String>, homeViewModel: HomeViewModel) {
     val scrollState = rememberScrollState()
 
     Row(
@@ -58,7 +47,7 @@ fun HomeCategory(modifier: Modifier = Modifier, state: MutableState<String>) {
                 .padding(8.dp)
                 .horizontalScroll(scrollState)
         ) {
-            CategoryButtonList(state = state)
+            CategoryButtonList(state = state, homeViewModel)
         }
     }
 }
@@ -67,7 +56,7 @@ fun HomeCategory(modifier: Modifier = Modifier, state: MutableState<String>) {
 @Composable
 fun CategoryButtonList(
     state: MutableState<String>,
-    homeViewModel: HomeViewModel = hiltViewModel()
+    homeViewModel: HomeViewModel
 ) {
     val categories = listOf<String>("전체", "환경", "건강", "식습관", "취미", "일상", "기타")
     categories.forEach { category ->
@@ -75,7 +64,7 @@ fun CategoryButtonList(
             text = category,
             onClick = {
                 state.value = category
-//                homeViewModel.requestByCategory(category)
+                homeViewModel.setCategory(category)
             },
             isSelected = state.value == category
         )

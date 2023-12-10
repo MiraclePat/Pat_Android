@@ -1,8 +1,6 @@
 package com.pat.data.model.member
 
 import com.pat.domain.model.member.MyProfileContent
-import com.pat.domain.model.member.ParticipatingContent
-import com.pat.domain.model.pat.HomePatContent
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 

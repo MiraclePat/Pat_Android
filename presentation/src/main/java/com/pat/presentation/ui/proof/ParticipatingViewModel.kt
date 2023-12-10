@@ -4,27 +4,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.orhanobut.logger.Logger
 import com.pat.domain.model.member.OpenPatRequestInfo
-import com.pat.domain.model.member.ParticipatingContent
 import com.pat.domain.model.member.ParticipatingRequestInfo
-import com.pat.domain.model.pat.HomePatRequestInfo
 import com.pat.domain.usecase.member.GetOpenPatUseCase
 import com.pat.domain.usecase.member.GetParticipatingUseCase
-import com.pat.presentation.ui.home.HomePaging
+import com.pat.presentation.ui.proof.paging.OpenPatPaging
+import com.pat.presentation.ui.proof.paging.ParticipatingPaging
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class PattingUiState(
-    val content: List<ParticipatingContent>? = null
-)
 
 
 @HiltViewModel
@@ -34,14 +29,12 @@ class ParticipatingViewModel @Inject constructor(
 ) : ViewModel() {
     private val size = 10
 
-    init {
-        getPatInfo()
-    }
+    private val _query = MutableStateFlow("IN_PROGRESS")
+    val query: StateFlow<String> = _query.asStateFlow()
 
-    fun getPatInfo(
-        state: String? = null
-    ): Flow<PagingData<ParticipatingContent>> {
-        return Pager(
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val pats = _query.flatMapLatest { state ->
+        Pager(
             config = PagingConfig(pageSize = size),
             pagingSourceFactory = {
                 ParticipatingPaging(
@@ -55,10 +48,9 @@ class ParticipatingViewModel @Inject constructor(
         ).flow.cachedIn(viewModelScope)
     }
 
-    fun getOpenPats(
-        state: String? = null
-    ): Flow<PagingData<ParticipatingContent>> {
-        return Pager(
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val openedPats = _query.flatMapLatest { state ->
+        Pager(
             config = PagingConfig(pageSize = size),
             pagingSourceFactory = {
                 OpenPatPaging(
@@ -70,5 +62,17 @@ class ParticipatingViewModel @Inject constructor(
                 )
             }
         ).flow.cachedIn(viewModelScope)
+    }
+
+    fun setState(state: String) {
+        val patState = when (state) {
+            "참여예정 팟" -> "SCHEDULED"
+            "참여중인 팟" -> "IN_PROGRESS"
+            "완료한 팟" -> "COMPLETED"
+            else -> "SCHEDULED"
+        }
+        viewModelScope.launch {
+            _query.emit(patState)
+        }
     }
 }
