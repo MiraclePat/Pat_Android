@@ -4,8 +4,15 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
 }
+ext {
+    // Define an empty string as a default value
+    kakaoApiKey = ""
+}
 Properties properties = new Properties()
 properties.load(project.rootProject.file("local.properties").newDataInputStream())
+//properties.load(project.rootProject.file("local.properties").inputStream())
+kakaoApiKey = properties.getProperty("KAKAO_API_KEY")
+
 android {
     namespace 'com.pat.miraclepat'
     compileSdk 34
@@ -19,10 +26,16 @@ android {
 
         buildConfigField "String", "CLIENT_ID", properties["CLIENT_ID"]
         buildConfigField "String", "CLIENT_SECRET", properties["CLIENT_SECRET"]
-        buildConfigField "String", "kakao_api_key", properties["kakao_api_key"]
-        def kakao_api_key = properties.getProperty('kakao_api_key')
-
-        manifestPlaceholders = [kakao_api_key:kakao_api_key]
+//        buildConfigField "String", "kakao_api_key", properties["kakao_api_key"]
+//        def kakao_api_key = properties.getProperty('kakao_api_key')
+//
+//        manifestPlaceholders = [kakao_api_key:kakao_api_key]
+        manifestPlaceholders["kakaoApiKey"] = kakaoApiKey
+        buildConfigField(
+                "String",
+                "KAKAO_API_KEY",
+                "\"${properties["KAKAO_API_KEY"]}\""
+        )
 
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

@@ -40,6 +40,10 @@ data class ParticipatingUiState(
     val content: ParticipatingDetailContent? = null
 )
 
+data class ProofUiState(
+    val content: List<ProofContent>? = null
+)
+
 @HiltViewModel
 class ProofViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
@@ -66,39 +70,54 @@ class ProofViewModel @Inject constructor(
 
     private val pagingId = MutableStateFlow(-1L)
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val myProof = pagingId.flatMapLatest { id ->
-        Pager(
-            config = PagingConfig(pageSize = size),
-            pagingSourceFactory = {
-                MyProofPaging(
-                    id,
-                    getMyProofUseCase,
-                    ProofRequestInfo(
-                        size = size
-                    )
-                )
+    private val _proofs = MutableStateFlow(ProofUiState())
+    val proofs: StateFlow<ProofUiState> = _proofs.asStateFlow()
 
+//    @OptIn(ExperimentalCoroutinesApi::class)
+//    val myProof = pagingId.flatMapLatest { id ->
+//        Pager(
+//            config = PagingConfig(pageSize = size),
+//            pagingSourceFactory = {
+//                MyProofPaging(
+//                    id,
+//                    getMyProofUseCase,
+//                    ProofRequestInfo(
+//                        size = size
+//                    )
+//                )
+//
+//            }
+//        ).flow.cachedIn(viewModelScope)
+//    }
+//
+//
+//    @OptIn(ExperimentalCoroutinesApi::class)
+//    val someoneProof = pagingId.flatMapLatest { id ->
+//        Pager(
+//            config = PagingConfig(pageSize = size),
+//            pagingSourceFactory = {
+//                SomeoneProofPaging(
+//                    id,
+//                    getSomeoneProofUseCase,
+//                    ProofRequestInfo(
+//                        size = size
+//                    )
+//                )
+//
+//            }
+//        ).flow.cachedIn(viewModelScope)
+//    }
+
+    fun getMyProof() {
+        viewModelScope.launch {
+            val result = getMyProofUseCase(patId, ProofRequestInfo())
+            if (result.isSuccess) {
+                val content = result.getOrThrow()
+                _proofs.emit(ProofUiState(content = content))
+            } else {
+                Logger.t("MainTest").i("patid: ${patId}")
             }
-        ).flow.cachedIn(viewModelScope)
-    }
-
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val someoneProof = pagingId.flatMapLatest { id ->
-        Pager(
-            config = PagingConfig(pageSize = size),
-            pagingSourceFactory = {
-                SomeoneProofPaging(
-                    id,
-                    getSomeoneProofUseCase,
-                    ProofRequestInfo(
-                        size = size
-                    )
-                )
-
-            }
-        ).flow.cachedIn(viewModelScope)
+        }
     }
 
 
@@ -114,6 +133,7 @@ class ProofViewModel @Inject constructor(
             } else {
                 Logger.t("MainTest").i("${uiState}")
             }
+            getMyProof()
         }
     }
 

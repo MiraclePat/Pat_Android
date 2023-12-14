@@ -12,7 +12,7 @@ class HiltApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         Logger.addLogAdapter(AndroidLogAdapter())
-        KakaoSdk.init(this, BuildConfig.kakao_api_key)
+        KakaoSdk.init(this, BuildConfig.KAKAO_API_KEY)
 
     }
 }
