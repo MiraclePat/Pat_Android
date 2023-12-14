@@ -119,7 +119,7 @@ fun ProofScreenView(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "팟 상세 페이지",
+                        text = "인증 화면",
                         style = Typography.labelMedium
                     )
                 },
@@ -166,8 +166,9 @@ fun ProofScreen(
     navController: NavController,
     showBottomSheet: Boolean? = false
 ) {
-    val myProof = viewModel.myProof.collectAsLazyPagingItems()
-    val someoneProof = viewModel.someoneProof.collectAsLazyPagingItems()
+    val proofState by viewModel.proofs.collectAsState()
+//    val myProof = viewModel.myProof.collectAsLazyPagingItems()
+//    val someoneProof = viewModel.someoneProof.collectAsLazyPagingItems()
     var spreadState by remember { mutableStateOf(false) }
     var myProofState by remember { mutableStateOf(true) }
     val viewStartTime = content.startTime
@@ -451,14 +452,14 @@ fun ProofScreen(
                 success = content.myProof,
                 fail = content.myFailProof,
                 all = content.maxProof,
-                imgUriList = myProof
+                imgUriList = proofState.content
             )
         } else {
             ProofStatus(
                 success = content.allProof,
                 fail = content.allFailProof,
                 all = content.allMaxProof,
-                imgUriList = someoneProof,
+                imgUriList = proofState.content,
                 isAll = "전체"
             )
         }
@@ -548,7 +549,8 @@ fun ProofStatus(
     fail: Int,
     all: Int,
     isAll: String = "",
-    imgUriList: LazyPagingItems<ProofContent>
+//    imgUriList: LazyPagingItems<ProofContent>
+    imgUriList: List<ProofContent>?
 ) {
     val title = if (isAll == "") "나의 인증사진" else "참여자들의 인증사진"
     Row() {
@@ -568,8 +570,34 @@ fun ProofStatus(
     Spacer(modifier = modifier.padding(bottom = 28.dp))
     Text(title, style = Typography.titleLarge, color = Gray800)
 
-    // TODO 연동 시 lazyRow로 수정
-    if (imgUriList.itemCount == 0) {
+//    if (imgUriList.itemCount == 0) {
+//        Box(
+//            modifier
+//                .padding(top = 12.dp)
+//                .size(140.dp)
+//        ) {
+//            Text("인증 내역이 없어요!", style = Typography.titleLarge, color = Gray800)
+//        }
+//    } else {
+//        if (imgUriList.loadState.append is LoadState.Loading || imgUriList.loadState.refresh is LoadState.Loading || imgUriList.loadState.prepend is LoadState.Loading) {
+//            LoadingProgressBar(modifier.size(130.dp, 140.dp))
+//        } else {
+//            LazyRow(modifier.padding(top = 12.dp)) {
+//                items(imgUriList.itemCount) { idx ->
+//                    imgUriList[idx]?.let { img ->
+//                        GlideImage(
+//                            modifier = modifier
+//                                .size(130.dp, 140.dp)
+//                                .clip(RoundedCornerShape(12.dp)),
+//                            imageModel = { img.proofImg })
+//                        Spacer(modifier = modifier.padding(end = 10.dp))
+//
+//                    }
+//                }
+//            }
+//        }
+//    }
+    if (imgUriList.isNullOrEmpty()) {
         Box(
             modifier
                 .padding(top = 12.dp)
@@ -578,24 +606,23 @@ fun ProofStatus(
             Text("인증 내역이 없어요!", style = Typography.titleLarge, color = Gray800)
         }
     } else {
-        if (imgUriList.loadState.append is LoadState.Loading || imgUriList.loadState.refresh is LoadState.Loading || imgUriList.loadState.prepend is LoadState.Loading) {
-            LoadingProgressBar(modifier.size(130.dp, 140.dp))
-        } else {
-            LazyRow(modifier.padding(top = 12.dp)) {
-                items(imgUriList.itemCount) { idx ->
-                    imgUriList[idx]?.let { img ->
-                        GlideImage(
-                            modifier = modifier
-                                .size(130.dp, 140.dp)
-                                .clip(RoundedCornerShape(12.dp)),
-                            imageModel = { img.proofImg })
-                        Spacer(modifier = modifier.padding(end = 10.dp))
-
-                    }
-                }
+        val scrollState = rememberScrollState()
+        Row(
+            modifier
+                .padding(top = 12.dp)
+                .horizontalScroll(scrollState)
+        ) {
+            imgUriList.forEach { img ->
+                GlideImage(
+                    modifier = modifier
+                        .size(130.dp, 140.dp)
+                        .clip(RoundedCornerShape(12.dp)),
+                    imageModel = { img.proofImg })
+                Spacer(modifier = modifier.padding(end = 10.dp))
             }
         }
     }
+
     Row(modifier.padding(top = 24.dp)) {
         RatioText(
             text = "성공률",

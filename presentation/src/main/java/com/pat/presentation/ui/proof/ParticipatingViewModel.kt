@@ -48,21 +48,17 @@ class ParticipatingViewModel @Inject constructor(
         ).flow.cachedIn(viewModelScope)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val openedPats = _query.flatMapLatest { state ->
-        Pager(
-            config = PagingConfig(pageSize = size),
-            pagingSourceFactory = {
-                OpenPatPaging(
-                    getOpenPatUseCase,
-                    OpenPatRequestInfo(
-                        state = state,
-                        size = size
-                    )
+    val openedPats = Pager(
+        config = PagingConfig(pageSize = size),
+        pagingSourceFactory = {
+            OpenPatPaging(
+                getOpenPatUseCase,
+                OpenPatRequestInfo(
+                    size = size
                 )
-            }
-        ).flow.cachedIn(viewModelScope)
-    }
+            )
+        }
+    ).flow.cachedIn(viewModelScope)
 
     fun setState(state: String) {
         val patState = when (state) {

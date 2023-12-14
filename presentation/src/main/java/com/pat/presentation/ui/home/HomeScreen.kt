@@ -82,7 +82,7 @@ fun HomeScreenView(
                 Pats(
                     modifier = modifier,
                     navController = navController,
-                    text = stringResource(id = R.string.home_hot_pat_title),
+                    text = stringResource(id = R.string.home_recent_pat_title),
                     uiState = recentPats
                 )
             }
