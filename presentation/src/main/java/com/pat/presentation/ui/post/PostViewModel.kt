@@ -9,7 +9,6 @@ import com.naver.maps.geometry.LatLng
 import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.CreatePatInfo
 import com.pat.domain.model.pat.CreatePatInfoDetail
-import com.pat.domain.model.pat.HomePatContent
 import com.pat.domain.model.place.PlaceDetailInfo
 import com.pat.domain.model.place.PlaceSearchRequestInfo
 import com.pat.domain.usecase.image.GetByteArrayByUriUseCase
@@ -22,20 +21,13 @@ import com.pat.presentation.util.image.getCompressedBytes
 import com.pat.presentation.util.image.getRotatedBitmap
 import com.pat.presentation.util.image.getScaledBitmap
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.reflect.KProperty0
-
-
-data class PostUiState(
-    val content: List<HomePatContent>? = null
-)
 
 data class PostBytes(
     var repBytes: ByteArray,
@@ -44,6 +36,15 @@ data class PostBytes(
     var correctBytes: ByteArray,
 )
 
+sealed class PostEvent {
+    object PostSuccess : PostEvent()
+    object PostFailed : PostEvent()
+    object SearchPlaceSuccess : PostEvent()
+    object SearchPlaceFailed : PostEvent()
+    object SearchCoordinateSuccess : PostEvent()
+    object SearchCoordinateFailed : PostEvent()
+}
+
 @HiltViewModel
 class PostViewModel @Inject constructor(
     private val createPatUseCase: CreatePatUseCase,
@@ -51,7 +52,9 @@ class PostViewModel @Inject constructor(
     private val getSearchPlaceUseCase: GetSearchPlaceUseCase,
     private val getSearchCoordinateUseCase: GetSearchCoordinateUseCase,
 ) : ViewModel() {
-//    private var searchedPlaces = listOf<PlacePrediction>()
+
+    private val _event = MutableSharedFlow<PostEvent>()
+    val event = _event.asSharedFlow()
 
     private var searchJob: Job = Job().apply {
         complete()
@@ -194,9 +197,9 @@ class PostViewModel @Inject constructor(
                 )
             )
             if (result.isSuccess) {
-                Logger.t("patdetail").i("성공")
+                _event.emit(PostEvent.PostSuccess)
             } else {
-                Logger.t("patdetail").i("${result.exceptionOrNull()}")
+                _event.emit(PostEvent.PostFailed)
             }
         }
     }
@@ -221,8 +224,9 @@ class PostViewModel @Inject constructor(
                     place.title = place.title.toString().replace("<b>", "").replace("</b>", "")
                 }
                 _searchPlaceResult.emit(places)
+                _event.emit(PostEvent.SearchPlaceSuccess)
             } else {
-                //TODO 에러 처리
+                _event.emit(PostEvent.SearchPlaceFailed)
             }
         }
     }
@@ -235,8 +239,10 @@ class PostViewModel @Inject constructor(
             if (result.isSuccess) {
                 val coordinate = result.getOrThrow()
                 selectPlaceCoordinate = LatLng(coordinate.lat, coordinate.long)
+                _event.emit(PostEvent.SearchCoordinateSuccess)
             } else {
                 //TODO 에러 처리 해당주소의 좌표를 찾을 수 없습니다 에러처리
+                _event.emit(PostEvent.SearchCoordinateFailed)
             }
         }
     }

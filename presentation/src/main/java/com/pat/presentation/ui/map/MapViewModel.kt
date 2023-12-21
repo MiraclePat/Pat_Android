@@ -8,10 +8,17 @@ import com.pat.domain.model.pat.MapPatContent
 import com.pat.domain.model.pat.MapPatRequestInfo
 import com.pat.domain.usecase.pat.GetMapPatsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+sealed class MapEvent {
+    object GetMapSuccess : MapEvent()
+    object GetMapFailed : MapEvent()
+}
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
@@ -20,6 +27,9 @@ class MapViewModel @Inject constructor(
 
     private val _mapPats = MutableStateFlow<List<MapPatContent>>(emptyList())
     val mapPats = _mapPats.asStateFlow()
+
+    private val _event = MutableSharedFlow<MapEvent>()
+    val event = _event.asSharedFlow()
 
     init {
         getMapPats(
@@ -57,11 +67,11 @@ class MapViewModel @Inject constructor(
             )
             if (result.isSuccess) {
                 _mapPats.emit(result.getOrThrow())
+                _event.emit(MapEvent.GetMapSuccess)
             } else {
                 Logger.t("navermap").i("${result.exceptionOrNull()}")
+                _event.emit(MapEvent.GetMapFailed)
             }
         }
     }
-
-
 }

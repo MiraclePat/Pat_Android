@@ -11,15 +11,11 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.paging.compose.LazyPagingItems
-import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.HomePatContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
@@ -36,30 +32,30 @@ fun Pats(
     text: String,
     uiState: LazyPagingItems<HomePatContent>
 ) {
-    LaunchedEffect(uiState) {} // 제거하면 리컴포지션이 안됨
-
     Column(modifier.padding(vertical = 20.dp, horizontal = 16.dp)) {
         Text(
             text = text,
             style = Typography.titleLarge
         )
         Spacer(Modifier.size(12.dp))
-        LazyRow {
-            items(uiState.itemCount) { idx ->
-                uiState[idx]?.let { pat ->
-                    HomePats(
-                        title = pat.patName,
-                        category = pat.category,
-                        nowPerson = pat.nowPerson,
-                        maxPerson = pat.maxPerson,
-                        startDate = pat.startDate,
-                        imgUri = pat.repImg,
-                        location = pat.location.ifEmpty { "어디서나 가능" },
-                        onClick = {
-                            navController.navigate("patDetail/${pat.patId}")
-                        }
-                    )
-                    Spacer(Modifier.size(10.dp))
+        if (uiState.itemSnapshotList.size != 0){
+            LazyRow {
+                items(uiState.itemCount) { idx ->
+                    uiState[idx]?.let { pat ->
+                        HomePats(
+                            title = pat.patName,
+                            category = pat.category,
+                            nowPerson = pat.nowPerson,
+                            maxPerson = pat.maxPerson,
+                            startDate = pat.startDate,
+                            imgUri = pat.repImg,
+                            location = pat.location.ifEmpty { "어디서나 가능" },
+                            onClick = {
+                                navController.navigate("patDetail/${pat.patId}")
+                            }
+                        )
+                        Spacer(Modifier.size(10.dp))
+                    }
                 }
             }
         }

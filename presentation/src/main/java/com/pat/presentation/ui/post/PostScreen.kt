@@ -24,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -57,9 +58,11 @@ import com.pat.presentation.ui.common.ExampleImageView
 import com.pat.presentation.ui.common.FinalButton
 import com.pat.presentation.ui.common.SelectDayButtonList
 import com.pat.presentation.ui.common.SelectImageList
+import com.pat.presentation.ui.common.SnackBar
 import com.pat.presentation.ui.common.WheelTimePickerView
 import com.pat.presentation.ui.common.convertDateFormat
 import com.pat.presentation.ui.common.convertTimeFormat
+import com.pat.presentation.ui.login.Event
 import com.pat.presentation.ui.post.components.PostRepImageView
 import com.pat.presentation.ui.post.components.PostTitleBox
 import com.pat.presentation.ui.post.components.SearchPlaceTextField
@@ -86,12 +89,48 @@ fun PostScreenView(
     navController: NavController,
     viewModel: PostViewModel,
 ) {
-
     val scrollState = rememberScrollState()
     val declarationDialogState = remember { mutableStateOf(false) }
+    val errorMessage = remember { mutableStateOf("") }
+
     BackHandler {
         declarationDialogState.value = true
     }
+
+    LaunchedEffect(Unit) {
+        viewModel.event.collect {
+            when (it) {
+                is PostEvent.PostSuccess -> {
+                    viewModel.clearImageData()
+                    navController.popBackStack(
+                        route = HOME,
+                        inclusive = false
+                    )
+                }
+
+                is PostEvent.PostFailed -> {
+                    errorMessage.value = "등록 실패"
+                }
+
+                is PostEvent.SearchPlaceSuccess -> {
+                    errorMessage.value = "검색 실패"
+                }
+
+                is PostEvent.SearchPlaceFailed -> {
+                    errorMessage.value = "검색 실패"
+                }
+
+                is PostEvent.SearchCoordinateSuccess -> {
+                    errorMessage.value = "검색 실패"
+                }
+
+                is PostEvent.SearchCoordinateFailed -> {
+                    errorMessage.value = "검색 실패"
+                }
+            }
+        }
+    }
+
     if (declarationDialogState.value) {
         CustomDialog(
             okRequest = {
@@ -142,6 +181,10 @@ fun PostScreenView(
                 viewModel = viewModel,
                 scrollState = scrollState
             )
+        }
+
+        if (errorMessage.value.isNotEmpty()) {
+            SnackBar(errorMessage)
         }
     }
 }
@@ -393,11 +436,6 @@ fun PostScreenBody(
                         days = dayList.value,
                         category = category.value,
                         realtime = !isRealTime.value,
-                    )
-                    viewModel.clearImageData()
-                    navController.popBackStack(
-                        route = HOME,
-                        inclusive = false
                     )
                 })
         } else {
