@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pat.domain.model.member.MyProfileContent
 import com.pat.domain.usecase.member.GetMyProfileUseCase
+import com.pat.presentation.util.resultException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +22,7 @@ sealed class SettingEvent {
 data class SettingUiState(
     val profileContent: MyProfileContent? = null
 )
+
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val getMyProfileUseCase: GetMyProfileUseCase,
@@ -31,9 +33,10 @@ class SettingViewModel @Inject constructor(
     private val _event = MutableSharedFlow<SettingEvent>()
     val event = _event.asSharedFlow()
 
-    init{
+    init {
         getMyProfile()
     }
+
     fun getMyProfile() {
         viewModelScope.launch {
             val result = getMyProfileUseCase()
@@ -44,8 +47,9 @@ class SettingViewModel @Inject constructor(
 
             } else {
                 _event.emit(SettingEvent.GetMyProfileFailed)
+                val error = result.exceptionOrNull()
+                resultException(error)
             }
         }
     }
-
 }

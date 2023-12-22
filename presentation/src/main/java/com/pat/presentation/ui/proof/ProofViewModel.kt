@@ -24,6 +24,7 @@ import com.pat.presentation.util.image.byteArrayToBitmap
 import com.pat.presentation.util.image.getCompressedBytes
 import com.pat.presentation.util.image.getRotatedBitmap
 import com.pat.presentation.util.image.getScaledBitmap
+import com.pat.presentation.util.resultException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -159,22 +160,25 @@ class ProofViewModel @Inject constructor(
                 _bottomSheetState.value = false
                 getParticipatingDetail(_uiState.value.content!!.patId)
                 _event.emit(ProofEvent.ProofSuccess)
+                // 인증 성공 시 proof 데이터 다시 가져오기
+                myProof = Pager(
+                    config = PagingConfig(pageSize = size),
+                    pagingSourceFactory = {
+                        MyProofPaging(
+                            patId,
+                            getMyProofUseCase,
+                            ProofRequestInfo(
+                                size = size
+                            )
+                        )
+
+                    }
+                ).flow.cachedIn(viewModelScope)
             } else {
                 _event.emit(ProofEvent.ProofFailed)
+                val error = result.exceptionOrNull()
+                resultException(error)
             }
-            myProof = Pager(
-                config = PagingConfig(pageSize = size),
-                pagingSourceFactory = {
-                    MyProofPaging(
-                        patId,
-                        getMyProofUseCase,
-                        ProofRequestInfo(
-                            size = size
-                        )
-                    )
-
-                }
-            ).flow.cachedIn(viewModelScope)
         }
     }
 
@@ -186,6 +190,8 @@ class ProofViewModel @Inject constructor(
                 _event.emit(ProofEvent.WithdrawSuccess)
             } else {
                 _event.emit(ProofEvent.WithdrawFailed)
+                val error = result.exceptionOrNull()
+                resultException(error)
             }
         }
     }

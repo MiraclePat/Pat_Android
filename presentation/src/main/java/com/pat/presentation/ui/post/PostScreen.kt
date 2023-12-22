@@ -112,20 +112,16 @@ fun PostScreenView(
                     errorMessage.value = "등록 실패"
                 }
 
-                is PostEvent.SearchPlaceSuccess -> {
-                    errorMessage.value = "검색 실패"
-                }
+                is PostEvent.SearchPlaceSuccess -> {}
 
                 is PostEvent.SearchPlaceFailed -> {
                     errorMessage.value = "검색 실패"
                 }
 
-                is PostEvent.SearchCoordinateSuccess -> {
-                    errorMessage.value = "검색 실패"
-                }
+                is PostEvent.SearchCoordinateSuccess -> {}
 
                 is PostEvent.SearchCoordinateFailed -> {
-                    errorMessage.value = "검색 실패"
+                    errorMessage.value = "좌표 검색 실패"
                 }
             }
         }

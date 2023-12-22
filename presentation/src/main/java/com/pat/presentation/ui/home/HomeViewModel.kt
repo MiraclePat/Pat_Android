@@ -5,10 +5,13 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
+import com.orhanobut.logger.Logger
+import com.pat.domain.model.exception.ForbiddenException
 import com.pat.domain.model.pat.HomeBannerContent
 import com.pat.domain.model.pat.HomePatRequestInfo
 import com.pat.domain.usecase.pat.GetHomeBannerUseCase
 import com.pat.domain.usecase.pat.GetHomePatsUseCase
+import com.pat.presentation.util.resultException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -97,6 +100,8 @@ class HomeViewModel @Inject constructor(
                 _homeBanner.emit(BannerUiState(content))
             } else {
                 _event.emit(HomeEvent.BannerFailed)
+                val error = homeBannerResult.exceptionOrNull()
+                resultException(error)
             }
         }
     }

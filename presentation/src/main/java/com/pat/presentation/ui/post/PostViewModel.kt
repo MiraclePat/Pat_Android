@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.naver.maps.geometry.LatLng
 import com.orhanobut.logger.Logger
+import com.pat.domain.model.exception.ForbiddenException
+import com.pat.domain.model.exception.NotFoundException
 import com.pat.domain.model.pat.CreatePatInfo
 import com.pat.domain.model.pat.CreatePatInfoDetail
 import com.pat.domain.model.place.PlaceDetailInfo
@@ -20,6 +22,7 @@ import com.pat.presentation.util.image.byteArrayToBitmap
 import com.pat.presentation.util.image.getCompressedBytes
 import com.pat.presentation.util.image.getRotatedBitmap
 import com.pat.presentation.util.image.getScaledBitmap
+import com.pat.presentation.util.resultException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -200,7 +203,8 @@ class PostViewModel @Inject constructor(
                 _event.emit(PostEvent.PostSuccess)
             } else {
                 _event.emit(PostEvent.PostFailed)
-            }
+                val error = result.exceptionOrNull()
+                resultException(error)            }
         }
     }
 
@@ -227,6 +231,8 @@ class PostViewModel @Inject constructor(
                 _event.emit(PostEvent.SearchPlaceSuccess)
             } else {
                 _event.emit(PostEvent.SearchPlaceFailed)
+                val error = result.exceptionOrNull()
+                resultException(error)
             }
         }
     }
@@ -243,7 +249,8 @@ class PostViewModel @Inject constructor(
             } else {
                 //TODO 에러 처리 해당주소의 좌표를 찾을 수 없습니다 에러처리
                 _event.emit(PostEvent.SearchCoordinateFailed)
-            }
+                val error = result.exceptionOrNull()
+                resultException(error)            }
         }
     }
 

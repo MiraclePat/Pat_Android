@@ -7,6 +7,7 @@ import com.pat.domain.model.pat.PatDetailContent
 import com.pat.domain.usecase.pat.GetPatDetailUseCase
 import com.pat.domain.usecase.pat.ParticipatePatUseCase
 import com.pat.domain.usecase.pat.WithdrawPatUseCase
+import com.pat.presentation.util.resultException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -57,6 +58,8 @@ class PatDetailViewModel @Inject constructor(
                 _uiState.emit(PatDetailUiState(content = content))
             } else {
                 _event.emit(ParticipateEvent.GetPatDetailFail)
+                val error = result.exceptionOrNull()
+                resultException(error)
             }
         }
     }
@@ -70,6 +73,8 @@ class PatDetailViewModel @Inject constructor(
                 getPatDetail()
             } else {
                 _event.emit(ParticipateEvent.ParticipateFailed)
+                val error = result.exceptionOrNull()
+                resultException(error)
             }
         }
     }
@@ -83,6 +88,8 @@ class PatDetailViewModel @Inject constructor(
                 getPatDetail()
             } else {
                 _event.emit(ParticipateEvent.WithdrawFail)
+                val error = result.exceptionOrNull()
+                resultException(error)
             }
         }
     }
