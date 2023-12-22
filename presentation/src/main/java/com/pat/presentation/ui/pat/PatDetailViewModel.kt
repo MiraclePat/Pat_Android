@@ -21,9 +21,9 @@ sealed class ParticipateEvent {
     data class ParticipateSuccess(val patState: String) : ParticipateEvent()
     object ParticipateFailed : ParticipateEvent()
     object GetPatDetailSuccess : ParticipateEvent()
-    object GetPatDetailFail : ParticipateEvent()
+    object GetPatDetailFailed : ParticipateEvent()
     object WithdrawSuccess : ParticipateEvent()
-    object WithdrawFail : ParticipateEvent()
+    object WithdrawFailed : ParticipateEvent()
 }
 data class PatDetailUiState(
     val content: PatDetailContent? = null
@@ -57,7 +57,7 @@ class PatDetailViewModel @Inject constructor(
                 _event.emit(ParticipateEvent.GetPatDetailSuccess)
                 _uiState.emit(PatDetailUiState(content = content))
             } else {
-                _event.emit(ParticipateEvent.GetPatDetailFail)
+                _event.emit(ParticipateEvent.GetPatDetailFailed)
                 val error = result.exceptionOrNull()
                 resultException(error)
             }
@@ -87,7 +87,7 @@ class PatDetailViewModel @Inject constructor(
                 _event.emit(ParticipateEvent.WithdrawSuccess)
                 getPatDetail()
             } else {
-                _event.emit(ParticipateEvent.WithdrawFail)
+                _event.emit(ParticipateEvent.WithdrawFailed)
                 val error = result.exceptionOrNull()
                 resultException(error)
             }

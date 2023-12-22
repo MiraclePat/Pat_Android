@@ -11,6 +11,7 @@ import com.pat.domain.model.pat.HomeBannerContent
 import com.pat.domain.model.pat.HomePatRequestInfo
 import com.pat.domain.usecase.pat.GetHomeBannerUseCase
 import com.pat.domain.usecase.pat.GetHomePatsUseCase
+import com.pat.presentation.ui.pat.ParticipateEvent
 import com.pat.presentation.util.resultException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,13 +25,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 sealed class HomeEvent {
-    object BannerSuccess : HomeEvent()
+    data class BannerSuccess(val content: HomeBannerContent? = null) : HomeEvent()
     object BannerFailed : HomeEvent()
 }
-
-data class BannerUiState(
-    val content: HomeBannerContent? = null
-)
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -42,8 +39,6 @@ class HomeViewModel @Inject constructor(
     private val _event = MutableSharedFlow<HomeEvent>()
     val event = _event.asSharedFlow()
 
-    private val _homeBanner = MutableStateFlow(BannerUiState())
-    val homeBanner: StateFlow<BannerUiState> = _homeBanner.asStateFlow()
 
     private val _category = MutableStateFlow("전체")
     val category: StateFlow<String> = _category.asStateFlow()
@@ -96,8 +91,7 @@ class HomeViewModel @Inject constructor(
             val homeBannerResult = getHomeBannerUseCase()
             if (homeBannerResult.isSuccess) {
                 val content = homeBannerResult.getOrThrow()
-                _event.emit(HomeEvent.BannerSuccess)
-                _homeBanner.emit(BannerUiState(content))
+                _event.emit(HomeEvent.BannerSuccess(content))
             } else {
                 _event.emit(HomeEvent.BannerFailed)
                 val error = homeBannerResult.exceptionOrNull()

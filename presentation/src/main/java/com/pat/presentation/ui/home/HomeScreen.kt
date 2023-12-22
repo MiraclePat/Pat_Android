@@ -46,14 +46,13 @@ fun HomeScreenView(
     val onSearchScreen = remember { mutableStateOf(false) }
 
     val errorMessage = remember { mutableStateOf("") }
-    val banner by homeViewModel.homeBanner.collectAsState()
-    var bannerContent by remember { mutableStateOf(BannerUiState().content) }
+    var bannerContent by remember { mutableStateOf(HomeEvent.BannerSuccess().content) }
 
     LaunchedEffect(Unit) {
         homeViewModel.event.collect {
             when (it) {
                 is HomeEvent.BannerSuccess -> {
-                    bannerContent = banner.content
+                    bannerContent = it.content
                 }
                 is HomeEvent.BannerFailed -> {
                     errorMessage.value = "배너를 불러오는데 실패"

@@ -94,7 +94,7 @@ fun PatDetailView(
                 is ParticipateEvent.GetPatDetailSuccess -> {
                 }
 
-                is ParticipateEvent.GetPatDetailFail -> {
+                is ParticipateEvent.GetPatDetailFailed -> {
                     errorMessage.value = "데이터를 불러오지 못했어요"
                 }
 
@@ -102,7 +102,7 @@ fun PatDetailView(
                     errorMessage.value = "취소 성공."
                 }
 
-                is ParticipateEvent.WithdrawFail -> {
+                is ParticipateEvent.WithdrawFailed -> {
                     errorMessage.value = "취소 실패"
                 }
             }
