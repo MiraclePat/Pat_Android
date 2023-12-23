@@ -19,10 +19,14 @@ interface MemberService {
     suspend fun getMyProfile(): MyProfileContentDTO
 
     @Multipart
-    @PATCH("/api/v1/members/me")
-    suspend fun updateProfile(
+    @PATCH("/api/v1/members/me/profile-image")
+    suspend fun updateProfileImage(
         @Part image: MultipartBody.Part,
-        @Part("nickname") nickname: String
+    ): Response<Unit>
+
+    @PATCH("/api/v1/members/me/profile-nickname")
+    suspend fun updateProfileNickname(
+        @Query("nickname") nickname: String
     ): Response<Unit>
 
     @DELETE("/api/v1/members/me")

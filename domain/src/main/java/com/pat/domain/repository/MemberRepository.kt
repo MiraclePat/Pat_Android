@@ -11,8 +11,12 @@ import com.pat.domain.model.pat.CreatePatInfo
 interface MemberRepository {
     suspend fun getMyProfile(): Result<MyProfileContent>
 
-    suspend fun updateProfile(
-        updateProfileInfo: UpdateProfileInfo
+    suspend fun updateProfileImage(
+        profileURI: String
+    ): Result<Unit>
+
+    suspend fun updateProfileNickname(
+        nickname: String
     ): Result<Unit>
 
     suspend fun deleteMember(): Result<Unit>

@@ -42,9 +42,28 @@ class MemberRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateProfile(updateProfileInfo: UpdateProfileInfo): Result<Unit> {
-        val image = getMultipartImage(updateProfileInfo.image, "image")
-        val response = memberDataSource.updateProfile(image, updateProfileInfo.nickname)
+    override suspend fun updateProfileImage(profileURI: String): Result<Unit> {
+
+        val bytes = imageRepositoryImpl.getImageBytes(profileURI)
+        val requestFile = bytes.toRequestBody("image/jpeg".toMediaType(), 0, bytes.size)
+        val fileName = imageDataSource.getImageName()
+        val image = MultipartBody.Part.createFormData(
+            "image",
+            "$fileName.jpeg",
+            requestFile,
+        )
+        val response = memberDataSource.updateProfileImage(image)
+
+        return if (response.isSuccessful) {
+            Result.success(Unit)
+        } else {
+            Logger.t("updateInfo").i("${response.errorBody()}")
+            Result.failure(UnKnownException())
+        }
+    }
+
+    override suspend fun updateProfileNickname(nickname: String): Result<Unit> {
+        val response = memberDataSource.updateProfileNickname(nickname)
 
         return if (response.isSuccessful) {
             Result.success(Unit)

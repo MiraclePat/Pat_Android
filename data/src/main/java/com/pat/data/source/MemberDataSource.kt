@@ -16,11 +16,16 @@ class MemberDataSource @Inject constructor(
         return service.getMyProfile()
     }
 
-    suspend fun updateProfile(
+    suspend fun updateProfileImage(
         image: MultipartBody.Part,
+    ): Response<Unit> {
+        return service.updateProfileImage(image)
+    }
+
+    suspend fun updateProfileNickname(
         nickname: String
     ): Response<Unit> {
-        return service.updateProfile(image, nickname)
+        return service.updateProfileNickname(nickname)
     }
 
     suspend fun deleteMember(): Response<Unit> {
