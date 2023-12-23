@@ -25,7 +25,6 @@ interface MemberService {
         @Part("nickname") nickname: String
     ): Response<Unit>
 
-    @Multipart
     @DELETE("/api/v1/members/me")
     suspend fun deleteMember(): Response<Unit>
 

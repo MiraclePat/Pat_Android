@@ -28,6 +28,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.SelectButton
 import com.pat.presentation.ui.theme.Gray100
@@ -45,7 +46,9 @@ import com.pat.presentation.util.WITHDRAWAL
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingWithdrawal(modifier: Modifier = Modifier, viewState: MutableState<String>) {
+fun SettingWithdrawal(
+    settingViewModel: SettingViewModel,
+    modifier: Modifier = Modifier, viewState: MutableState<String>) {
     BackHandler { viewState.value = ACCOUNT }
     Scaffold(
         topBar = {
@@ -134,7 +137,7 @@ fun SettingWithdrawal(modifier: Modifier = Modifier, viewState: MutableState<Str
                     modifier = modifier.weight(1f),
                     text = "탈퇴하기",
                     onClick = {
-                        // TODO 탈퇴하기
+                        settingViewModel.deleteUser()
                     },
                     cornerSize = 100.dp,
                 )

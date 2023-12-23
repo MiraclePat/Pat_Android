@@ -9,11 +9,14 @@ import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.orhanobut.logger.Logger
+import com.pat.presentation.ui.pat.ParticipateEvent
+import com.pat.presentation.ui.pat.PatUpdateViewModel
 import com.pat.presentation.util.ACCOUNT
 import com.pat.presentation.util.ALARM
 import com.pat.presentation.util.ANNOUNCE
 import com.pat.presentation.util.BODY
 import com.pat.presentation.util.PASSWORD
+import com.pat.presentation.util.POST
 import com.pat.presentation.util.WITHDRAWAL
 
 
@@ -34,6 +37,11 @@ fun SettingScreenView(
                 is SettingEvent.GetMyProfileFailed -> {
                     Logger.t("Setting").i("GetMyProfileFailed")
                 }
+                is SettingEvent.DeleteUserSuccess -> {
+                    navController.navigate("LOGIN")
+                }
+                is SettingEvent.DeleteUserFailed -> {
+                }
             }
         }
     }
@@ -44,7 +52,7 @@ fun SettingScreenView(
         ALARM -> SettingAlarm(viewState = viewState)
         ANNOUNCE -> SettingAnnounce(viewState = viewState)
         PASSWORD -> SettingPassword(viewState = viewState)
-        WITHDRAWAL -> SettingWithdrawal(viewState = viewState)
+        WITHDRAWAL -> SettingWithdrawal(viewState = viewState, settingViewModel = settingViewModel)
     }
 }
 

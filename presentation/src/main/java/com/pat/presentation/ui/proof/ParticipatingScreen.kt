@@ -89,7 +89,7 @@ fun ParticipatingScreenView(
         Spacer(modifier = modifier.padding(bottom = 28.dp))
 
 
-        // 추후 ENUM으로 Refcator
+        // TODO 추후 ENUM으로 Refcator
         val buttonText: (String) -> (String) = { state ->
             when (state) {
                 "SCHEDULED" -> "상세보기"

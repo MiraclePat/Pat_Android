@@ -26,6 +26,7 @@ import androidx.navigation.navArgument
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.SettingCamera
 import com.pat.presentation.ui.home.HomeScreenView
+import com.pat.presentation.ui.login.LoginScreenView
 import com.pat.presentation.ui.map.MapScreenView
 import com.pat.presentation.ui.pat.PatDetailView
 import com.pat.presentation.ui.pat.PatUpdateView
@@ -72,6 +73,9 @@ fun NavigationGraph(navController: NavHostController) {
     val updateViewModel: PatUpdateViewModel = hiltViewModel()
 
     NavHost(navController = navController, startDestination = BottomNavItem.Home.screenRoute) {
+        composable("LOGIN") {
+            LoginScreenView()
+        }
         composable(BottomNavItem.Home.screenRoute) {
             HomeScreenView(
                 navController = navController,
