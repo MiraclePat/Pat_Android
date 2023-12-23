@@ -5,6 +5,9 @@ import com.pat.data.repository.image.ImageRepositoryImpl
 import com.pat.data.source.ImageDataSource
 import com.pat.data.source.PatDataSource
 import com.pat.data.util.exception
+import com.pat.domain.model.exception.BadRequestException
+import com.pat.domain.model.exception.ForbiddenException
+import com.pat.domain.model.exception.NotFoundException
 import com.pat.domain.model.exception.UnKnownException
 import com.pat.domain.model.pat.CreatePatInfo
 import com.pat.domain.model.pat.CreatePatInfoDetail
@@ -20,6 +23,9 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.internal.http.HTTP_BAD_REQUEST
+import okhttp3.internal.http.HTTP_FORBIDDEN
+import okhttp3.internal.http.HTTP_NOT_FOUND
 import retrofit2.HttpException
 import javax.inject.Inject
 
@@ -183,9 +189,25 @@ class PatRepositoryImpl @Inject constructor(
 
     private fun handleRegisterAndGetError(t: Throwable): Throwable {
         return if (t is HttpException) {
-            Logger.t("MainTest").i("실패 ${t.message()}")
+            val message = t.response()?.errorBody()?.string().toString()
+            when (t.code()) {
+                HTTP_FORBIDDEN -> {
+                    Logger.t("code").i(message)
+                    ForbiddenException()
+                }
 
-            UnKnownException()
+                HTTP_BAD_REQUEST -> {
+                    Logger.t("code").i(message)
+                    BadRequestException()
+                }
+
+                HTTP_NOT_FOUND -> {
+                    Logger.t("code").i(message)
+                    NotFoundException()
+                }
+
+                else -> UnKnownException()
+            }
         } else {
             Logger.t("MainTest").i("실패 ${t.message}")
             t

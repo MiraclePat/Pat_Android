@@ -1,7 +1,5 @@
 package com.pat.presentation.ui.map
 
-import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
@@ -23,7 +21,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,7 +36,6 @@ import com.naver.maps.map.compose.MarkerState
 import com.naver.maps.map.compose.NaverMap
 import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.overlay.OverlayImage
-import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.MapPatContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
@@ -68,17 +64,18 @@ fun MapScreenView(
     val scrollState = rememberScrollState()
 
     val mapPats by mapViewModel.mapPats.collectAsState()
-//    var selectedPat by remember { mutableStateOf<MapPatContent>(mapPats.first()) }
 
-    //화면이 움직일 때마다  현재 화면의 좌표값 전달 viewmodel에 전달 0
-    //검색하면 viewmodel query를 호출해서 뿌려줍니다 0
-    //카테고리를 클릭하면 viewmodel 호출 카테고리 디자인수정  0
-    //마커클릭시 마커변경, 바텀으로 올라옴 o
-    //바텀클릭시 detail로 이동 o
-    //카테고리별로 마커달리하기 o
+    LaunchedEffect(Unit) {
+        mapViewModel.event.collect {
+            when (it) {
+                is MapEvent.GetMapSuccess -> {
+                }
+                is MapEvent.GetMapFailed -> {
+                }
+            }
+        }
+    }
 
-    //네이버 맵 초기화 ( 관악구청 ) o
-    //관악구청 화면의 bound좌표를 viewmodel에 넘겨준다 intit o
 
     LaunchedEffect(cameraPositionState.isMoving) {
         if (cameraPositionState.isMoving) {
