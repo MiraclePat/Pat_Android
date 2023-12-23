@@ -152,4 +152,8 @@ dependencies {
 
     // paging
     implementation "androidx.paging:paging-compose:3.3.0-alpha02"
+
+    // KeyboardEvent
+    implementation("tech.thdev:extensions-compose-keyboard-state:1.6.0-beta03")
+    implementation("tech.thdev:extensions-compose-system-ui-controller:1.6.0-beta03")
 }
