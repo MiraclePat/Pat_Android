@@ -24,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
@@ -44,7 +45,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.orhanobut.logger.Logger
 import com.pat.domain.model.place.PlaceDetailInfo
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBoxList
@@ -62,13 +62,11 @@ import com.pat.presentation.ui.common.SnackBar
 import com.pat.presentation.ui.common.WheelTimePickerView
 import com.pat.presentation.ui.common.convertDateFormat
 import com.pat.presentation.ui.common.convertTimeFormat
-import com.pat.presentation.ui.login.Event
 import com.pat.presentation.ui.post.components.PostRepImageView
 import com.pat.presentation.ui.post.components.PostTitleBox
 import com.pat.presentation.ui.post.components.SearchPlaceTextField
 import com.pat.presentation.ui.post.components.SearchResultList
 import com.pat.presentation.ui.theme.Gray300
-import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.GreenBack
 import com.pat.presentation.ui.theme.GreenText
@@ -76,11 +74,13 @@ import com.pat.presentation.ui.theme.Primary50
 import com.pat.presentation.ui.theme.PrimaryMain
 import com.pat.presentation.ui.theme.RedBack
 import com.pat.presentation.ui.theme.RedText
-import com.pat.presentation.ui.theme.StarColor
 import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.ui.theme.White
 import com.pat.presentation.util.HOME
 import kotlinx.coroutines.launch
+import tech.thdev.compose.extensions.keyboard.state.MutableExKeyboardStateSource
+import tech.thdev.compose.extensions.keyboard.state.foundation.removeFocusWhenKeyboardIsHidden
+import tech.thdev.compose.extensions.keyboard.state.localowners.LocalMutableExKeyboardStateSourceOwner
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -141,46 +141,51 @@ fun PostScreenView(
             okMessage = "작성 취소"
         )
     }
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "공고글 작성",
-                        fontSize = 14.sp,
-                        style = Typography.labelMedium
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        declarationDialogState.value = !declarationDialogState.value
-                    }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_back_arrow),
-                            contentDescription = "Go back"
+    CompositionLocalProvider(
+        LocalMutableExKeyboardStateSourceOwner provides MutableExKeyboardStateSource()
+    ) {
+        Scaffold(
+            modifier = Modifier.removeFocusWhenKeyboardIsHidden(),
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = {
+                        Text(
+                            text = "공고글 작성",
+                            fontSize = 14.sp,
+                            style = Typography.labelMedium
                         )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            declarationDialogState.value = !declarationDialogState.value
+                        }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_back_arrow),
+                                contentDescription = "Go back"
+                            )
+                        }
                     }
-                }
-            )
-        }
-    ) { innerPadding ->
+                )
+            }
+        ) { innerPadding ->
 
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .verticalScroll(scrollState),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .verticalScroll(scrollState),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
-            PostScreenBody(
-                navController = navController,
-                viewModel = viewModel,
-                scrollState = scrollState
-            )
-        }
+                PostScreenBody(
+                    navController = navController,
+                    viewModel = viewModel,
+                    scrollState = scrollState
+                )
+            }
 
-        if (errorMessage.value.isNotEmpty()) {
-            SnackBar(errorMessage)
+            if (errorMessage.value.isNotEmpty()) {
+                SnackBar(errorMessage)
+            }
         }
     }
 }
@@ -255,8 +260,8 @@ fun PostScreenBody(
 
         PostTitleBox(title = "팟 제목", approve = checkTitle) {
             CustomTextField(
-                placeholderText = "최대 15자",
-                state = title, maxLength = 15
+                placeholderText = "최대 15자", maxLines = 1,
+                state = title, maxLength = 15,
             )
         }
 
@@ -296,7 +301,7 @@ fun PostScreenBody(
             CustomTextField(
                 placeholderText = "숫자만 입력해주세요. (최대 10,000명 가능)",
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                state = maxPerson, maxLength = 5,
+                maxLines = 1, state = maxPerson, maxLength = 5,
             )
         }
 
@@ -381,7 +386,7 @@ fun PostScreenBody(
 
         PostTitleBox(title = "인증방법 설명", approve = checkProof) {
             CustomTextField(
-                placeholderText = "최소 5자, 최대 30자",
+                placeholderText = "최소 5자, 최대 30자", maxLines = 2,
                 maxLength = 30, state = proofDetail
             )
         }
