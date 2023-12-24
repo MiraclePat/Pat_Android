@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.orhanobut.logger.Logger
 import com.pat.domain.model.member.MyProfileContent
+import com.pat.domain.usecase.auth.LogoutUseCase
 import com.pat.domain.usecase.member.DeleteMemberUseCase
 import com.pat.domain.usecase.member.GetMyProfileUseCase
 import com.pat.domain.usecase.member.UpdateProfileImageUseCase
@@ -22,6 +23,7 @@ import javax.inject.Inject
 sealed class SettingEvent {
     object DeleteUserSuccess : SettingEvent()
     object DeleteUserFailed : SettingEvent()
+    object LogoutSuccess : SettingEvent()
 
 }
 data class SettingUiState(
@@ -33,6 +35,7 @@ class SettingViewModel @Inject constructor(
     private val deleteMemberUseCase: DeleteMemberUseCase,
     private val updateProfileImageUseCase :UpdateProfileImageUseCase,
     private val updateProfileNicknameUseCase: UpdateProfileNicknameUseCase,
+    private val logoutUseCase: LogoutUseCase,
 
 ) : ViewModel() {
 
@@ -78,6 +81,19 @@ class SettingViewModel @Inject constructor(
 
     fun updateProfileNickname(nickname : String){
 
+    }
+
+    fun logout(){
+        viewModelScope.launch {
+            val result = logoutUseCase()
+            if (result.isSuccess) {
+                _event.emit(SettingEvent.DeleteUserSuccess)
+                Log.e("custom", "로그아웃성공")
+            } else {
+                _event.emit(SettingEvent.DeleteUserFailed)
+                Log.e("custom", "로그아웃실패")
+            }
+        }
     }
 
 }

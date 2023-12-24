@@ -1,6 +1,7 @@
 package com.pat.data.repository.auth
 
 import android.content.Context
+import com.google.firebase.auth.FirebaseAuth
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
@@ -45,6 +46,7 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override suspend fun logout(): Result<Unit> {
+        FirebaseAuth.getInstance().signOut()
         return logoutKakao().first()
     }
 
@@ -81,6 +83,7 @@ class AuthRepositoryImpl @Inject constructor(
         val firebaseToken = serverLoginResult.getOrNull()?.token ?: throw TokenNotFoundException()
         val firebaseLoginResult = loginWithFirebaseToken(firebaseToken)
         return if (firebaseLoginResult.isSuccess) {
+            authDataSource.setUserKey(firebaseToken)
             Result.success(Unit)
         } else {
             Logger.t("login").i("파이어베이스 실패${firebaseLoginResult.exception().message }")

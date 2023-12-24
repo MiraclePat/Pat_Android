@@ -69,7 +69,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation 'com.squareup.moshi:moshi-kotlin:1.12.0'
 
-    implementation "com.kakao.sdk:v2-user:2.14.0"
+    implementation "com.kakao.sdk:v2-user:2.18.0"
 
 //    implementation platform("com.google.firebase:firebase-bom:32.1.1")
     implementation 'com.google.firebase:firebase-auth-ktx'

@@ -31,6 +31,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.SelectButton
 import com.pat.presentation.ui.setting.components.SettingBox
@@ -49,7 +50,12 @@ import com.pat.presentation.util.WITHDRAWAL
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingAccount(modifier: Modifier = Modifier, viewState: MutableState<String>) {
+fun SettingAccount(
+    modifier: Modifier = Modifier,
+    viewState: MutableState<String>,
+    navController: NavController,
+    viewModel: SettingViewModel
+) {
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
 
@@ -92,7 +98,9 @@ fun SettingAccount(modifier: Modifier = Modifier, viewState: MutableState<String
             sheetState = sheetState
         ) {
             Column(
-                modifier = modifier.padding(bottom = 40.dp).fillMaxWidth(),
+                modifier = modifier
+                    .padding(bottom = 40.dp)
+                    .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -104,7 +112,7 @@ fun SettingAccount(modifier: Modifier = Modifier, viewState: MutableState<String
                 SelectButton(
                     text = "로그아웃 하기",
                     onClick = {
-                        //TODO 로그아웃
+                       viewModel.logout()
                     },
                     cornerSize = 100.dp,
                 )

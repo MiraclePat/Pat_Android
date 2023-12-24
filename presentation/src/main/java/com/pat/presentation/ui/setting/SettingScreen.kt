@@ -35,6 +35,9 @@ fun SettingScreenView(
                 }
                 is SettingEvent.DeleteUserFailed -> {
                 }
+                is SettingEvent.LogoutSuccess -> {
+                    navController.navigate("LOGIN")
+                }
                 else -> {}
             }
         }
@@ -42,7 +45,7 @@ fun SettingScreenView(
 
     when (viewState.value) {
         BODY -> SettingScreenBody(viewState = viewState, content = uiState.profileContent, navController = navController, viewModel = settingViewModel)
-        ACCOUNT -> SettingAccount(viewState = viewState)
+        ACCOUNT -> SettingAccount(viewState = viewState, navController = navController, viewModel = settingViewModel)
         ALARM -> SettingAlarm(viewState = viewState)
         ANNOUNCE -> SettingAnnounce(viewState = viewState)
         PASSWORD -> SettingPassword(viewState = viewState)

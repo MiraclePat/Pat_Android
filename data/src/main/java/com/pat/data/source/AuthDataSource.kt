@@ -46,6 +46,8 @@ class AuthDataSource @Inject constructor(
 
     private companion object{
         val KEY_USERCODE = stringPreferencesKey(name = "usercode")
+        val KEY_FIREBASE_KEY = stringPreferencesKey(name = "userkey")
+
     }
 
     suspend fun setUserCode(userCode: String) {
@@ -65,6 +67,27 @@ class AuthDataSource @Inject constructor(
             }
             .map { preferences ->
                 preferences[KEY_USERCODE]
+            }
+        return flow.firstOrNull()
+    }
+
+    suspend fun setUserKey(userKey: String) {
+        context.userInfoDataStore.edit { preference ->
+            preference[KEY_FIREBASE_KEY] = userKey
+        }
+    }
+
+    suspend fun getUserKey(): String? {
+        val flow = context.userInfoDataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                preferences[KEY_FIREBASE_KEY]
             }
         return flow.firstOrNull()
     }
