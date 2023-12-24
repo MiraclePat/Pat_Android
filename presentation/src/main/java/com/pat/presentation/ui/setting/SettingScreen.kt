@@ -41,7 +41,7 @@ fun SettingScreenView(
     }
 
     when (viewState.value) {
-        BODY -> SettingScreenBody(viewState = viewState, content = uiState.profileContent, navController = navController)
+        BODY -> SettingScreenBody(viewState = viewState, content = uiState.profileContent, navController = navController, viewModel = settingViewModel)
         ACCOUNT -> SettingAccount(viewState = viewState)
         ALARM -> SettingAlarm(viewState = viewState)
         ANNOUNCE -> SettingAnnounce(viewState = viewState)
