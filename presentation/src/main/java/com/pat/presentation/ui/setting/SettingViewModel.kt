@@ -1,11 +1,17 @@
 package com.pat.presentation.ui.setting
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.orhanobut.logger.Logger
 import com.pat.domain.model.member.MyProfileContent
+import com.pat.domain.usecase.auth.LogoutUseCase
+import com.pat.domain.usecase.auth.SetUserKeyUseCase
 import com.pat.domain.usecase.member.DeleteMemberUseCase
 import com.pat.domain.usecase.member.GetMyProfileUseCase
+import com.pat.domain.usecase.member.UpdateProfileImageUseCase
+import com.pat.domain.usecase.member.UpdateProfileNicknameUseCase
 import com.pat.presentation.util.resultException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,6 +28,7 @@ sealed class SettingEvent {
 
     object DeleteUserSuccess : SettingEvent()
     object DeleteUserFailed : SettingEvent()
+    object LogoutSuccess : SettingEvent()
 
 }
 data class SettingUiState(
@@ -32,6 +39,10 @@ data class SettingUiState(
 class SettingViewModel @Inject constructor(
     private val getMyProfileUseCase: GetMyProfileUseCase,
     private val deleteMemberUseCase: DeleteMemberUseCase,
+    private val updateProfileImageUseCase :UpdateProfileImageUseCase,
+    private val updateProfileNicknameUseCase: UpdateProfileNicknameUseCase,
+    private val logoutUseCase: LogoutUseCase,
+    private val setUserKeyUseCase: SetUserKeyUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SettingUiState())
     val uiState: StateFlow<SettingUiState> = _uiState.asStateFlow()
@@ -71,4 +82,28 @@ class SettingViewModel @Inject constructor(
             }
         }
     }
+
+    fun updateProfileImage(uri: Uri?){
+
+    }
+
+    fun updateProfileNickname(nickname : String){
+
+    }
+
+    fun logout(){
+        viewModelScope.launch {
+            val result = logoutUseCase()
+            if (result.isSuccess) {
+                setUserKeyUseCase("")
+                _event.emit(SettingEvent.LogoutSuccess)
+                Log.e("custom", "로그아웃성공")
+            } else {
+                _event.emit(SettingEvent.DeleteUserFailed)
+                Log.e("custom", "로그아웃실패")
+            }
+        }
+    }
+
+
 }

@@ -1,5 +1,8 @@
 package com.pat.presentation.ui.setting
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,6 +24,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,10 +63,19 @@ fun SettingScreenBody(
     modifier: Modifier = Modifier,
     viewState: MutableState<String>,
     content: MyProfileContent?,
-    navController: NavController
+    navController: NavController,
+    viewModel: SettingViewModel
 ) {
     val tempLoginState = true
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
 
+    val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            viewModel.updateProfileImage(uri)
+            selectedImageUri = uri
+        }
+    )
     @Composable
     fun patCount(modifier: Modifier = Modifier, text: String, count: Int) {
         Column(
@@ -92,13 +108,17 @@ fun SettingScreenBody(
         Box(
             modifier
                 .size(80.dp),
-            contentAlignment = Alignment.BottomEnd
+            contentAlignment = Alignment.BottomEnd,
         ) {
             Box(
                 modifier
                     .fillMaxSize()
                     .clip(CircleShape)
-                    .border(1.dp, Gray100, CircleShape),
+                    .border(1.dp, Gray100, CircleShape)
+                    .clickable {
+
+                    },
+
             ) {
                 GlideImage(
                     modifier = modifier
