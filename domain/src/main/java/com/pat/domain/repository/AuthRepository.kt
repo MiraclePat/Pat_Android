@@ -8,7 +8,10 @@ interface AuthRepository {
     ): Result<Unit>
 
     suspend fun login(): Result<Unit>
+    suspend fun loginWithCustomToken(firebaseToken: String): Result<Unit>
 
     suspend fun getUsercode(): Result<String?>
+    suspend fun getUserKey(): Result<String?>
+    suspend fun setUserKey(key: String): Result<Unit>
 
 }

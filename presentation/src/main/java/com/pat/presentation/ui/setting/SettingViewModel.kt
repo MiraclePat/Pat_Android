@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.orhanobut.logger.Logger
 import com.pat.domain.model.member.MyProfileContent
 import com.pat.domain.usecase.auth.LogoutUseCase
+import com.pat.domain.usecase.auth.SetUserKeyUseCase
 import com.pat.domain.usecase.member.DeleteMemberUseCase
 import com.pat.domain.usecase.member.GetMyProfileUseCase
 import com.pat.domain.usecase.member.UpdateProfileImageUseCase
@@ -36,7 +37,7 @@ class SettingViewModel @Inject constructor(
     private val updateProfileImageUseCase :UpdateProfileImageUseCase,
     private val updateProfileNicknameUseCase: UpdateProfileNicknameUseCase,
     private val logoutUseCase: LogoutUseCase,
-
+    private val setUserKeyUseCase: SetUserKeyUseCase
 ) : ViewModel() {
 
     private val _event = MutableSharedFlow<SettingEvent>()
@@ -87,7 +88,8 @@ class SettingViewModel @Inject constructor(
         viewModelScope.launch {
             val result = logoutUseCase()
             if (result.isSuccess) {
-                _event.emit(SettingEvent.DeleteUserSuccess)
+                setUserKeyUseCase("")
+                _event.emit(SettingEvent.LogoutSuccess)
                 Log.e("custom", "로그아웃성공")
             } else {
                 _event.emit(SettingEvent.DeleteUserFailed)

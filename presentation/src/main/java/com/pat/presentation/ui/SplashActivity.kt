@@ -21,7 +21,17 @@ class SplashActivity : AppCompatActivity() {
 
         repeatOnStarted(this) {
             viewModel.splashEvent.collectLatest {
-                val intent = Intent(this@SplashActivity,MainActivity::class.java)
+                val isLogin = when(it) {
+                    SplashEvent.LoginSuccess -> {
+                        "SUCCESS"
+                    }
+
+                    SplashEvent.LoginFailed -> {
+                        "FAILED"
+                    }
+                }
+                val intent = Intent(this@SplashActivity, MainActivity::class.java)
+                intent.putExtra("IS_LOGIN", isLogin)
                 startActivity(intent)
                 finish()
             }

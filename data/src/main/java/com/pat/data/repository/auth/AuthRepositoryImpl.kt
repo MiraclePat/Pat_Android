@@ -92,6 +92,16 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun loginWithCustomToken(firebaseToken: String): Result<Unit> {
+        val firebaseLoginResult = loginWithFirebaseToken(firebaseToken)
+        return if (firebaseLoginResult.isSuccess) {
+            Result.success(Unit)
+        } else {
+            Logger.t("login").i("파이어베이스 실패${firebaseLoginResult.exception().message }")
+
+            Result.failure(firebaseLoginResult.exceptionOrNull() ?: Exception())
+        }    }
+
     private fun setUserCode(userCode: String) {
         CoroutineScope(Dispatchers.IO).launch {
             authDataSource.setUserCode(userCode)
@@ -101,6 +111,18 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun getUsercode(): Result<String?> {
         return runCatching {
             authDataSource.getUserCode()
+        }
+    }
+
+    override suspend fun setUserKey(userKey: String): Result<Unit> {
+        return runCatching {
+            authDataSource.setUserKey(userKey)
+        }
+    }
+
+    override suspend fun getUserKey(): Result<String?> {
+        return runCatching {
+            authDataSource.getUserKey()
         }
     }
 

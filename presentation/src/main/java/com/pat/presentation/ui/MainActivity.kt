@@ -3,6 +3,7 @@ package com.pat.presentation.ui
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.camera.view.CameraController
@@ -30,6 +31,9 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val isAutoLogin = intent.getStringExtra("IS_LOGIN")
+        Log.e("custom", "$isAutoLogin")
+
         if (!hasRequiredPermissions()) {   //TODO USECASE로 빼기
             ActivityCompat.requestPermissions(
                 this, CAMERAX_PERMISSIONS, 0
@@ -40,7 +44,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             val isLogin = remember { mutableStateOf(false) }
 
-            if (isLogin.value) {
+            if (isLogin.value || isAutoLogin.equals("SUCCESS")) {
                 Scaffold(
                     bottomBar = { BottomNavi(navController = navController) }
                 ) {
