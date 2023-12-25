@@ -1,7 +1,6 @@
 package com.pat.presentation.ui.pat
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.camera.core.ImageProxy
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -26,10 +25,13 @@ import com.pat.presentation.util.image.getCompressedBytes
 import com.pat.presentation.util.image.getCompressedExistedBytes
 import com.pat.presentation.util.image.getRotatedBitmap
 import com.pat.presentation.util.image.getScaledBitmap
+import com.pat.presentation.util.resultException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -46,6 +48,18 @@ data class UpdateBytes(
     var correctBytes: ByteArray,
 )
 
+sealed class UpdateEvent {
+    object UpdateSuccess : UpdateEvent()
+    object UpdateFailed : UpdateEvent()
+    object SearchPlaceSuccess : UpdateEvent()
+    object SearchPlaceFailed : UpdateEvent()
+    object SearchCoordinateSuccess : UpdateEvent()
+    object SearchCoordinateFailed : UpdateEvent()
+    object DeleteSuccess : UpdateEvent()
+    object DeleteFailed : UpdateEvent()
+}
+
+
 @HiltViewModel
 class PatUpdateViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
@@ -59,6 +73,9 @@ class PatUpdateViewModel @Inject constructor(
     private var patId: Long = -1
     private val _uiState = MutableStateFlow(PatUpdateUiState())
     val uiState: StateFlow<PatUpdateUiState> = _uiState.asStateFlow()
+
+    private val _event = MutableSharedFlow<UpdateEvent>()
+    val event = _event.asSharedFlow()
 
     private var searchJob: Job = Job().apply {
         complete()
@@ -128,9 +145,11 @@ class PatUpdateViewModel @Inject constructor(
         viewModelScope.launch {
             val result = deletePatUseCase(patId)
             if (result.isSuccess) {
-                result.getOrThrow()
+                _event.emit(UpdateEvent.DeleteSuccess)
             } else {
-                Log.e("custom", "fail")
+                _event.emit(UpdateEvent.DeleteFailed)
+                val error = result.exceptionOrNull()
+                resultException(error)
             }
         }
     }
@@ -263,37 +282,18 @@ class PatUpdateViewModel @Inject constructor(
 
 
     fun updatePat(
-        patName: String,
-        patDetail: String,
-        maxPerson: Int,
-        category: String,
-        startTime: String,
-        endTime: String,
-        startDate: String,
-        endDate: String,
-        proofDetail: String,
-        days: List<String>,
-        realtime: Boolean,
+        patName: String, patDetail: String, maxPerson: Int,
+        category: String, startTime: String, endTime: String,
+        startDate: String, endDate: String, proofDetail: String,
+        days: List<String>, realtime: Boolean,
     ) {
         viewModelScope.launch {
             val detail = CreatePatInfoDetail(
-                patName,
-                patDetail,
-                maxPerson,
-                selectPlaceCoordinate?.latitude ?: 0.0,
-                selectPlaceCoordinate?.longitude ?: 0.0,
-                selectPlace ?: "",
-                category,
-                startTime,
-                endTime,
-                startDate,
-                endDate,
-                proofDetail,
-                listOf("월요일", "화요일"),
-                realtime
+                patName, patDetail, maxPerson,
+                selectPlaceCoordinate?.latitude ?: 0.0, selectPlaceCoordinate?.longitude ?: 0.0,
+                selectPlace ?: "", category, startTime, endTime,
+                startDate, endDate, proofDetail, days, realtime
             )
-            Logger.t("updateInfo").i("${patId}, ${detail}")
-
             val result = updatePatUseCase(
                 patId,
                 CreatePatInfo(
@@ -305,9 +305,11 @@ class PatUpdateViewModel @Inject constructor(
                 )
             )
             if (result.isSuccess) {
-                Logger.t("patdetail").i("성공")
+                _event.emit(UpdateEvent.UpdateSuccess)
             } else {
-                Logger.t("patdetail").i("${result.exceptionOrNull()}")
+                _event.emit(UpdateEvent.UpdateFailed)
+                val error = result.exceptionOrNull()
+                resultException(error)
             }
         }
     }
@@ -331,8 +333,9 @@ class PatUpdateViewModel @Inject constructor(
                     place.title = place.title.toString().replace("<b>", "").replace("</b>", "")
                 }
                 _searchPlaceResult.emit(places)
+                _event.emit(UpdateEvent.SearchPlaceSuccess)
             } else {
-                //TODO 에러 처리
+                _event.emit(UpdateEvent.SearchPlaceFailed)
             }
         }
     }
@@ -345,8 +348,9 @@ class PatUpdateViewModel @Inject constructor(
             if (result.isSuccess) {
                 val coordinate = result.getOrThrow()
                 selectPlaceCoordinate = LatLng(coordinate.lat, coordinate.long)
+                _event.emit(UpdateEvent.SearchCoordinateSuccess)
             } else {
-                //TODO 에러 처리 해당주소의 좌표를 찾을 수 없습니다 에러처리
+                _event.emit(UpdateEvent.SearchCoordinateFailed)
             }
         }
     }

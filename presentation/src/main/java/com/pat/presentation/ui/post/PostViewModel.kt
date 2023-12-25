@@ -204,7 +204,8 @@ class PostViewModel @Inject constructor(
             } else {
                 _event.emit(PostEvent.PostFailed)
                 val error = result.exceptionOrNull()
-                resultException(error)            }
+                resultException(error)
+            }
         }
     }
 
@@ -250,7 +251,8 @@ class PostViewModel @Inject constructor(
                 //TODO 에러 처리 해당주소의 좌표를 찾을 수 없습니다 에러처리
                 _event.emit(PostEvent.SearchCoordinateFailed)
                 val error = result.exceptionOrNull()
-                resultException(error)            }
+                resultException(error)
+            }
         }
     }
 
