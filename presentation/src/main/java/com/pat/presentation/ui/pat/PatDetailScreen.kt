@@ -43,7 +43,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.PatDetailContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
@@ -52,6 +51,7 @@ import com.pat.presentation.ui.common.Divider
 import com.pat.presentation.ui.common.FinalButton
 import com.pat.presentation.ui.common.IconWithTextView
 import com.pat.presentation.ui.common.SimpleTextView
+import com.pat.presentation.ui.common.SnackBar
 import com.pat.presentation.ui.common.convertDateViewFormat
 import com.pat.presentation.ui.common.convertTimeViewFormat
 import com.pat.presentation.ui.theme.Gray200
@@ -78,6 +78,36 @@ fun PatDetailView(
 ) {
     val uiState by patDetailViewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
+    val errorMessage = remember { mutableStateOf("") }
+
+    LaunchedEffect(patDetailViewModel) {
+        patDetailViewModel.event.collect {
+            when (it) {
+                is ParticipateEvent.ParticipateSuccess -> {
+                    errorMessage.value = "참여 성공"
+                }
+
+                is ParticipateEvent.ParticipateFailed -> {
+                    errorMessage.value = "참여 실패"
+                }
+
+                is ParticipateEvent.GetPatDetailSuccess -> {
+                }
+
+                is ParticipateEvent.GetPatDetailFailed -> {
+                    errorMessage.value = "데이터를 불러오지 못했어요"
+                }
+
+                is ParticipateEvent.WithdrawSuccess -> {
+                    errorMessage.value = "취소 성공."
+                }
+
+                is ParticipateEvent.WithdrawFailed -> {
+                    errorMessage.value = "취소 실패"
+                }
+            }
+        }
+    }
 
     Scaffold(
         modifier = modifier
@@ -130,6 +160,10 @@ fun PatDetailView(
                 )
             }
         }
+
+        if (errorMessage.value.isNotEmpty()) {
+            SnackBar(errorMessage)
+        }
     }
 }
 
@@ -140,23 +174,6 @@ fun PatDetailScreen(
     content: PatDetailContent,
     patDetailViewModel: PatDetailViewModel,
 ) {
-    LaunchedEffect(patDetailViewModel) {
-        patDetailViewModel.event.collect {
-            when (it) {
-                is ParticipateEvent.ParticipateSuccess -> {
-                    navController.popBackStack()
-                }
-
-                is ParticipateEvent.ParticipateFailed -> {
-
-                }
-
-                else -> {}
-            }
-        }
-    }
-
-
     GlideImage(
         modifier = modifier
             .fillMaxWidth()
@@ -335,6 +352,8 @@ fun PatDetailScreen(
 
         }
 
+
+
         if (content.isJoiner) {
             when (content.state) {
                 "CANCELABLE" -> {
@@ -376,7 +395,7 @@ fun PatDetailScreen(
                 }
             }
         } else { // 참여자가 아니면
-            if (content.state == "COMPLETED ") {
+            if (content.state == "COMPLETED") {
                 FinalButton(
                     text = "종료된 팟이에요!",
                     backColor = Gray300,

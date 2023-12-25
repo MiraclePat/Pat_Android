@@ -10,7 +10,7 @@ const val MAX_TITLE = 20
 const val MIN_DETAIL = 15
 const val MAX_DETAIL = 500
 
-const val MIN_PERSON = 1
+const val MIN_PERSON = 2
 const val MAX_PERSON = 10000
 
 const val MIN_PROOF = 5

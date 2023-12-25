@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.orhanobut.logger.Logger
 import com.pat.presentation.ui.pat.ParticipateEvent
 import com.pat.presentation.ui.pat.PatUpdateViewModel
 import com.pat.presentation.util.ACCOUNT
@@ -30,6 +31,12 @@ fun SettingScreenView(
     LaunchedEffect(Unit) {
         settingViewModel.event.collect {
             when (it) {
+                is SettingEvent.GetMyProfileSuccess -> {
+                    Logger.t("Setting").i("GetMyProfileSuccess")
+                }
+                is SettingEvent.GetMyProfileFailed -> {
+                    Logger.t("Setting").i("GetMyProfileFailed")
+                }
                 is SettingEvent.DeleteUserSuccess -> {
                     navController.navigate("LOGIN")
                 }
@@ -39,6 +46,7 @@ fun SettingScreenView(
                     navController.navigate("LOGIN")
                 }
                 else -> {}
+
             }
         }
     }

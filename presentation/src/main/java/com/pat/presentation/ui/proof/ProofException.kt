@@ -14,7 +14,9 @@ fun checkProofTime(start: String, end: String): Boolean {
     val adjustedStartHour = if (start.contains("오후")) startHour + 12 else startHour
     val adjustedEndHour = if (end.contains("오후")) endHour + 12 else endHour
 
-    return currentTime.get(Calendar.HOUR_OF_DAY) in adjustedStartHour..adjustedEndHour || start == end
+    val currentHour = currentTime.get(Calendar.HOUR_OF_DAY)
+
+    return adjustedStartHour <= currentHour && currentHour < adjustedEndHour || start == end
 }
 
 fun getDayOfWeek(): String {

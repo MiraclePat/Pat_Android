@@ -1,19 +1,14 @@
 package com.pat.presentation.ui.common
 
 
-import android.util.Log
-import androidx.annotation.Dimension.Companion.DP
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,7 +25,6 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.pat.presentation.ui.post.PostViewModel
 import com.pat.presentation.ui.theme.Gray200
 import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.Gray800
@@ -45,15 +39,10 @@ fun CustomTextField(
     style: TextStyle = Typography.labelMedium,
     maxLength: Int,
     maxLines: Int = Int.MAX_VALUE,
-    inputEnter: () -> Unit = {},
-    onScreen: MutableState<Boolean> = rememberSaveable {
-        mutableStateOf(false)
-    },
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     state: MutableState<String> = rememberSaveable {
         mutableStateOf("")
     },
-    viewModel: PostViewModel? = null,
 ) {
     var isFocused by remember { mutableStateOf(false) }
     val borderColor = if (!isFocused) Gray200 else SystemBlue
@@ -69,19 +58,10 @@ fun CustomTextField(
         value = state.value,
         onValueChange = {
             if (it.length <= maxLength) state.value = it
-            onScreen.value = true
-            viewModel?.onSearch(state.value)
         },
         cursorBrush = SolidColor(SystemBlue),
-        textStyle = style.copy(
-            color = Gray800,
-        ),
+        textStyle = style.copy(color = Gray800),
         keyboardOptions = keyboardOptions,
-        keyboardActions = KeyboardActions(
-            onDone = {
-                inputEnter()
-            }
-        ),
         maxLines = maxLines,
         decorationBox = { innerTextField ->
             Row(

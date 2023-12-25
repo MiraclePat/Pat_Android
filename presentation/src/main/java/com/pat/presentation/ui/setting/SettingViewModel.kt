@@ -12,6 +12,7 @@ import com.pat.domain.usecase.member.DeleteMemberUseCase
 import com.pat.domain.usecase.member.GetMyProfileUseCase
 import com.pat.domain.usecase.member.UpdateProfileImageUseCase
 import com.pat.domain.usecase.member.UpdateProfileNicknameUseCase
+import com.pat.presentation.util.resultException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +23,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 sealed class SettingEvent {
+    object GetMyProfileSuccess : SettingEvent()
+    object GetMyProfileFailed : SettingEvent()
+
     object DeleteUserSuccess : SettingEvent()
     object DeleteUserFailed : SettingEvent()
     object LogoutSuccess : SettingEvent()
@@ -30,6 +34,7 @@ sealed class SettingEvent {
 data class SettingUiState(
     val profileContent: MyProfileContent? = null
 )
+
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val getMyProfileUseCase: GetMyProfileUseCase,
@@ -39,30 +44,32 @@ class SettingViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
     private val setUserKeyUseCase: SetUserKeyUseCase
 ) : ViewModel() {
+    private val _uiState = MutableStateFlow(SettingUiState())
+    val uiState: StateFlow<SettingUiState> = _uiState.asStateFlow()
 
     private val _event = MutableSharedFlow<SettingEvent>()
     val event = _event.asSharedFlow()
 
-    private val _uiState = MutableStateFlow(SettingUiState())
-    val uiState: StateFlow<SettingUiState> = _uiState.asStateFlow()
-
-    init{
+    init {
         getMyProfile()
     }
+
     fun getMyProfile() {
         viewModelScope.launch {
             val result = getMyProfileUseCase()
             if (result.isSuccess) {
                 val content = result.getOrThrow()
-                Logger.t("MainTest").i("content ${content}")
-
+                _event.emit(SettingEvent.GetMyProfileSuccess)
                 _uiState.emit(SettingUiState(profileContent = content))
+
             } else {
-                Logger.t("MainTest").i("setting viewmodel ${_uiState.value}")
+                _event.emit(SettingEvent.GetMyProfileFailed)
+                val error = result.exceptionOrNull()
+                resultException(error)
             }
         }
     }
-
+    
     fun deleteUser(){
         viewModelScope.launch {
             val result = deleteMemberUseCase()
@@ -97,5 +104,6 @@ class SettingViewModel @Inject constructor(
             }
         }
     }
+
 
 }
