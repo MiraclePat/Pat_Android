@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.orhanobut.logger.Logger
+import com.pat.domain.model.exception.InvaildRequestException
+import com.pat.domain.model.exception.UserNotFoundException
 import com.pat.domain.model.member.MyProfileContent
 import com.pat.domain.usecase.auth.LogoutUseCase
 import com.pat.domain.usecase.auth.SetUserKeyUseCase
@@ -68,7 +70,7 @@ class SettingViewModel @Inject constructor(
             } else {
                 _event.emit(SettingEvent.GetMyProfileFailed)
                 val error = result.exceptionOrNull()
-                resultException(error)
+//                resultException(error)
             }
         }
     }
