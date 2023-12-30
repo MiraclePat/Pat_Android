@@ -2,6 +2,7 @@ package com.pat.presentation.ui.setting
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -73,7 +74,6 @@ fun SettingScreenBody(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
             viewModel.updateProfileImage(uri)
-            selectedImageUri = uri
         }
     )
     @Composable
@@ -116,7 +116,9 @@ fun SettingScreenBody(
                     .clip(CircleShape)
                     .border(1.dp, Gray100, CircleShape)
                     .clickable {
-
+                        singlePhotoPickerLauncher.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
                     },
 
             ) {
@@ -125,6 +127,8 @@ fun SettingScreenBody(
                         .size(140.dp, 140.dp)
                         .clip(RoundedCornerShape(12.dp)),
                     imageModel = { content?.profileImg })
+
+                //content?.profileImg
             }
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_white_add),

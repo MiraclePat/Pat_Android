@@ -54,8 +54,6 @@ class SettingViewModel @Inject constructor(
             val result = getMyProfileUseCase()
             if (result.isSuccess) {
                 val content = result.getOrThrow()
-                Logger.t("MainTest").i("content ${content}")
-
                 _uiState.emit(SettingUiState(profileContent = content))
             } else {
                 Logger.t("MainTest").i("setting viewmodel ${_uiState.value}")
@@ -77,7 +75,14 @@ class SettingViewModel @Inject constructor(
     }
 
     fun updateProfileImage(uri: Uri?){
+        viewModelScope.launch {
+            val result = updateProfileImageUseCase(uri.toString())
+            if (result.isSuccess) {
+                getMyProfile()
+            } else {
 
+            }
+        }
     }
 
     fun updateProfileNickname(nickname : String){
