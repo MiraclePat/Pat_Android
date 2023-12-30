@@ -5,8 +5,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.orhanobut.logger.Logger
-import com.pat.domain.model.exception.InvaildRequestException
-import com.pat.domain.model.exception.UserNotFoundException
 import com.pat.domain.model.member.MyProfileContent
 import com.pat.domain.usecase.auth.LogoutUseCase
 import com.pat.domain.usecase.auth.SetUserKeyUseCase
@@ -24,6 +22,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 sealed class SettingEvent {
+    object GetMyProfileSuccess : SettingEvent()
+    object GetMyProfileFailed : SettingEvent()
+
     object DeleteUserSuccess : SettingEvent()
     object DeleteUserFailed : SettingEvent()
     object LogoutSuccess : SettingEvent()
@@ -37,6 +38,7 @@ sealed class SettingEvent {
 data class SettingUiState(
     val profileContent: MyProfileContent? = null
 )
+
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val getMyProfileUseCase: GetMyProfileUseCase,
@@ -61,9 +63,12 @@ class SettingViewModel @Inject constructor(
             val result = getMyProfileUseCase()
             if (result.isSuccess) {
                 val content = result.getOrThrow()
+                _event.emit(SettingEvent.GetMyProfileSuccess)
                 _uiState.emit(SettingUiState(profileContent = content))
             } else {
-                Logger.t("MainTest").i("setting viewmodel ${_uiState.value}")
+                _event.emit(SettingEvent.GetMyProfileFailed)
+                val error = result.exceptionOrNull()
+                resultException(error)
             }
         }
     }

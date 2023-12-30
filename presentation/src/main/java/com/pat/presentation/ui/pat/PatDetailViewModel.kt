@@ -1,14 +1,13 @@
 package com.pat.presentation.ui.pat
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.PatDetailContent
 import com.pat.domain.usecase.pat.GetPatDetailUseCase
 import com.pat.domain.usecase.pat.ParticipatePatUseCase
 import com.pat.domain.usecase.pat.WithdrawPatUseCase
+import com.pat.presentation.util.resultException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +20,10 @@ import javax.inject.Inject
 sealed class ParticipateEvent {
     data class ParticipateSuccess(val patState: String) : ParticipateEvent()
     object ParticipateFailed : ParticipateEvent()
+    object GetPatDetailSuccess : ParticipateEvent()
+    object GetPatDetailFailed : ParticipateEvent()
+    object WithdrawSuccess : ParticipateEvent()
+    object WithdrawFailed : ParticipateEvent()
 }
 data class PatDetailUiState(
     val content: PatDetailContent? = null
@@ -44,13 +47,19 @@ class PatDetailViewModel @Inject constructor(
     val uiState: StateFlow<PatDetailUiState> = _uiState.asStateFlow()
 
     init {
+        getPatDetail()
+    }
+    private fun getPatDetail() {
         viewModelScope.launch {
             val result = getPatDetailUseCase(patId)
             if (result.isSuccess) {
                 val content = result.getOrThrow()
+                _event.emit(ParticipateEvent.GetPatDetailSuccess)
                 _uiState.emit(PatDetailUiState(content = content))
             } else {
-                Logger.t("MainTest").i("detail viewmodel ${_uiState.value}")
+                _event.emit(ParticipateEvent.GetPatDetailFailed)
+                val error = result.exceptionOrNull()
+                resultException(error)
             }
         }
     }
@@ -61,10 +70,11 @@ class PatDetailViewModel @Inject constructor(
             if (result.isSuccess) {
                 result.getOrThrow()
                 _event.emit(ParticipateEvent.ParticipateSuccess("CANCELABLE"))
-                Log.e("custom", "참여하기 성공")
+                getPatDetail()
             } else {
                 _event.emit(ParticipateEvent.ParticipateFailed)
-                Log.e("custom", "참여하기 실패")
+                val error = result.exceptionOrNull()
+                resultException(error)
             }
         }
     }
@@ -74,9 +84,12 @@ class PatDetailViewModel @Inject constructor(
             val result = withdrawPatUseCase(patId)
             if (result.isSuccess) {
                 result.getOrThrow()
-                Logger.t("MainTest").i("취소 성공")
+                _event.emit(ParticipateEvent.WithdrawSuccess)
+                getPatDetail()
             } else {
-                Logger.t("MainTest").i("취소 실패")
+                _event.emit(ParticipateEvent.WithdrawFailed)
+                val error = result.exceptionOrNull()
+                resultException(error)
             }
         }
     }

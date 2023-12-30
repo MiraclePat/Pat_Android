@@ -9,10 +9,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
-import com.orhanobut.logger.Logger
 import com.pat.domain.model.member.ParticipatingDetailContent
 import com.pat.domain.model.proof.ProofPatInfo
-import com.pat.domain.model.proof.ProofContent
 import com.pat.domain.model.proof.ProofRequestInfo
 import com.pat.domain.usecase.image.GetByteArrayByUriUseCase
 import com.pat.domain.usecase.member.GetParticipatingDetailUseCase
@@ -26,27 +24,33 @@ import com.pat.presentation.util.image.byteArrayToBitmap
 import com.pat.presentation.util.image.getCompressedBytes
 import com.pat.presentation.util.image.getRotatedBitmap
 import com.pat.presentation.util.image.getScaledBitmap
+import com.pat.presentation.util.resultException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+sealed class ProofEvent {
+    object GetPatInfoSuccess : ProofEvent()
+    object GetPatInfoFailed : ProofEvent()
+    object ProofSuccess : ProofEvent()
+    object ProofFailed : ProofEvent()
+    object WithdrawSuccess : ProofEvent()
+    object WithdrawFailed : ProofEvent()
+}
 
 data class ParticipatingUiState(
     val content: ParticipatingDetailContent? = null
 )
 
-data class ProofUiState(
-    val content: List<ProofContent>? = null
-)
-
 @HiltViewModel
 class ProofViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
     private val proofPatUseCase: ProofPatUseCase,
     private val getMyProofUseCase: GetMyProofUseCase,
     private val getSomeoneProofUseCase: GetSomeoneProofUseCase,
@@ -70,56 +74,43 @@ class ProofViewModel @Inject constructor(
 
     private val pagingId = MutableStateFlow(-1L)
 
-    private val _proofs = MutableStateFlow(ProofUiState())
-    val proofs: StateFlow<ProofUiState> = _proofs.asStateFlow()
+    private val _event = MutableSharedFlow<ProofEvent>()
+    val event = _event.asSharedFlow()
 
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    val myProof = pagingId.flatMapLatest { id ->
-//        Pager(
-//            config = PagingConfig(pageSize = size),
-//            pagingSourceFactory = {
-//                MyProofPaging(
-//                    id,
-//                    getMyProofUseCase,
-//                    ProofRequestInfo(
-//                        size = size
-//                    )
-//                )
-//
-//            }
-//        ).flow.cachedIn(viewModelScope)
-//    }
-//
-//
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    val someoneProof = pagingId.flatMapLatest { id ->
-//        Pager(
-//            config = PagingConfig(pageSize = size),
-//            pagingSourceFactory = {
-//                SomeoneProofPaging(
-//                    id,
-//                    getSomeoneProofUseCase,
-//                    ProofRequestInfo(
-//                        size = size
-//                    )
-//                )
-//
-//            }
-//        ).flow.cachedIn(viewModelScope)
-//    }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    var myProof = pagingId.flatMapLatest { id ->
+        Pager(
+            config = PagingConfig(pageSize = size),
+            pagingSourceFactory = {
+                MyProofPaging(
+                    id,
+                    getMyProofUseCase,
+                    ProofRequestInfo(
+                        size = size
+                    )
+                )
 
-    fun getMyProof() {
-        viewModelScope.launch {
-            val result = getMyProofUseCase(patId, ProofRequestInfo())
-            if (result.isSuccess) {
-                val content = result.getOrThrow()
-                _proofs.emit(ProofUiState(content = content))
-            } else {
-                Logger.t("MainTest").i("patid: ${patId}")
             }
-        }
+        ).flow.cachedIn(viewModelScope)
     }
 
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val someoneProof = pagingId.flatMapLatest { id ->
+        Pager(
+            config = PagingConfig(pageSize = size),
+            pagingSourceFactory = {
+                SomeoneProofPaging(
+                    id,
+                    getSomeoneProofUseCase,
+                    ProofRequestInfo(
+                        size = size
+                    )
+                )
+
+            }
+        ).flow.cachedIn(viewModelScope)
+    }
 
 
     fun getParticipatingDetail(getPatId: Long) {
@@ -130,10 +121,10 @@ class ProofViewModel @Inject constructor(
             if (result.isSuccess) {
                 val content = result.getOrThrow()
                 _uiState.emit(ParticipatingUiState(content = content))
+                _event.emit(ProofEvent.GetPatInfoSuccess)
             } else {
-                Logger.t("MainTest").i("${uiState}")
+                _event.emit(ProofEvent.GetPatInfoFailed)
             }
-            getMyProof()
         }
     }
 
@@ -168,8 +159,25 @@ class ProofViewModel @Inject constructor(
                 result.getOrThrow()
                 _bottomSheetState.value = false
                 getParticipatingDetail(_uiState.value.content!!.patId)
+                _event.emit(ProofEvent.ProofSuccess)
+                // 인증 성공 시 proof 데이터 다시 가져오기
+                myProof = Pager(
+                    config = PagingConfig(pageSize = size),
+                    pagingSourceFactory = {
+                        MyProofPaging(
+                            patId,
+                            getMyProofUseCase,
+                            ProofRequestInfo(
+                                size = size
+                            )
+                        )
+
+                    }
+                ).flow.cachedIn(viewModelScope)
             } else {
-                Logger.t("proof").i("실패")
+                _event.emit(ProofEvent.ProofFailed)
+                val error = result.exceptionOrNull()
+                resultException(error)
             }
         }
     }
@@ -179,9 +187,11 @@ class ProofViewModel @Inject constructor(
             val result = withdrawPatUseCase(patId)
             if (result.isSuccess) {
                 result.getOrThrow()
-                Logger.t("MainTest").i("취소 성공")
+                _event.emit(ProofEvent.WithdrawSuccess)
             } else {
-                Logger.t("MainTest").i("취소 실패")
+                _event.emit(ProofEvent.WithdrawFailed)
+                val error = result.exceptionOrNull()
+                resultException(error)
             }
         }
     }

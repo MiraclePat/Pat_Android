@@ -33,6 +33,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,6 +52,7 @@ import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.orhanobut.logger.Logger
 import com.pat.domain.model.member.ParticipatingDetailContent
 import com.pat.domain.model.proof.ProofContent
 import com.pat.presentation.R
@@ -63,6 +65,7 @@ import com.pat.presentation.ui.common.SelectButton
 import com.pat.presentation.ui.common.SimpleTextView
 import com.pat.presentation.ui.common.reduceText
 import com.pat.presentation.ui.common.setUnderLine
+import com.pat.presentation.ui.home.HomeEvent
 import com.pat.presentation.ui.navigations.BottomNavItem
 import com.pat.presentation.ui.pat.DateText
 import com.pat.presentation.ui.theme.FailCircleColor
@@ -110,6 +113,36 @@ fun ProofScreenView(
         )
     }
 
+    LaunchedEffect(Unit) {
+        proofViewModel.event.collect {
+            when (it) {
+                is ProofEvent.GetPatInfoSuccess -> {
+                    Logger.t("Proof").i("GetPatInfoSuccess")
+                }
+
+                is ProofEvent.GetPatInfoFailed -> {
+                    Logger.t("Proof").i("GetPatInfoFailed")
+                }
+
+                is ProofEvent.ProofSuccess -> {
+                    Logger.t("Proof").i("ProofSuccess")
+                }
+
+                is ProofEvent.ProofFailed -> {
+                    Logger.t("Proof").i("ProofFailed")
+                }
+
+                is ProofEvent.WithdrawSuccess -> {
+                    Logger.t("Proof").i("WithdrawSuccess")
+                }
+
+                is ProofEvent.WithdrawFailed -> {
+                    Logger.t("Proof").i("WithdrawFailed")
+                }
+            }
+        }
+    }
+
     val uiState by proofViewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
     Scaffold(
@@ -119,7 +152,7 @@ fun ProofScreenView(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "인증 화면",
+                        text = "팟 상세 페이지",
                         style = Typography.labelMedium
                     )
                 },
@@ -166,9 +199,8 @@ fun ProofScreen(
     navController: NavController,
     showBottomSheet: Boolean? = false
 ) {
-    val proofState by viewModel.proofs.collectAsState()
-//    val myProof = viewModel.myProof.collectAsLazyPagingItems()
-//    val someoneProof = viewModel.someoneProof.collectAsLazyPagingItems()
+    val myProof = viewModel.myProof.collectAsLazyPagingItems()
+    val someoneProof = viewModel.someoneProof.collectAsLazyPagingItems()
     var spreadState by remember { mutableStateOf(false) }
     var myProofState by remember { mutableStateOf(true) }
     val viewStartTime = content.startTime
@@ -452,14 +484,14 @@ fun ProofScreen(
                 success = content.myProof,
                 fail = content.myFailProof,
                 all = content.maxProof,
-                imgUriList = proofState.content
+                imgUriList = myProof
             )
         } else {
             ProofStatus(
                 success = content.allProof,
                 fail = content.allFailProof,
                 all = content.allMaxProof,
-                imgUriList = proofState.content,
+                imgUriList = someoneProof,
                 isAll = "전체"
             )
         }
@@ -549,8 +581,7 @@ fun ProofStatus(
     fail: Int,
     all: Int,
     isAll: String = "",
-//    imgUriList: LazyPagingItems<ProofContent>
-    imgUriList: List<ProofContent>?
+    imgUriList: LazyPagingItems<ProofContent>
 ) {
     val title = if (isAll == "") "나의 인증사진" else "참여자들의 인증사진"
     Row() {
@@ -570,34 +601,7 @@ fun ProofStatus(
     Spacer(modifier = modifier.padding(bottom = 28.dp))
     Text(title, style = Typography.titleLarge, color = Gray800)
 
-//    if (imgUriList.itemCount == 0) {
-//        Box(
-//            modifier
-//                .padding(top = 12.dp)
-//                .size(140.dp)
-//        ) {
-//            Text("인증 내역이 없어요!", style = Typography.titleLarge, color = Gray800)
-//        }
-//    } else {
-//        if (imgUriList.loadState.append is LoadState.Loading || imgUriList.loadState.refresh is LoadState.Loading || imgUriList.loadState.prepend is LoadState.Loading) {
-//            LoadingProgressBar(modifier.size(130.dp, 140.dp))
-//        } else {
-//            LazyRow(modifier.padding(top = 12.dp)) {
-//                items(imgUriList.itemCount) { idx ->
-//                    imgUriList[idx]?.let { img ->
-//                        GlideImage(
-//                            modifier = modifier
-//                                .size(130.dp, 140.dp)
-//                                .clip(RoundedCornerShape(12.dp)),
-//                            imageModel = { img.proofImg })
-//                        Spacer(modifier = modifier.padding(end = 10.dp))
-//
-//                    }
-//                }
-//            }
-//        }
-//    }
-    if (imgUriList.isNullOrEmpty()) {
+    if (imgUriList.itemCount == 0) {
         Box(
             modifier
                 .padding(top = 12.dp)
@@ -606,23 +610,24 @@ fun ProofStatus(
             Text("인증 내역이 없어요!", style = Typography.titleLarge, color = Gray800)
         }
     } else {
-        val scrollState = rememberScrollState()
-        Row(
-            modifier
-                .padding(top = 12.dp)
-                .horizontalScroll(scrollState)
-        ) {
-            imgUriList.forEach { img ->
-                GlideImage(
-                    modifier = modifier
-                        .size(130.dp, 140.dp)
-                        .clip(RoundedCornerShape(12.dp)),
-                    imageModel = { img.proofImg })
-                Spacer(modifier = modifier.padding(end = 10.dp))
+        if (imgUriList.loadState.append is LoadState.Loading || imgUriList.loadState.refresh is LoadState.Loading || imgUriList.loadState.prepend is LoadState.Loading) {
+            LoadingProgressBar(modifier.size(130.dp, 140.dp))
+        } else {
+            LazyRow(modifier.padding(top = 12.dp)) {
+                items(imgUriList.itemCount) { idx ->
+                    imgUriList[idx]?.let { img ->
+                        GlideImage(
+                            modifier = modifier
+                                .size(130.dp, 140.dp)
+                                .clip(RoundedCornerShape(12.dp)),
+                            imageModel = { img.proofImg })
+                        Spacer(modifier = modifier.padding(end = 10.dp))
+
+                    }
+                }
             }
         }
     }
-
     Row(modifier.padding(top = 24.dp)) {
         RatioText(
             text = "성공률",
