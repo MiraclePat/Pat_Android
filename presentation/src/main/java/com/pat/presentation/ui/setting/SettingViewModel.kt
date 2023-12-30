@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.orhanobut.logger.Logger
+import com.pat.domain.model.exception.InvaildRequestException
+import com.pat.domain.model.exception.UserNotFoundException
 import com.pat.domain.model.member.MyProfileContent
 import com.pat.domain.usecase.auth.LogoutUseCase
 import com.pat.domain.usecase.auth.SetUserKeyUseCase
@@ -25,6 +27,11 @@ sealed class SettingEvent {
     object DeleteUserSuccess : SettingEvent()
     object DeleteUserFailed : SettingEvent()
     object LogoutSuccess : SettingEvent()
+    object UpdateNicknameSuccess : SettingEvent()
+
+    object DuplicatedNicknameException : SettingEvent()
+    object UserNotFoundException : SettingEvent()
+    object UnknownException : SettingEvent()
 
 }
 data class SettingUiState(
@@ -80,13 +87,21 @@ class SettingViewModel @Inject constructor(
             if (result.isSuccess) {
                 getMyProfile()
             } else {
-
+                handleException(result.exceptionOrNull()!!)
             }
         }
     }
 
     fun updateProfileNickname(nickname : String){
-
+        viewModelScope.launch {
+            val result = updateProfileNicknameUseCase(nickname)
+            if (result.isSuccess) {
+                getMyProfile()
+                _event.emit(SettingEvent.UpdateNicknameSuccess)
+            } else {
+                handleException(result.exceptionOrNull()!!)
+            }
+        }
     }
 
     fun logout(){
@@ -100,6 +115,14 @@ class SettingViewModel @Inject constructor(
                 _event.emit(SettingEvent.DeleteUserFailed)
                 Log.e("custom", "로그아웃실패")
             }
+        }
+    }
+
+    private suspend fun handleException(error: Throwable){
+        when (error){
+            is InvaildRequestException -> _event.emit(SettingEvent.DuplicatedNicknameException)
+            is UserNotFoundException -> _event.emit(SettingEvent.UserNotFoundException)
+            else -> _event.emit(SettingEvent.UnknownException)
         }
     }
 

@@ -4,37 +4,53 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -42,16 +58,21 @@ import com.orhanobut.logger.Logger
 import com.pat.domain.model.member.MyProfileContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.Divider
+import com.pat.presentation.ui.common.SnackBar
 import com.pat.presentation.ui.common.setUnderLine
 import com.pat.presentation.ui.navigations.BottomNavItem
 import com.pat.presentation.ui.setting.components.SettingBox
 import com.pat.presentation.ui.theme.Gray100
+import com.pat.presentation.ui.theme.Gray400
 import com.pat.presentation.ui.theme.Gray500
 import com.pat.presentation.ui.theme.Gray600
 import com.pat.presentation.ui.theme.Gray800
 import com.pat.presentation.ui.theme.Primary100
+import com.pat.presentation.ui.theme.Primary50
 import com.pat.presentation.ui.theme.PrimaryMain
+import com.pat.presentation.ui.theme.SystemBlue
 import com.pat.presentation.ui.theme.Typography
+import com.pat.presentation.ui.theme.White
 import com.pat.presentation.util.ACCOUNT
 import com.pat.presentation.util.ALARM
 import com.pat.presentation.util.ANNOUNCE
@@ -68,6 +89,10 @@ fun SettingScreenBody(
     viewModel: SettingViewModel
 ) {
     val tempLoginState = true
+    var updateNameState by remember { mutableStateOf<Boolean>(false) }
+    var updateName: MutableState<String> = rememberSaveable {
+        mutableStateOf("")}
+    val errorMessage = remember { mutableStateOf("") }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
 
     val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
@@ -76,6 +101,25 @@ fun SettingScreenBody(
             viewModel.updateProfileImage(uri)
         }
     )
+
+    LaunchedEffect(Unit) {
+        viewModel.event.collect {
+            when (it) {
+                is SettingEvent.UpdateNicknameSuccess -> {
+                    errorMessage.value = "정상적으로 변경되었습니다."
+                    updateNameState = false
+                }
+                is SettingEvent.DuplicatedNicknameException -> {
+                    errorMessage.value = "중복된 닉네임입니다."
+                }
+                is SettingEvent.UserNotFoundException -> {
+                    errorMessage.value = "로그인을 다시 시도해주세요"
+               }
+                else ->{}
+
+            }
+        }
+    }
     @Composable
     fun patCount(modifier: Modifier = Modifier, text: String, count: Int) {
         Column(
@@ -96,7 +140,6 @@ fun SettingScreenBody(
             Text("${count}개", style = Typography.titleLarge, color = PrimaryMain, fontSize = 18.sp)
         }
     }
-
 
 
     Column(
@@ -127,8 +170,6 @@ fun SettingScreenBody(
                         .size(140.dp, 140.dp)
                         .clip(RoundedCornerShape(12.dp)),
                     imageModel = { content?.profileImg })
-
-                //content?.profileImg
             }
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_white_add),
@@ -141,15 +182,37 @@ fun SettingScreenBody(
         }
         Spacer(modifier = modifier.size(12.dp))
         if (tempLoginState) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(content?.nickname.toString(), style = Typography.titleLarge, color = Gray800)
-                Icon(
-                    modifier = modifier.padding(start = 2.dp),
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_pencil),
-                    contentDescription = null,
-                    tint = Color.Unspecified
-                )
+            if(updateNameState){
+                Row(verticalAlignment = Alignment.CenterVertically,
+                    modifier = modifier.clickable {
+                        //변경하기 버튼으로 icon이 사라지고 바뀐다
+                        //변경하기 버튼을 누르면 update nickname
+                        //snackbar
+                    }) {
+                    NicknameTextField(state = updateName)
+                    NicknameUpdateButton(
+                        onClick = { viewModel.updateProfileNickname(updateName.value) },
+                        shape = RoundedCornerShape(100.dp),
+                        fontSize = 12.sp,
+                        text = "변경하기",
+                    )
+                }
+            }else{
+                Row(verticalAlignment = Alignment.CenterVertically,
+                    modifier = modifier.clickable {
+                    }) {
+                    Text(content?.nickname.toString(), style = Typography.titleLarge, color = Gray800)
+                    Icon(
+                        modifier = modifier
+                            .padding(start = 2.dp)
+                            .clickable { updateNameState = true },
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_pencil),
+                        contentDescription = null,
+                        tint = Color.Unspecified,
+                    )
+                }
             }
+
         } else {
             Text(
                 modifier = setUnderLine,
@@ -182,5 +245,79 @@ fun SettingScreenBody(
         SettingBox(
             text = "버전 정보",
             content = { Text("1.0", style = Typography.bodySmall, color = Gray500) })
+
+        if (errorMessage.value.isNotEmpty()) {
+            SnackBar(errorMessage)
+        }
     }
+}
+
+@Composable
+fun NicknameUpdateButton(
+    onClick: () -> Unit = {},
+    modifier: Modifier = Modifier,
+    text: String,
+    enabled: Boolean = true,
+    isSelected: Boolean = false,
+    shape: Shape,
+    fontSize: TextUnit,
+) {
+
+    Button(
+        modifier = modifier,
+        shape = shape,
+        contentPadding = PaddingValues(),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Primary50
+        ),
+        enabled = enabled,
+        border = BorderStroke(1.dp, PrimaryMain),
+        onClick = {
+            onClick()
+        },
+    ) {
+        Text(
+            style = Typography.displaySmall,
+            text = text,
+            fontSize = fontSize,
+            color = PrimaryMain
+        )
+    }
+}
+
+@Composable
+fun NicknameTextField(
+    modifier: Modifier = Modifier,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    state: MutableState<String> = rememberSaveable {
+        mutableStateOf("")
+    },
+    style: TextStyle = Typography.titleLarge,
+){
+    var isFocused by remember { mutableStateOf(false) }
+
+    BasicTextField(modifier = modifier
+        .fillMaxWidth()
+        .heightIn(1.dp, Dp.Infinity)
+        .clip(RoundedCornerShape(4.dp))
+        .onFocusChanged {
+            isFocused = it.hasFocus
+        },
+        value = state.value,
+        onValueChange = {
+            state.value = it
+        },
+        cursorBrush = SolidColor(SystemBlue),
+        textStyle = style.copy(
+            color = Gray800,
+        ),
+        keyboardOptions = keyboardOptions,
+        keyboardActions = KeyboardActions(
+        ),
+        decorationBox = { innerTextField ->
+            Row() {
+                innerTextField()
+            }
+        }
+    )
 }

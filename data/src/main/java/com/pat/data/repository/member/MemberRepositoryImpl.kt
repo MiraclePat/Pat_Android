@@ -5,22 +5,21 @@ import com.pat.data.repository.image.ImageRepositoryImpl
 import com.pat.data.source.ImageDataSource
 import com.pat.data.source.MemberDataSource
 import com.pat.data.util.exception
+import com.pat.domain.model.exception.InvaildRequestException
 import com.pat.domain.model.exception.UnKnownException
+import com.pat.domain.model.exception.UserNotFoundException
 import com.pat.domain.model.member.MyProfileContent
 import com.pat.domain.model.member.OpenPatRequestInfo
 import com.pat.domain.model.member.ParticipatingContent
 import com.pat.domain.model.member.ParticipatingDetailContent
 import com.pat.domain.model.member.ParticipatingRequestInfo
-import com.pat.domain.model.member.UpdateProfileInfo
-import com.pat.domain.model.pat.CreatePatInfo
-import com.pat.domain.model.pat.CreatePatInfoDetail
 import com.pat.domain.repository.MemberRepository
-import com.pat.domain.repository.ProofRepository
 import com.squareup.moshi.Moshi
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.internal.http.HTTP_CONFLICT
+import okhttp3.internal.http.HTTP_NOT_FOUND
 import javax.inject.Inject
 
 class MemberRepositoryImpl @Inject constructor(
@@ -68,8 +67,7 @@ class MemberRepositoryImpl @Inject constructor(
         return if (response.isSuccessful) {
             Result.success(Unit)
         } else {
-            Logger.t("updateInfo").i("${response.errorBody()}")
-            Result.failure(UnKnownException())
+            Result.failure(handleServerError(response.code()))
         }
     }
 
@@ -128,13 +126,11 @@ class MemberRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun getMultipartImage(bytes: ByteArray, partName: String): MultipartBody.Part {
-        val requestFile = bytes.toRequestBody("image/jpeg".toMediaType(), 0, bytes.size)
-        val fileName = imageDataSource.getImageName()
-        return MultipartBody.Part.createFormData(
-            partName,
-            "$fileName.jpeg",
-            requestFile,
-        )
+    private fun handleServerError(code: Int): Throwable {
+        return when (code) {
+                 HTTP_NOT_FOUND -> UserNotFoundException()
+                 HTTP_CONFLICT -> InvaildRequestException()
+                else -> UnKnownException()
+            }
     }
 }
