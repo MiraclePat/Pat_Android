@@ -8,6 +8,7 @@ import androidx.paging.cachedIn
 import com.orhanobut.logger.Logger
 import com.pat.domain.model.pat.HomeBannerContent
 import com.pat.domain.model.pat.HomePatRequestInfo
+import com.pat.domain.usecase.auth.GetLoginStatusUseCase
 import com.pat.domain.usecase.pat.GetHomeBannerUseCase
 import com.pat.domain.usecase.pat.GetHomePatsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +29,7 @@ data class BannerUiState(
 class HomeViewModel @Inject constructor(
     private val getHomePatsUseCase: GetHomePatsUseCase,
     private val getHomeBannerUseCase: GetHomeBannerUseCase,
+    private val getLoginStatusUseCase: GetLoginStatusUseCase,
 ) : ViewModel() {
     private val size = 10
 
@@ -81,6 +83,18 @@ class HomeViewModel @Inject constructor(
 
 
     init {
+        viewModelScope.launch {
+            val loginResult = getLoginStatusUseCase()
+            if (loginResult.isSuccess) {
+               if(loginResult.getOrThrow()==true)
+                getBanner()
+            } else {
+                Logger.t("MainTest").i("비회원입니다")
+            }
+        }
+    }
+
+    private fun getBanner(){
         viewModelScope.launch {
             val homeBannerResult = getHomeBannerUseCase()
             if (homeBannerResult.isSuccess) {

@@ -47,6 +47,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun logout(): Result<Unit> {
         FirebaseAuth.getInstance().signOut()
+        setLoginStatus(false)
         return logoutKakao().first()
     }
 
@@ -84,6 +85,7 @@ class AuthRepositoryImpl @Inject constructor(
         val firebaseLoginResult = loginWithFirebaseToken(firebaseToken)
         return if (firebaseLoginResult.isSuccess) {
             authDataSource.setUserKey(firebaseToken)
+            setLoginStatus(true)
             Result.success(Unit)
         } else {
             Logger.t("login").i("파이어베이스 실패${firebaseLoginResult.exception().message }")
@@ -95,6 +97,7 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun loginWithCustomToken(firebaseToken: String): Result<Unit> {
         val firebaseLoginResult = loginWithFirebaseToken(firebaseToken)
         return if (firebaseLoginResult.isSuccess) {
+            setLoginStatus(true)
             Result.success(Unit)
         } else {
             Logger.t("login").i("파이어베이스 실패${firebaseLoginResult.exception().message }")
@@ -123,6 +126,18 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun getUserKey(): Result<String?> {
         return runCatching {
             authDataSource.getUserKey()
+        }
+    }
+
+    private fun setLoginStatus(loginStatus: Boolean) {
+        CoroutineScope(Dispatchers.IO).launch {
+            authDataSource.setLoginStatus(loginStatus)
+        }
+    }
+
+    override suspend fun getLoginStatus(): Result<Boolean?> {
+        return runCatching {
+            authDataSource.getLoginStatus()
         }
     }
 
