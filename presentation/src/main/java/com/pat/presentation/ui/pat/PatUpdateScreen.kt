@@ -20,6 +20,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -48,6 +49,7 @@ import com.pat.presentation.ui.common.CustomTextField
 import com.pat.presentation.ui.common.DateTimePickerView
 import com.pat.presentation.ui.common.FinalButton
 import com.pat.presentation.ui.common.SelectDayButtonList
+import com.pat.presentation.ui.common.SnackBar
 import com.pat.presentation.ui.common.WheelTimePickerView
 import com.pat.presentation.ui.common.convertDateFormat
 import com.pat.presentation.ui.common.convertTimeFormat
@@ -94,9 +96,42 @@ fun PatUpdateView(
     val deleteDialogState = remember { mutableStateOf(false) }
     val updateDialogState = remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
+    val errorMessage = remember { mutableStateOf("") }
+
     BackHandler {
         updateDialogState.value = true
     }
+
+    LaunchedEffect(Unit) {
+        patUpdateViewModel.event.collect {
+            when (it) {
+                is UpdateEvent.UpdateSuccess -> {
+                    patUpdateViewModel.clearImageData()
+                    navController.popBackStack()
+                }
+
+                is UpdateEvent.UpdateFailed -> {
+                    errorMessage.value = "업데이트 실패"
+                }
+
+                is UpdateEvent.DeleteSuccess -> {
+                    patUpdateViewModel.clearImageData()
+                    navController.popBackStack()
+                }
+
+                is UpdateEvent.DeleteFailed -> {
+                    errorMessage.value = "삭제 실패"
+                }
+
+                is UpdateEvent.SearchCoordinateFailed -> {}
+                is UpdateEvent.SearchCoordinateSuccess -> {}
+                is UpdateEvent.SearchPlaceFailed -> {}
+                is UpdateEvent.SearchPlaceSuccess -> {}
+            }
+        }
+    }
+
+
     if (updateDialogState.value) {
         CustomDialog(
             okRequest = { navController.popBackStack() }, state = updateDialogState,
@@ -108,12 +143,7 @@ fun PatUpdateView(
     if (deleteDialogState.value) {
         CustomDialog(
             okRequest = {
-                if (uiState.content != null) patUpdateViewModel.deletePat(uiState.content!!.patId)
-                patUpdateViewModel.clearImageData()
-                navController.popBackStack(
-                    route = HOME,
-                    inclusive = false
-                )
+                patUpdateViewModel.deletePat(uiState.content?.patId ?: -1)
             },
             state = deleteDialogState,
             message = "이 공고글을 삭제하시겠어요?",
@@ -166,6 +196,10 @@ fun PatUpdateView(
                     scrollState = scrollState
                 )
             }
+        }
+
+        if (errorMessage.value.isNotEmpty()) {
+            SnackBar(errorMessage)
         }
     }
 }
