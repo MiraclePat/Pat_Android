@@ -92,15 +92,18 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             val loginResult = getLoginStatusUseCase()
             if (loginResult.isSuccess) {
-               if(loginResult.getOrThrow()==true)
-                getBanner()
+                Logger.t("MainTest").i("에러. ${loginResult}")
+//                if (loginResult.getOrThrow() == true)
+//                    Logger.t("MainTest").i("진입")
+//                    getBanner()
+//                getBanner()
             } else {
                 Logger.t("MainTest").i("비회원입니다")
             }
         }
     }
 
-    private fun getBanner(){
+    private fun getBanner() {
         viewModelScope.launch {
             val homeBannerResult = getHomeBannerUseCase()
             if (homeBannerResult.isSuccess) {

@@ -91,7 +91,8 @@ fun SettingScreenBody(
     val tempLoginState = true
     var updateNameState by remember { mutableStateOf<Boolean>(false) }
     var updateName: MutableState<String> = rememberSaveable {
-        mutableStateOf("")}
+        mutableStateOf("")
+    }
     val errorMessage = remember { mutableStateOf("") }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
 
@@ -109,13 +110,16 @@ fun SettingScreenBody(
                     errorMessage.value = "정상적으로 변경되었습니다."
                     updateNameState = false
                 }
+
                 is SettingEvent.DuplicatedNicknameException -> {
                     errorMessage.value = "중복된 닉네임입니다."
                 }
+
                 is SettingEvent.UserNotFoundException -> {
                     errorMessage.value = "로그인을 다시 시도해주세요"
-               }
-                else ->{}
+                }
+
+                else -> {}
 
             }
         }
@@ -164,7 +168,7 @@ fun SettingScreenBody(
                         )
                     },
 
-            ) {
+                ) {
                 GlideImage(
                     modifier = modifier
                         .size(140.dp, 140.dp)
@@ -182,14 +186,16 @@ fun SettingScreenBody(
         }
         Spacer(modifier = modifier.size(12.dp))
         if (tempLoginState) {
-            if(updateNameState){
-                Row(verticalAlignment = Alignment.CenterVertically,
-                    modifier = modifier.clickable {
-                        //변경하기 버튼으로 icon이 사라지고 바뀐다
-                        //변경하기 버튼을 누르면 update nickname
-                        //snackbar
-                    }) {
-                    NicknameTextField(state = updateName)
+            if (updateNameState) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = modifier
+                        .fillMaxWidth()
+                ) {
+                    NicknameTextField(
+                        state = updateName
+                    )
                     NicknameUpdateButton(
                         onClick = { viewModel.updateProfileNickname(updateName.value) },
                         shape = RoundedCornerShape(100.dp),
@@ -197,11 +203,15 @@ fun SettingScreenBody(
                         text = "변경하기",
                     )
                 }
-            }else{
+            } else {
                 Row(verticalAlignment = Alignment.CenterVertically,
                     modifier = modifier.clickable {
                     }) {
-                    Text(content?.nickname.toString(), style = Typography.titleLarge, color = Gray800)
+                    Text(
+                        content?.nickname.toString(),
+                        style = Typography.titleLarge,
+                        color = Gray800
+                    )
                     Icon(
                         modifier = modifier
                             .padding(start = 2.dp)
@@ -264,7 +274,9 @@ fun NicknameUpdateButton(
 ) {
 
     Button(
-        modifier = modifier,
+        modifier = modifier
+            .width(58.dp)
+            .height(26.dp),
         shape = shape,
         contentPadding = PaddingValues(),
         colors = ButtonDefaults.buttonColors(
@@ -293,16 +305,17 @@ fun NicknameTextField(
         mutableStateOf("")
     },
     style: TextStyle = Typography.titleLarge,
-){
+) {
     var isFocused by remember { mutableStateOf(false) }
 
     BasicTextField(modifier = modifier
-        .fillMaxWidth()
-        .heightIn(1.dp, Dp.Infinity)
+        .padding(end = 2.dp)
         .clip(RoundedCornerShape(4.dp))
         .onFocusChanged {
             isFocused = it.hasFocus
-        },
+        }
+        .border(1.dp, SystemBlue, RoundedCornerShape(4.dp)),
+
         value = state.value,
         onValueChange = {
             state.value = it
@@ -312,8 +325,7 @@ fun NicknameTextField(
             color = Gray800,
         ),
         keyboardOptions = keyboardOptions,
-        keyboardActions = KeyboardActions(
-        ),
+        keyboardActions = KeyboardActions(),
         decorationBox = { innerTextField ->
             Row() {
                 innerTextField()
