@@ -2,6 +2,7 @@ package com.pat.presentation.ui.setting
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.orhanobut.logger.Logger
+import com.pat.presentation.ui.navigations.BottomNavItem
 import com.pat.presentation.ui.pat.ParticipateEvent
 import com.pat.presentation.ui.pat.PatUpdateViewModel
 import com.pat.presentation.util.ACCOUNT
@@ -34,17 +36,25 @@ fun SettingScreenView(
                 is SettingEvent.GetMyProfileSuccess -> {
                     Logger.t("Setting").i("GetMyProfileSuccess")
                 }
+
                 is SettingEvent.GetMyProfileFailed -> {
                     Logger.t("Setting").i("GetMyProfileFailed")
                 }
+
                 is SettingEvent.DeleteUserSuccess -> {
                     navController.navigate("LOGIN")
                 }
+
                 is SettingEvent.DeleteUserFailed -> {
                 }
+
                 is SettingEvent.LogoutSuccess -> {
-                    navController.navigate("LOGIN")
+                    navController.navigate("LOGIN") {
+                        popUpTo("LOGIN") { inclusive = false }
+
+                    }
                 }
+
                 else -> {}
 
             }
@@ -52,8 +62,19 @@ fun SettingScreenView(
     }
 
     when (viewState.value) {
-        BODY -> SettingScreenBody(viewState = viewState, content = uiState.profileContent, navController = navController, viewModel = settingViewModel)
-        ACCOUNT -> SettingAccount(viewState = viewState, navController = navController, viewModel = settingViewModel)
+        BODY -> SettingScreenBody(
+            viewState = viewState,
+            content = uiState.profileContent,
+            navController = navController,
+            viewModel = settingViewModel
+        )
+
+        ACCOUNT -> SettingAccount(
+            viewState = viewState,
+            navController = navController,
+            viewModel = settingViewModel
+        )
+
         ALARM -> SettingAlarm(viewState = viewState)
         ANNOUNCE -> SettingAnnounce(viewState = viewState)
         PASSWORD -> SettingPassword(viewState = viewState)

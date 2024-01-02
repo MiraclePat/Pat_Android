@@ -42,19 +42,19 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val navController = rememberNavController()
-            val isLogin = remember { mutableStateOf(false) }
+//            val isLogin = remember { mutableStateOf(false) }
 
-            if (isLogin.value || isAutoLogin.equals("SUCCESS")) {
-                Scaffold(
-                    bottomBar = { BottomNavi(navController = navController) }
-                ) {
-                    Box(Modifier.padding(it)) {
-                        NavigationGraph(navController = navController)
-                    }
+            Scaffold(
+                bottomBar = { BottomNavi(navController = navController) }
+            ) {
+                Box(Modifier.padding(it)) {
+                    NavigationGraph(
+                        navController = navController,
+                        isAutoLogin = isAutoLogin.toString()
+                    )
                 }
-            } else {
-                LoginScreenView(loginState = isLogin)
             }
+
         }
     }
 

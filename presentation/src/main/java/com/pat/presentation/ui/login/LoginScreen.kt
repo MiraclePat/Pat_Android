@@ -30,8 +30,11 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.orhanobut.logger.Logger
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.FinalButton
+import com.pat.presentation.ui.navigations.BottomNavItem
 import com.pat.presentation.ui.theme.Gray700
 import com.pat.presentation.ui.theme.KaKaoColor
 import com.pat.presentation.ui.theme.PrimaryMain
@@ -42,7 +45,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @Composable
 fun LoginScreenView(
     modifier: Modifier = Modifier,
-    loginState: MutableState<Boolean> = remember { mutableStateOf(false) },
+    navController: NavController,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
 
@@ -52,7 +55,9 @@ fun LoginScreenView(
         viewModel.event.collect {
             when (it) {
                 is Event.LoginSuccess -> {
-                    loginState.value = true
+                    navController.navigate(BottomNavItem.Home.screenRoute){
+                        popUpTo(BottomNavItem.Home.screenRoute) { inclusive = true }
+                    }
                 }
                 is Event.LoginFailed -> {
                     //TODO 로그인 실패 메세지 보내기
@@ -105,16 +110,15 @@ fun LoginScreenView(
             }
         }
         Spacer(modifier = modifier.size(12.dp))
-        FinalButton(
-            modifier = modifier.padding(horizontal = 30.dp),
-            text = "비회원으로 둘러보기",
-            backColor = White,
-            textColor = PrimaryMain,
-            stokeWidth = 1.dp,
-            onClick = {
-                loginState.value = true
-            }
-        )
+//        FinalButton(
+//            modifier = modifier.padding(horizontal = 30.dp),
+//            text = "비회원으로 둘러보기",
+//            backColor = White,
+//            textColor = PrimaryMain,
+//            stokeWidth = 1.dp,
+//            onClick = {
+//            }
+//        )
         Spacer(modifier = modifier.weight(1f))
         Box(modifier.fillMaxWidth(), contentAlignment = Alignment.BottomEnd) {
             Image(
