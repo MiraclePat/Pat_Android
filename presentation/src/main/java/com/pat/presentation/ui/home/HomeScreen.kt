@@ -50,12 +50,13 @@ fun HomeScreenView(
 
     LaunchedEffect(Unit) {
         homeViewModel.event.collect {
-            when (it) {
+            bannerContent = when (it) {
                 is HomeEvent.BannerSuccess -> {
-                    bannerContent = it.content
+                    it.content
                 }
+
                 is HomeEvent.BannerFailed -> {
-                    errorMessage.value = "배너를 불러오는데 실패"
+                    null
                 }
             }
         }

@@ -1,6 +1,7 @@
 package com.pat.presentation.ui.setting
 
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -102,6 +103,14 @@ fun SettingScreenBody(
             viewModel.updateProfileImage(uri)
         }
     )
+
+    BackHandler {
+        if (updateNameState) {
+            updateNameState = false
+        } else {
+            navController.popBackStack()
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.event.collect {
