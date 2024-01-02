@@ -355,43 +355,45 @@ fun PatDetailScreen(
 
 
         if (content.isJoiner) {
-            when (content.state) {
-                "CANCELABLE" -> {
-                    FinalButton(
-                        text = "팟 취소하기 (시작 하루 전까지 취소 가능)",
-                        backColor = PrimaryMain,
-                        textColor = White,
-                        onClick = {
-                            patDetailViewModel.withdrawPat(content.patId)
-                        }
-                    )
-                }
+            if (!content.isWriter) { // 작성자가 아니면서 참여자일 때, 작성자면 아무것도 안보임.
+                when (content.state) {
+                    "CANCELABLE" -> {
+                        FinalButton(
+                            text = "팟 취소하기 (시작 하루 전까지 취소 가능)",
+                            backColor = PrimaryMain,
+                            textColor = White,
+                            onClick = {
+                                patDetailViewModel.withdrawPat(content.patId)
+                            }
+                        )
+                    }
 
-                "NO_CANCELABLE" -> {
-                    FinalButton(
-                        text = "취소가 불가능해요! (시작 하루 전까지 취소 가능)",
-                        backColor = Gray300,
-                        textColor = White,
-                        stokeColor = Gray300,
-                    )
-                }
+                    "NO_CANCELABLE" -> {
+                        FinalButton(
+                            text = "취소가 불가능해요! (시작 하루 전까지 취소 가능)",
+                            backColor = Gray300,
+                            textColor = White,
+                            stokeColor = Gray300,
+                        )
+                    }
 
-                "IN_PROGRESS" -> {
-                    FinalButton(
-                        text = "인증이 이미 진행중인 팟이에요!",
-                        backColor = Gray300,
-                        textColor = White,
-                        stokeColor = Gray300,
-                    )
-                }
+                    "IN_PROGRESS" -> {
+                        FinalButton(
+                            text = "인증이 이미 진행중인 팟이에요!",
+                            backColor = Gray300,
+                            textColor = White,
+                            stokeColor = Gray300,
+                        )
+                    }
 
-                "COMPLETED" -> {
-                    FinalButton(
-                        text = "종료된 팟이에요!",
-                        backColor = Gray300,
-                        textColor = White,
-                        stokeColor = Gray300,
-                    )
+                    "COMPLETED" -> {
+                        FinalButton(
+                            text = "종료된 팟이에요!",
+                            backColor = Gray300,
+                            textColor = White,
+                            stokeColor = Gray300,
+                        )
+                    }
                 }
             }
         } else { // 참여자가 아니면
