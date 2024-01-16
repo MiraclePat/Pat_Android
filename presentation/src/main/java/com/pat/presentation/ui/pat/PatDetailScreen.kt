@@ -156,15 +156,7 @@ fun PatDetailView(
                     }
                 },
                 actions = {
-                    if (uiState.content?.isWriter == true) {
-                        IconButton(onClick = {
-                            deleteDialogState.value = true
-                        }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_delete),
-                                contentDescription = "Delete"
-                            )
-                        }
+                    if (uiState.content?.isWriter == true && uiState.content?.state == "CANCELABLE") {
                         IconButton(onClick = {
                             deleteDialogState.value = true
                         }) {
@@ -384,9 +376,26 @@ fun PatDetailScreen(
         }
 
 
-
-        if (content.isJoiner) {
-            if (!content.isWriter) { // 작성자가 아니면서 참여자일 때, 작성자면 아무것도 안보임.
+        if (content.isWriter) {
+            when (content.state) {
+                "CANCELABLE" -> {
+                    FinalButton(
+                        text = "수정 또는 삭제하기",
+                        backColor = PrimaryMain,
+                        textColor = White,
+                        onClick = {
+                            navController.navigate("patUpdate/${content.patId}")
+                        }
+                    )
+                }
+                else -> {
+                    // 빈 버튼
+                }
+            }
+        } else {
+            // 작성자가 아닐 때
+            if (content.isJoiner) {
+                // 참여자인 경우
                 when (content.state) {
                     "CANCELABLE" -> {
                         FinalButton(
@@ -416,7 +425,6 @@ fun PatDetailScreen(
                             stokeColor = Gray300,
                         )
                     }
-
                     "COMPLETED" -> {
                         FinalButton(
                             text = "종료된 팟이에요!",
@@ -426,21 +434,22 @@ fun PatDetailScreen(
                         )
                     }
                 }
-            }
-        } else { // 참여자가 아니면
-            if (content.state == "COMPLETED") {
-                FinalButton(
-                    text = "종료된 팟이에요!",
-                    backColor = Gray300,
-                    textColor = White,
-                )
-            } else { // 종료 상태가 아니면
-                FinalButton(text = "팟 참여하기",
-                    backColor = PrimaryMain,
-                    textColor = White,
-                    // 비회원 / 회원 상태에 따라 달라져야 함
-                    onClick = { patDetailViewModel.participatePat() }
-                )
+            } else {
+                // 작성자도, 참여자가 아니면
+                if (content.state == "COMPLETED") {
+                    FinalButton(
+                        text = "종료된 팟이에요!",
+                        backColor = Gray300,
+                        textColor = White,
+                    )
+                } else { // 종료 상태가 아니면
+                    FinalButton(text = "팟 참여하기",
+                        backColor = PrimaryMain,
+                        textColor = White,
+                        // 비회원 / 회원 상태에 따라 달라져야 함
+                        onClick = { patDetailViewModel.participatePat() }
+                    )
+                }
             }
         }
     }
