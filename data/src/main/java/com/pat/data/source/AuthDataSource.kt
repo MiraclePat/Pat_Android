@@ -3,6 +3,7 @@ package com.pat.data.source
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -47,7 +48,7 @@ class AuthDataSource @Inject constructor(
     private companion object{
         val KEY_USERCODE = stringPreferencesKey(name = "usercode")
         val KEY_FIREBASE_KEY = stringPreferencesKey(name = "userkey")
-
+        val KEY_LOGIN_STATUS_KEY = booleanPreferencesKey(name = "loginstatus")
     }
 
     suspend fun setUserCode(userCode: String) {
@@ -88,6 +89,27 @@ class AuthDataSource @Inject constructor(
             }
             .map { preferences ->
                 preferences[KEY_FIREBASE_KEY]
+            }
+        return flow.firstOrNull()
+    }
+
+    suspend fun setLoginStatus(loginStatus: Boolean) {
+        context.userInfoDataStore.edit { preference ->
+            preference[KEY_LOGIN_STATUS_KEY] = loginStatus
+        }
+    }
+
+    suspend fun getLoginStatus(): Boolean? {
+        val flow = context.userInfoDataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                preferences[KEY_LOGIN_STATUS_KEY]
             }
         return flow.firstOrNull()
     }

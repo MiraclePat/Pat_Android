@@ -8,6 +8,7 @@ import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -67,14 +68,19 @@ sealed class BottomNavItem(
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun NavigationGraph(navController: NavHostController) {
+fun NavigationGraph(
+    navController: NavHostController,
+    isAutoLogin: String
+) {
     val postViewModel: PostViewModel = hiltViewModel()
     val proofViewModel: ProofViewModel = hiltViewModel()
     val updateViewModel: PatUpdateViewModel = hiltViewModel()
+    val startDestination =
+        if (isAutoLogin.equals("SUCCESS")) BottomNavItem.Home.screenRoute else "LOGIN"
 
-    NavHost(navController = navController, startDestination = BottomNavItem.Home.screenRoute) {
+    NavHost(navController = navController, startDestination = startDestination) {
         composable("LOGIN") {
-            LoginScreenView()
+            LoginScreenView(navController = navController)
         }
         composable(BottomNavItem.Home.screenRoute) {
             HomeScreenView(

@@ -13,5 +13,7 @@ interface AuthRepository {
     suspend fun getUsercode(): Result<String?>
     suspend fun getUserKey(): Result<String?>
     suspend fun setUserKey(key: String): Result<Unit>
+    suspend fun getLoginStatus(): Result<Boolean?>
+
 
 }

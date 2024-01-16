@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.orhanobut.logger.Logger
+import com.pat.domain.model.exception.InvaildRequestException
+import com.pat.domain.model.exception.UserNotFoundException
 import com.pat.domain.model.member.MyProfileContent
 import com.pat.domain.usecase.auth.LogoutUseCase
 import com.pat.domain.usecase.auth.SetUserKeyUseCase
@@ -12,7 +14,6 @@ import com.pat.domain.usecase.member.DeleteMemberUseCase
 import com.pat.domain.usecase.member.GetMyProfileUseCase
 import com.pat.domain.usecase.member.UpdateProfileImageUseCase
 import com.pat.domain.usecase.member.UpdateProfileNicknameUseCase
-import com.pat.presentation.util.resultException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +30,11 @@ sealed class SettingEvent {
     object DeleteUserSuccess : SettingEvent()
     object DeleteUserFailed : SettingEvent()
     object LogoutSuccess : SettingEvent()
+    object UpdateNicknameSuccess : SettingEvent()
+
+    object DuplicatedNicknameException : SettingEvent()
+    object UserNotFoundException : SettingEvent()
+    object UnknownException : SettingEvent()
 
 }
 data class SettingUiState(
@@ -44,16 +50,16 @@ class SettingViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
     private val setUserKeyUseCase: SetUserKeyUseCase
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(SettingUiState())
-    val uiState: StateFlow<SettingUiState> = _uiState.asStateFlow()
 
     private val _event = MutableSharedFlow<SettingEvent>()
     val event = _event.asSharedFlow()
 
-    init {
+    private val _uiState = MutableStateFlow(SettingUiState())
+    val uiState: StateFlow<SettingUiState> = _uiState.asStateFlow()
+
+    init{
         getMyProfile()
     }
-
     fun getMyProfile() {
         viewModelScope.launch {
             val result = getMyProfileUseCase()
@@ -61,15 +67,14 @@ class SettingViewModel @Inject constructor(
                 val content = result.getOrThrow()
                 _event.emit(SettingEvent.GetMyProfileSuccess)
                 _uiState.emit(SettingUiState(profileContent = content))
-
             } else {
                 _event.emit(SettingEvent.GetMyProfileFailed)
                 val error = result.exceptionOrNull()
-                resultException(error)
+//                resultException(error)
             }
         }
     }
-    
+
     fun deleteUser(){
         viewModelScope.launch {
             val result = deleteMemberUseCase()
@@ -84,11 +89,26 @@ class SettingViewModel @Inject constructor(
     }
 
     fun updateProfileImage(uri: Uri?){
-
+        viewModelScope.launch {
+            val result = updateProfileImageUseCase(uri.toString())
+            if (result.isSuccess) {
+                getMyProfile()
+            } else {
+                handleException(result.exceptionOrNull()!!)
+            }
+        }
     }
 
     fun updateProfileNickname(nickname : String){
-
+        viewModelScope.launch {
+            val result = updateProfileNicknameUseCase(nickname)
+            if (result.isSuccess) {
+                getMyProfile()
+                _event.emit(SettingEvent.UpdateNicknameSuccess)
+            } else {
+                handleException(result.exceptionOrNull()!!)
+            }
+        }
     }
 
     fun logout(){
@@ -105,5 +125,12 @@ class SettingViewModel @Inject constructor(
         }
     }
 
+    private suspend fun handleException(error: Throwable){
+        when (error){
+            is InvaildRequestException -> _event.emit(SettingEvent.DuplicatedNicknameException)
+            is UserNotFoundException -> _event.emit(SettingEvent.UserNotFoundException)
+            else -> _event.emit(SettingEvent.UnknownException)
+        }
+    }
 
 }

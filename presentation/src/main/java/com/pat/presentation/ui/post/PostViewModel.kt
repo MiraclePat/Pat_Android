@@ -105,8 +105,6 @@ class PostViewModel @Inject constructor(
         val bytes = getCompressedBytes(scaledBitmap)
         val newBitmap = byteArrayToBitmap(bytes)
 
-
-        //TOSTRING을 어떻게 할까, 코루틴을 쓰는방법으로 바꿔야함 , 위에 데이터 처리를 data layer에서 못하는문제
         when (bitmapType) {
             PatBitmap.REP.toString() -> {
                 _repBitmap.value = newBitmap

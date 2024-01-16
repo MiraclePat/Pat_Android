@@ -9,6 +9,7 @@ import com.orhanobut.logger.Logger
 import com.pat.domain.model.exception.ForbiddenException
 import com.pat.domain.model.pat.HomeBannerContent
 import com.pat.domain.model.pat.HomePatRequestInfo
+import com.pat.domain.usecase.auth.GetLoginStatusUseCase
 import com.pat.domain.usecase.pat.GetHomeBannerUseCase
 import com.pat.domain.usecase.pat.GetHomePatsUseCase
 import com.pat.presentation.ui.pat.ParticipateEvent
@@ -33,6 +34,7 @@ sealed class HomeEvent {
 class HomeViewModel @Inject constructor(
     private val getHomePatsUseCase: GetHomePatsUseCase,
     private val getHomeBannerUseCase: GetHomeBannerUseCase,
+    private val getLoginStatusUseCase: GetLoginStatusUseCase,
 ) : ViewModel() {
     private val size = 10
 
@@ -87,6 +89,21 @@ class HomeViewModel @Inject constructor(
 
 
     init {
+        viewModelScope.launch {
+//            val loginResult = getLoginStatusUseCase()
+//            if (loginResult.isSuccess) {
+//                Logger.t("MainTest").i("에러. ${loginResult}")
+//                if (loginResult.getOrThrow() == true){
+//                    Logger.t("MainTest").i("진입")
+//                    getBanner()}
+                getBanner()
+//            } else {
+//                Logger.t("MainTest").i("비회원입니다")
+//            }
+        }
+    }
+
+    private fun getBanner() {
         viewModelScope.launch {
             val homeBannerResult = getHomeBannerUseCase()
             if (homeBannerResult.isSuccess) {

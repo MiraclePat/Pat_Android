@@ -99,7 +99,6 @@ fun SettingAccount(
         ) {
             Column(
                 modifier = modifier
-                    .padding(bottom = 40.dp)
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -125,7 +124,7 @@ fun SettingAccount(
                     textColor = Gray600,
                     stokeColor = Gray200
                 )
-                Spacer(modifier = modifier.padding(40.dp))
+                Spacer(modifier = modifier.padding(30.dp))
             }
         }
     }

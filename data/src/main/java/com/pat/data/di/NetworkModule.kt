@@ -19,7 +19,7 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.Interceptor
 
 
-private const val BASE_URL = "http://43.200.73.58:8080/"
+private const val BASE_URL = "https://miraclepat.site/"
 private const val BASE_URL_NAVER_API = "https://openapi.naver.com/"
 private const val BASE_URL_NAVER_GEOCODE_API = "https://naveropenapi.apigw.ntruss.com/"
 
