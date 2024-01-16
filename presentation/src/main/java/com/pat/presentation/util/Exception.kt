@@ -8,15 +8,15 @@ import com.pat.domain.model.exception.NotFoundException
 fun resultException(error: Throwable?) {
     when (error) {
         is BadRequestException -> {
-            Logger.t("code").i("${error.message}")
+            Logger.t("errorCode").i("${error.message}")
         }
 
         is NotFoundException -> {
-            Logger.t("code").i("${error.message}")
+            Logger.t("errorCode").i("${error.message}")
         }
 
         is ForbiddenException -> {
-            Logger.t("code").i("${error.message}")
+            Logger.t("errorCode").i("${error.message}")
         }
     }
 }

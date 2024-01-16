@@ -2,6 +2,7 @@ package com.pat.data.source
 
 import com.pat.data.model.ListResponse
 import com.pat.data.model.member.MyProfileContentDTO
+import com.pat.data.model.member.NicknameRequestBody
 import com.pat.data.model.member.ParticipatingContentDTO
 import com.pat.data.model.member.ParticipatingDetailContentDTO
 import com.pat.data.service.MemberService
@@ -23,7 +24,7 @@ class MemberDataSource @Inject constructor(
     }
 
     suspend fun updateProfileNickname(
-        nickname: String
+        nickname: NicknameRequestBody
     ): Response<Unit> {
         return service.updateProfileNickname(nickname)
     }

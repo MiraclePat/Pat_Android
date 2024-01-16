@@ -1,6 +1,7 @@
 package com.pat.data.repository.member
 
 import com.orhanobut.logger.Logger
+import com.pat.data.model.member.NicknameRequestBody
 import com.pat.data.repository.image.ImageRepositoryImpl
 import com.pat.data.source.ImageDataSource
 import com.pat.data.source.MemberDataSource
@@ -62,7 +63,7 @@ class MemberRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateProfileNickname(nickname: String): Result<Unit> {
-        val response = memberDataSource.updateProfileNickname(nickname)
+        val response = memberDataSource.updateProfileNickname(NicknameRequestBody(nickname))
 
         return if (response.isSuccessful) {
             Result.success(Unit)

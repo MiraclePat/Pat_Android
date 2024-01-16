@@ -46,6 +46,7 @@ import androidx.navigation.NavController
 import com.pat.domain.model.pat.PatDetailContent
 import com.pat.presentation.R
 import com.pat.presentation.ui.common.CategoryBox
+import com.pat.presentation.ui.common.CustomDialog
 import com.pat.presentation.ui.common.DayButtonList
 import com.pat.presentation.ui.common.Divider
 import com.pat.presentation.ui.common.FinalButton
@@ -66,6 +67,7 @@ import com.pat.presentation.ui.theme.RedBack
 import com.pat.presentation.ui.theme.RedText
 import com.pat.presentation.ui.theme.Typography
 import com.pat.presentation.ui.theme.White
+import com.pat.presentation.util.HOME
 import com.skydoves.landscapist.glide.GlideImage
 
 
@@ -79,7 +81,19 @@ fun PatDetailView(
     val uiState by patDetailViewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
     val errorMessage = remember { mutableStateOf("") }
+    val deleteDialogState = remember { mutableStateOf(false) }
 
+    if (deleteDialogState.value) {
+        CustomDialog(
+            okRequest = {
+                if (uiState.content != null) patDetailViewModel.deletePat(uiState.content!!.patId)
+            },
+            state = deleteDialogState,
+            message = "이 공고글을 삭제하시겠어요?",
+            cancelMessage = "공고글 유지",
+            okMessage = "삭제하기"
+        )
+    }
     LaunchedEffect(patDetailViewModel) {
         patDetailViewModel.event.collect {
             when (it) {
@@ -104,6 +118,18 @@ fun PatDetailView(
 
                 is ParticipateEvent.WithdrawFailed -> {
                     errorMessage.value = "취소 실패"
+                }
+
+                is ParticipateEvent.DeleteSuccess -> {
+                    errorMessage.value = "삭제 성공"
+                    navController.popBackStack(
+                        route = HOME,
+                        inclusive = false
+                    )
+                }
+
+                is ParticipateEvent.DeleteFailed -> {
+                    errorMessage.value = "삭제 실패"
                 }
             }
         }
@@ -131,15 +157,20 @@ fun PatDetailView(
                 },
                 actions = {
                     if (uiState.content?.isWriter == true) {
-                        IconButton(modifier = modifier
-                            .padding(end = 12.dp)
-                            .size(24.dp), onClick = {
-                            navController.navigate("patUpdate/${uiState.content?.patId}")
+                        IconButton(onClick = {
+                            deleteDialogState.value = true
                         }) {
                             Icon(
-                                painter = painterResource(id = R.drawable.ic_write),
-                                contentDescription = "Write",
-                                tint = Gray800
+                                painter = painterResource(id = R.drawable.ic_delete),
+                                contentDescription = "Delete"
+                            )
+                        }
+                        IconButton(onClick = {
+                            deleteDialogState.value = true
+                        }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_delete),
+                                contentDescription = "Delete"
                             )
                         }
                     }

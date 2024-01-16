@@ -1,9 +1,11 @@
 package com.pat.presentation.ui.pat
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pat.domain.model.pat.PatDetailContent
+import com.pat.domain.usecase.pat.DeletePatUseCase
 import com.pat.domain.usecase.pat.GetPatDetailUseCase
 import com.pat.domain.usecase.pat.ParticipatePatUseCase
 import com.pat.domain.usecase.pat.WithdrawPatUseCase
@@ -24,6 +26,9 @@ sealed class ParticipateEvent {
     object GetPatDetailFailed : ParticipateEvent()
     object WithdrawSuccess : ParticipateEvent()
     object WithdrawFailed : ParticipateEvent()
+
+    object DeleteSuccess : ParticipateEvent()
+    object DeleteFailed : ParticipateEvent()
 }
 data class PatDetailUiState(
     val content: PatDetailContent? = null
@@ -35,6 +40,7 @@ class PatDetailViewModel @Inject constructor(
     private val getPatDetailUseCase: GetPatDetailUseCase,
     private val participatePatUseCase: ParticipatePatUseCase,
     private val withdrawPatUseCase: WithdrawPatUseCase,
+    private val deletePatUseCase: DeletePatUseCase,
 ) : ViewModel() {
     private val patId = savedStateHandle.get<Long?>(
         key = "patId"
@@ -64,11 +70,21 @@ class PatDetailViewModel @Inject constructor(
         }
     }
 
+    fun deletePat(patId: Long) {
+        viewModelScope.launch {
+            val result = deletePatUseCase(patId)
+            if (result.isSuccess) {
+                _event.emit(ParticipateEvent.DeleteSuccess)
+            } else {
+                _event.emit(ParticipateEvent.DeleteFailed)
+            }
+        }
+    }
+
     fun participatePat() {
         viewModelScope.launch {
             val result = participatePatUseCase(patId)
             if (result.isSuccess) {
-                result.getOrThrow()
                 _event.emit(ParticipateEvent.ParticipateSuccess("CANCELABLE"))
                 getPatDetail()
             } else {
@@ -83,7 +99,6 @@ class PatDetailViewModel @Inject constructor(
         viewModelScope.launch {
             val result = withdrawPatUseCase(patId)
             if (result.isSuccess) {
-                result.getOrThrow()
                 _event.emit(ParticipateEvent.WithdrawSuccess)
                 getPatDetail()
             } else {

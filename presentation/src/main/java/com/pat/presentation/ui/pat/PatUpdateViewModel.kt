@@ -289,7 +289,7 @@ class PatUpdateViewModel @Inject constructor(
                 startDate,
                 endDate,
                 proofDetail,
-                listOf("월요일", "화요일"),
+                days,
                 realtime
             )
             Logger.t("updateInfo").i("${patId}, ${detail}")

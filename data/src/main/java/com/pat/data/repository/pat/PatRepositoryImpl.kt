@@ -113,6 +113,8 @@ class PatRepositoryImpl @Inject constructor(
         return if (result.isSuccess) {
             Result.success(result.getOrThrow())
         } else {
+            Logger.t("errorCode").i("${result.exceptionOrNull()}")
+
             Result.failure(handleRegisterAndGetError(result.exception()))
         }
     }
