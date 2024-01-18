@@ -114,8 +114,8 @@ https://drive.google.com/drive/folders/1Q3G-edN6snPJL1RjgX1qQjq_Qmucue9u
 | 이름 | 담당 업무 |
 | ------ | ------ |
 | 박지혜 |  |
-| 이기영 |  |
+| 이기영 | REST API 호출, Compose 기반 MVVM 연동 및 화면 구현, 예외처리 및 UX |
 | 고현정 | Back-End 개발, DB 설계 |
-| 문예영 | UI/U 디자인 |
+| 문예영 | UI/UX 디자인 |
 
 <br>
