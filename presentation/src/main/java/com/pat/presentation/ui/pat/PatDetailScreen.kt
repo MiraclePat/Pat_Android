@@ -375,25 +375,8 @@ fun PatDetailScreen(
 
         }
 
-
-        if (content.isWriter) {
-            when (content.state) {
-                "CANCELABLE" -> {
-                    FinalButton(
-                        text = "수정 또는 삭제하기",
-                        backColor = PrimaryMain,
-                        textColor = White,
-                        onClick = {
-                            navController.navigate("patUpdate/${content.patId}")
-                        }
-                    )
-                }
-                else -> {
-                    // 빈 버튼
-                }
-            }
-        } else {
-            // 작성자가 아닐 때
+        // 작성자인경우 빈 버튼
+        if (!content.isWriter) {
             if (content.isJoiner) {
                 // 참여자인 경우
                 when (content.state) {
@@ -425,6 +408,7 @@ fun PatDetailScreen(
                             stokeColor = Gray300,
                         )
                     }
+
                     "COMPLETED" -> {
                         FinalButton(
                             text = "종료된 팟이에요!",

@@ -55,7 +55,7 @@ sealed class BottomNavItem(
 
     object Certification :
         BottomNavItem(
-            R.string.text_certification,
+            R.string.text_pat,
             R.drawable.na_circle_check,
             R.drawable.na_circle_check_fill,
             "$CERTIFICATION?state={state}"

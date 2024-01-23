@@ -22,7 +22,7 @@ class OpenPatPaging(
             LoadResult.Page(
                 data = response,
                 prevKey = null,
-                nextKey = response.last().patId.toInt()
+                nextKey = if (response.isNotEmpty()) response.last().patId.toInt() else null
             )
         } catch (e: Exception) {
             LoadResult.Error(e)

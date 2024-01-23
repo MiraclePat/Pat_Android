@@ -82,8 +82,6 @@ fun SettingAccount(
                 .padding(paddingValues)
                 .fillMaxSize()
         ) {
-            SettingTitle(text = "내 계정")
-            SettingBox(text = PASSWORD, onClick = { viewState.value = PASSWORD })
             SettingTitle(text = "로그인")
             SettingBox(text = LOGOUT, onClick = { showBottomSheet = true })
             SettingBox(text = WITHDRAWAL, onClick = { viewState.value = WITHDRAWAL })

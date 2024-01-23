@@ -23,7 +23,7 @@ class SomeoneProofPaging(
             LoadResult.Page(
                 data = response,
                 prevKey = null,
-                nextKey = response.last().proofId.toInt()
+                nextKey = if (response.isNotEmpty()) response.last().proofId.toInt() else null
             )
         } catch (e: Exception) {
             LoadResult.Error(e)
