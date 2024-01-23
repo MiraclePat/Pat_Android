@@ -18,5 +18,8 @@ fun resultException(error: Throwable?) {
         is ForbiddenException -> {
             Logger.t("errorCode").i("${error.message}")
         }
+        else -> {
+            Logger.t("code").i("${error?.message}")
+        }
     }
 }

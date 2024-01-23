@@ -92,6 +92,7 @@ fun PostScreenView(
     val scrollState = rememberScrollState()
     val declarationDialogState = remember { mutableStateOf(false) }
     val errorMessage = remember { mutableStateOf("") }
+    val postLoading = remember { mutableStateOf(false) }
 
     BackHandler {
         declarationDialogState.value = true
@@ -106,10 +107,12 @@ fun PostScreenView(
                         route = HOME,
                         inclusive = false
                     )
+                    postLoading.value = false
                 }
 
                 is PostEvent.PostFailed -> {
                     errorMessage.value = "등록 실패"
+                    postLoading.value = false
                 }
 
                 is PostEvent.SearchPlaceSuccess -> {}
@@ -179,7 +182,8 @@ fun PostScreenView(
                 PostScreenBody(
                     navController = navController,
                     viewModel = viewModel,
-                    scrollState = scrollState
+                    scrollState = scrollState,
+                    postLoading = postLoading
                 )
             }
 
@@ -195,7 +199,8 @@ fun PostScreenBody(
     navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: PostViewModel,
-    scrollState: ScrollState
+    scrollState: ScrollState,
+    postLoading: MutableState<Boolean>
 ) {
     val isRealTime = rememberSaveable { mutableStateOf(false) }         // 사진 선택
     val title = rememberSaveable { mutableStateOf("") }         // 팟 제목
@@ -418,26 +423,30 @@ fun PostScreenBody(
         }
 
         if (checkList.all { it }) {
-            FinalButton(text = "확정",
-                backColor = PrimaryMain,
+            FinalButton(text = if (!postLoading.value) "확정" else "등록 요청 중...",
+                backColor = if (!postLoading.value) PrimaryMain else Gray300,
+                stokeColor = if (!postLoading.value) PrimaryMain else Gray300,
                 textColor = White,
                 onClick = {
                     val outputStartTime = convertTimeFormat(startTime.value)
                     val outputEndTime = convertTimeFormat(endTime.value)
 
-                    viewModel.post(
-                        patName = title.value,
-                        maxPerson = maxPerson.value.toInt(),
-                        patDetail = patDetail.value,
-                        proofDetail = proofDetail.value,
-                        startDate = startDate.value,
-                        endDate = endDate.value,
-                        startTime = outputStartTime,
-                        endTime = outputEndTime,
-                        days = dayList.value,
-                        category = category.value,
-                        realtime = !isRealTime.value,
-                    )
+                    if (!postLoading.value) {
+                        viewModel.post(
+                            patName = title.value,
+                            maxPerson = maxPerson.value.toInt(),
+                            patDetail = patDetail.value,
+                            proofDetail = proofDetail.value,
+                            startDate = startDate.value,
+                            endDate = endDate.value,
+                            startTime = outputStartTime,
+                            endTime = outputEndTime,
+                            days = dayList.value,
+                            category = category.value,
+                            realtime = !isRealTime.value,
+                        )
+                    }
+                    postLoading.value = true
                 })
         } else {
             FinalButton(
