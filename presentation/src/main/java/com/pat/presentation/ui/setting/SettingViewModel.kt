@@ -79,6 +79,7 @@ class SettingViewModel @Inject constructor(
         viewModelScope.launch {
             val result = deleteMemberUseCase()
             if (result.isSuccess) {
+                setUserKeyUseCase("")
                 _event.emit(SettingEvent.DeleteUserSuccess)
                 Log.e("custom", "탈퇴성공")
             } else {
