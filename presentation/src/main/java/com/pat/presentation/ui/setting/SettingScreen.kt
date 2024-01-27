@@ -77,7 +77,6 @@ fun SettingScreenView(
 
         ALARM -> SettingAlarm(viewState = viewState)
         ANNOUNCE -> SettingAnnounce(viewState = viewState)
-        PASSWORD -> SettingPassword(viewState = viewState)
         WITHDRAWAL -> SettingWithdrawal(viewState = viewState, settingViewModel = settingViewModel)
     }
 }

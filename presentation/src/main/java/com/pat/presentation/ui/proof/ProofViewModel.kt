@@ -152,28 +152,30 @@ class ProofViewModel @Inject constructor(
         _bottomSheetState.value = false
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun proofPat(patId: Long) {
         viewModelScope.launch {
             val result = proofPatUseCase(patId, ProofPatInfo(proofImageBytes))
             if (result.isSuccess) {
                 result.getOrThrow()
-                _bottomSheetState.value = false
+                clearBitmap()
                 getParticipatingDetail(_uiState.value.content!!.patId)
                 _event.emit(ProofEvent.ProofSuccess)
-                // 인증 성공 시 proof 데이터 다시 가져오기
-                myProof = Pager(
-                    config = PagingConfig(pageSize = size),
-                    pagingSourceFactory = {
-                        MyProofPaging(
-                            patId,
-                            getMyProofUseCase,
-                            ProofRequestInfo(
-                                size = size
+                myProof = pagingId.flatMapLatest { id ->
+                    Pager(
+                        config = PagingConfig(pageSize = size),
+                        pagingSourceFactory = {
+                            MyProofPaging(
+                                id,
+                                getMyProofUseCase,
+                                ProofRequestInfo(
+                                    size = size
+                                )
                             )
-                        )
 
-                    }
-                ).flow.cachedIn(viewModelScope)
+                        }
+                    ).flow.cachedIn(viewModelScope)
+                }
             } else {
                 _event.emit(ProofEvent.ProofFailed)
                 val error = result.exceptionOrNull()

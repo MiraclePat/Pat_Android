@@ -47,14 +47,9 @@ fun SettingAnnounce(modifier: Modifier = Modifier, viewState: MutableState<Strin
                 .fillMaxSize()
         ) {
             SettingAnnounceBox(
-                title = "공지 제목",
-                date = "2023.12.12",
-                body = "공지 내용이 들어갈 예정입니다. 공지 내용이 들어갈 예정입니다. 공지 내용이 들어갈 예정입니다. 공지 내용이 들어갈 예정입니다."
-            )
-            SettingAnnounceBox(
-                title = "공지 제목",
-                date = "2023.12.12",
-                body = "공지 내용이 들어갈 예정입니다. 공지 내용이 들어갈 예정입니다. 공지 내용이 들어갈 예정입니다. 공지 내용이 들어갈 예정입니다."
+                title = "공지사항",
+                date = "2024.01.25",
+                body = "미라클 팟에 가입해주셔서 감사합니다. 모두 정하신 목표 이루셨으면 좋겠습니다."
             )
         }
     }

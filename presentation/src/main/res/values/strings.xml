@@ -5,6 +5,7 @@
     <string name="text_app_name">미라클 팟</string>
     <string name="text_home">홈</string>
     <string name="text_certification">인증</string>
+    <string name="text_pat">팟</string>
     <string name="text_map">맵</string>
     <string name="text_setting">마이페이지</string>
     <string name="home_empty_pat">아직 참여 중인 팟이 없어요.</string>

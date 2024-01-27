@@ -223,7 +223,7 @@ fun ProofScreen(
             text = text,
             textColor = White,
             backColor = Gray300,
-            stokeColor = Gray300
+            stokeColor = Gray300,
         )
     }
 
@@ -497,7 +497,8 @@ fun ProofScreen(
         }
         when (content.state) {
             "CANCELABLE" -> {
-                FinalButton(text = "팟 취소하기", onClick = { viewModel.withdrawPat(content.patId) })
+                finalButton(text = "모집공고글에서 팟 취소가 가능합니다")
+
             }
 
             "NO_CANCELABLE" -> {
