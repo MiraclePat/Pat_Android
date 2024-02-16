@@ -100,7 +100,7 @@ fun SettingScreenBody(
     val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
-            viewModel.updateProfileImage(uri)
+            uri?.let { viewModel.updateProfileImage(uri) }
         }
     )
 

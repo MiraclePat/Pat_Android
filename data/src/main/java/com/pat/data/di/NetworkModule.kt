@@ -1,6 +1,7 @@
 package com.pat.data.di
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import com.orhanobut.logger.Logger
 import com.pat.data.BuildConfig
 import com.pat.data.interceptor.AuthInterceptor
 import com.pat.data.source.AuthDataSource
@@ -47,15 +48,12 @@ object NetworkModule {
     @Singleton
     @Provides
     fun provideNormalOkHttpClient(): OkHttpClient =
-        if (BuildConfig.DEBUG) {
+        run {
             val loggingInterceptor = HttpLoggingInterceptor().apply {
                 setLevel(HttpLoggingInterceptor.Level.BODY)
             }
             OkHttpClient.Builder()
                 .addInterceptor(loggingInterceptor)
-                .build()
-        } else {
-            OkHttpClient.Builder()
                 .build()
         }
 
@@ -77,7 +75,7 @@ object NetworkModule {
     @Singleton
     @Provides
     fun provideNaverOkHttpClient(): OkHttpClient =
-        if (BuildConfig.DEBUG) {
+        run {
             val loggingInterceptor = HttpLoggingInterceptor().apply {
                 setLevel(HttpLoggingInterceptor.Level.BODY)
             }
@@ -87,15 +85,14 @@ object NetworkModule {
                     .addHeader("X-Naver-Client-Id", BuildConfig.CLIENT_ID)
                     .addHeader("X-Naver-Client-Secret", BuildConfig.CLIENT_SECRET)
                     .build()
+
+                Logger.t("MainTest").i("$request")
                 return@Interceptor it.proceed(request)
             }
 
             OkHttpClient.Builder()
                 .addInterceptor(headerInterceptor)
                 .addInterceptor(loggingInterceptor)
-                .build()
-        } else {
-            OkHttpClient.Builder()
                 .build()
         }
 
@@ -118,7 +115,7 @@ object NetworkModule {
     @Singleton
     @Provides
     fun provideNaverGeocodeOkHttpClient(): OkHttpClient =
-        if (BuildConfig.DEBUG) {
+       run {
             val loggingInterceptor = HttpLoggingInterceptor().apply {
                 setLevel(HttpLoggingInterceptor.Level.BODY)
             }
@@ -134,9 +131,6 @@ object NetworkModule {
             OkHttpClient.Builder()
                 .addInterceptor(headerInterceptor)
                 .addInterceptor(loggingInterceptor)
-                .build()
-        } else {
-            OkHttpClient.Builder()
                 .build()
         }
 
@@ -161,17 +155,13 @@ object NetworkModule {
     fun provideAuthOkHttpClient(
         authInterceptor: AuthInterceptor,
     ): OkHttpClient =
-        if (BuildConfig.DEBUG) {
+        run {
             val loggingInterceptor = HttpLoggingInterceptor().apply {
                 setLevel(HttpLoggingInterceptor.Level.BODY)
             }
             OkHttpClient.Builder()
                 .addInterceptor(authInterceptor)
                 .addInterceptor(loggingInterceptor)
-                .build()
-        } else {
-            OkHttpClient.Builder()
-                .addInterceptor(authInterceptor)
                 .build()
         }
 
