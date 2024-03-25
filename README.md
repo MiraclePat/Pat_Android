@@ -3,6 +3,9 @@
 ## :loudspeaker: Description
 일명 팟(모임)을 만들고 참여하여 정해진 기간과 시간에 인증샷을 올릴 수 있는 챌린지 앱입니다. 
 
+PlayStore link
+https://play.google.com/store/apps/details?id=com.pat.miraclepat
+
 ## :mega: 주요 기능
 
   - 팟 생성 및 참여
