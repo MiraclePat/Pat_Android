@@ -6,6 +6,8 @@
 PlayStore link
 https://play.google.com/store/apps/details?id=com.pat.miraclepat
 
+프로젝트 기간 : 2023.11.11 ~ 2023.12.11
+
 ## :mega: 주요 기능
 
   - 팟 생성 및 참여
